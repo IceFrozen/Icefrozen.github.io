@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/archives/4/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/iron_man/iron2.jpg') 
+            /*config*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="site-heading">
+                        <h1>西木凌萧</h1>
+                        <!--<hr class="small">-->
+                        <span class="subheading">个人博客</span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <!-- Main Content -->
+
+<style type="text/css">
+    .post_img{
+        border-radius:10px;/*四个圆角值都设置为宽度或高度值的一半*/
+    }
+    .post-subtitle-my {
+        /* color: #ffffff;
+        text-align: left;
+        margin-left: 30px;
+        position: relative;
+        top: -75px; */
+        font-size: xx-large;
+        font-family: cursive;
+    }
+   
+</style>
+
+
+<div class="post-preview">
+
+    <a href="/article/data-structure-tree-b-puls/">
+        <h2 class="post-title">
+            算法探秘系列之数据结构篇——树（2）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                B+树
+            </h3>
+        <div class="post-content-preview">
+            概诉
+概诉 
+
+B+ 树的定义
+
+关于B树的阶数和度数已经在上一篇算法探秘系列之数据结构篇——树（1）
+除此之外B+树还有以下的要求。
+
+
+1）B+树包含2种类型的结点：内部结点（也称索引结点）和叶子结点。根结点本身即可以是内部结点，也可以是叶子结点。根结点的关键字个数最少可以只有1个。
+
+
+2）B+树与B树最大的不同是内部结点不保存数据，只用于索引，所有数据（或者说记录）都保存在叶子结点中...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-06-26
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#算法" title="算法">算法</a>
+            
+              <a href="/tags/#数据结构" title="数据结构">数据结构</a>
+            
+              <a href="/tags/#树" title="树">树</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/bloomfilter/">
+        <h2 class="post-title">
+            算法探秘系列之概率随机算法(1)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/75/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                布隆过滤器
+            </h3>
+        <div class="post-content-preview">
+            什么是布隆过滤器
+本质上布隆过滤器是一种数据结构，比较巧妙的概率型数据结构（probabilistic data structure），特点是高效地插入和查询，可以用来告诉你 “某样东西一定不存在或者可能存在”。
+相比于传统的 List、Set、Map 等数据结构，它更高效、占用空间更少，但是缺点是其返回的结果是概率性的，而不是确切的。
+实现原理
+HashMap 的问题
+讲述布隆过滤器的原理...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-06-25
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#算法" title="算法">算法</a>
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+              <a href="/tags/#概率随机算法" title="概率随机算法">概率随机算法</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/B-Tree-And-B-Tree/">
+        <h2 class="post-title">
+            算法探秘系列之数据结构篇——树（1）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                B树
+            </h3>
+        <div class="post-content-preview">
+            注意：首先需要说明的一点是：B-树就是B树，没有所谓的B减树
+引言
+我们都知道二叉查找树的查找的时间复杂度是Ｏ(log N)，其查找效率已经足够高了，那为什么还有Ｂ树和Ｂ＋树的出现呢？难道它两的时间复杂度比二叉查找树还小吗？
+答案当然不是，Ｂ树和Ｂ＋树的出现是因为另外一个问题，那就是磁盘ＩＯ，众所周知ＩＯ操作的效率很低，那么，当在大量数据存储中，查询时我们不能一下子将所有数据加载到内存中，只...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-06-24
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#算法" title="算法">算法</a>
+            
+              <a href="/tags/#数据结构" title="数据结构">数据结构</a>
+            
+              <a href="/tags/#树" title="树">树</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/distributed-redis-lock/">
+        <h2 class="post-title">
+            分布式锁的实现 redis篇
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                基于Redis的单点和基于集群的Redlock的分析
+            </h3>
+        <div class="post-content-preview">
+            概述
+在大多数的情况下，我们需要对一个共享资源进行写操作，在分布式的环境下，对于资源的写操作的互斥性就显得尤为重要。由于生产环境对redis有很多依赖，所以最近在分布式锁的实现上进行了一些调研。
+对于锁的安全性，一直是分布式领域不可逃避的话题，一个分布式锁的实现在网上所以下，就会发现，这些文章的思路大体相近，给出的实现算法也看似合乎逻辑，但当我们着手去实现它们的时候，却发现如果你越是仔细推敲...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-30
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/knapsack-problem/">
+        <h2 class="post-title">
+            算法探秘系列之动态规划（2）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/56/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                背包问题
+            </h3>
+        <div class="post-content-preview">
+            背包问题
+有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
+问题分类
+
+01背包问题  如果N个物品每个物品只能使用一次，则成为01背包问题
+完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题
+
+问题的解法
+
+暴力搜索解法（递归解法）
+动态规划解法
+优化后的动态规划（滚动数组，自下而上）
+
+01背包问题
+
+...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-30
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#算法" title="算法">算法</a>
+            
+              <a href="/tags/#动态规划" title="动态规划">动态规划</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/dynamic-programming/">
+        <h2 class="post-title">
+            算法探秘系列之动态规划（1）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                动态规划介绍
+            </h3>
+        <div class="post-content-preview">
+            概述
+态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。
+动态规划一般可分为
+
+
+线性动规
+
+
+区域动规
+
+
+树形动规
+
+
+背包动规四类。
+
+
+举例：
+
+线性动规：拦截导弹(最大递减数列)，合唱队形，挖地雷，建学校，剑客决斗等；
+
+
+区域动规：石子合并， 加分二叉树，统计单词个数，炮兵布阵等；
+
+
+树形动规...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-26
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#算法" title="算法">算法</a>
+            
+              <a href="/tags/#动态规划" title="动态规划">动态规划</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/distributed-redis-data-structure-skip-zip-list/">
+        <h2 class="post-title">
+            Redis系列之数据结构篇(3)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                跳表和压缩表
+            </h3>
+        <div class="post-content-preview">
+            
+本文转自 redis 的设计与实现
+
+跳表
+–
+跳表的结构
+跳跃表（skiplist）是一种随机化的数据， 跳跃表以有序的方式在层次化的链表中保存元素， 效率和平衡树媲美 —— 查找、删除、添加等操作都可以在对数期望时间下完成， 并且比起平衡树来说， 跳跃表的实现要简单直观得多。
+以下是个典型的跳跃表例子（图片来自维基百科）：
+
+从图中可以看到， 跳跃表主要由以下部分构成：
+
+表头（hea...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-26
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/most-frequent-number-in-stream/">
+        <h2 class="post-title">
+            大数据算法之空间亚线性算法（二）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/90/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                Misra-Gries 算法（数据流中最频繁的的数字）
+            </h3>
+        <div class="post-content-preview">
+            概诉
+水库抽样算法 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。
+Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那些在数据流中出现频率最高的数据项。频繁项挖掘，这个看似简单的任务却是很多复杂算法的基础，同时也有着广泛的应用。
+对于频繁项挖掘而言，一个简单的想法是，为所有的数据项分配计数器，当一个数据项到达，我们即增加相应计数器...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-24
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#大数据" title="大数据">大数据</a>
+            
+              <a href="/tags/#空间亚线性算法" title="空间亚线性算法">空间亚线性算法</a>
+            
+              <a href="/tags/#大数据算法篇" title="大数据算法篇">大数据算法篇</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/reservoir-sampling/">
+        <h2 class="post-title">
+            大数据算法之空间亚线性算法(一)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/41/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                水库抽样算法
+            </h3>
+        <div class="post-content-preview">
+            问题描述
+
+输入：一组数据，大小未知
+输出：这组数据的K个均匀抽取
+要求：仅扫描一次
+总体要求：从N个元素中随机的抽取k个元素，其中N无法确定，保证每个元素抽到的概率相同
+
+问题难点
+首先明确什么叫均匀抽样，就是每个数据被等概率抽取呗。即当样本总体为n 时候，每个样本被抽取的概率为1/n,如果要抽取k个元素，那么每个样本被抽到的概率为k/n。但是我们实现不知道总体的数量n。如果就只有n=K个...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-23
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#大数据" title="大数据">大数据</a>
+            
+              <a href="/tags/#空间亚线性算法" title="空间亚线性算法">空间亚线性算法</a>
+            
+              <a href="/tags/#大数据算法篇" title="大数据算法篇">大数据算法篇</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/distributed-redis-data-structure-object/">
+        <h2 class="post-title">
+            Redis系列之数据结构篇(4)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/43/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                对象简介
+            </h3>
+        <div class="post-content-preview">
+            
+本文转自 redis 的设计与实现
+
+简介
+我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。
+Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-19
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+        <li class="previous">
+            <a href="/archives/3/">&larr; Newer Posts</a>
+        </li>
+    
+    
+        <li class="next">
+            <a href="/archives/5/">Older Posts &rarr;</a>
+        </li>
+    
+</ul>
+
+
+
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- 如果开启评论功能 -->
+                
+            </div>
+
+          <!-- Sidebar Container -->
+<div class="
+    col-lg-3 col-lg-offset-0
+    col-md-3 col-md-offset-0
+    col-sm-12
+    col-xs-12
+    sidebar-container
+">
+    
+        <!-- Short About -->
+<section class="visible-md visible-lg">
+    <h5><a href="/about/">ABOUT ME</a></h5>
+    <div class="short-about">
+
+        
+            <img id = "avatar_pic" src="/img/avatar/ironman.png" />
+        
+
+        
+            <p>Stay hungry,Stay foolish</p>
+        
+
+        <!-- SNS Link -->
+        <ul class="list-inline">
+            
+            
+            
+
+            
+                <li>
+                    <a target="_blank" href="http://weibo.com/u/2028033763">
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                </li>
+            
+
+            
+
+            
+                <li>
+                    <a target="_blank"  href="https://github.com/IceFrozen">
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                </li>
+            
+            
+            
+            
+        </ul>
+    </div>
+</section>
+
+        <hr>
+    
+        
+    <div id="site_search">
+     <div class="form-group">
+      <input type="text" id="local-search-input" name="q" results="0" placeholder="search" class="st-search-input st-default-search-input form-control"/>
+     </div>  
+    <div id="local-search-result"></div>
+    </div>
+  
+        <hr>
+    
+        
+  <h5>RECENT POSTS</h3>
+  <div class="widget">
+    <ul>
+      
+        <li>
+          <a href="/article/bytecode-analysis/">深入JVM字节码(1)</a>
+        </li>
+      
+        <li>
+          <a href="/article/java-cms-gc/">Java垃圾回收详解(4)</a>
+        </li>
+      
+        <li>
+          <a href="/article/java-cms-gc-log/">Java垃圾回收详解(6)</a>
+        </li>
+      
+        <li>
+          <a href="/article/java-cms-gc-2/">Java垃圾回收详解(5)</a>
+        </li>
+      
+        <li>
+          <a href="/article/retry-2-spring-retry/">Spring-Retry 源码分析</a>
+        </li>
+      
+    </ul>
+  </div>
+
+        <hr>
+    
+        
+    <h5>ARCHIVES</h5>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+
+        <hr>
+    
+        <!-- Featured Tags -->
+
+<section>
+    <!-- no hr -->
+    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+            
+        
+            
+            <a href="/tags/#算法" title="算法" rel="5">算法</a>
+            
+        
+            
+            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            
+        
+            
+            <a href="/tags/#JAVA" title="JAVA" rel="22">JAVA</a>
+            
+        
+            
+            <a href="/tags/#JVM" title="JVM" rel="19">JVM</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
+            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
+            
+        
+            
+            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
+            
+        
+            
+            <a href="/tags/#多线程" title="多线程" rel="7">多线程</a>
+            
+        
+            
+            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#操作系统" title="操作系统" rel="2">操作系统</a>
+            
+        
+            
+            <a href="/tags/#TCP/IP" title="TCP/IP" rel="4">TCP/IP</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#数据结构" title="数据结构" rel="2">数据结构</a>
+            
+        
+            
+            <a href="/tags/#树" title="树" rel="2">树</a>
+            
+        
+            
+            <a href="/tags/#垃圾回收篇" title="垃圾回收篇" rel="8">垃圾回收篇</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
+            
+        
+            
+            <a href="/tags/#事物" title="事物" rel="3">事物</a>
+            
+        
+            
+            <a href="/tags/#MYSQL" title="MYSQL" rel="3">MYSQL</a>
+            
+        
+            
+            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#内存模型篇" title="内存模型篇" rel="2">内存模型篇</a>
+            
+        
+            
+            <a href="/tags/#Thrift" title="Thrift" rel="5">Thrift</a>
+            
+        
+            
+            <a href="/tags/#RPC" title="RPC" rel="5">RPC</a>
+            
+        
+            
+            <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
+            
+        
+            
+            <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#TLS" title="TLS" rel="2">TLS</a>
+            
+        
+    </div>
+</section>
+
+        <hr>
+    
+        <!-- Friends Blog -->
+
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+
+    
+</ul>
+
+        <hr>
+    
+</div>
+
+        
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

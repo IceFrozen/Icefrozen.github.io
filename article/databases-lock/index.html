@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          数据库原理篇（3） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/databases-lock/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>数据库原理篇（3）</h1>
+                        <h2 class="subheading">InnoDB中的锁</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-10-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="innodb-介绍">InnoDB 介绍</span></h2>
+<h2><span id="innodb-中的锁">InnoDB 中的锁</span></h2>
+<p>你可能听过各种各样的 InnoDB 的数据库锁，Gap 锁，共享锁，排它锁，读锁，写锁等等。但是 InnoDB 的标准实现的锁只有 2 类，<strong>一种是行级锁，一种是意向锁</strong>。</p>
+<h3><span id="innodb的行级锁">InnoDB的行级锁：</span></h3>
+<ul>
+<li><strong>共享锁(读锁 S Lock)</strong>，允许事务读一行数据。</li>
+<li><strong>排它锁(写锁 X Lock)</strong>，允许事务删除一行数据或者更新一行数据。<br>
+行级锁中，除了 S 和 S 兼容，其他都不兼容。</li>
+</ul>
+<h3><span id="innodb-支持两种意向锁即为表级别的锁">InnoDB 支持两种意向锁(即为表级别的锁)：</span></h3>
+<ul>
+<li><strong>意向共享锁(读锁 IS Lock)</strong>，事务想要获取一张表的几行数据的共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。</li>
+<li><strong>意向排他锁(写锁 IX Lock)</strong>，事务想要获取一张表中几行数据的排它锁，事务在给一个数据行加排它锁前必须先取得该表的 IX 锁。</li>
+</ul>
+<p>首先解释一下意向锁，意向锁为了表明某个事务正在锁定一行或者将要锁定一行数据。<br>
+首先申请意向锁的动作是 InnoDB 完成的，怎么理解意向锁呢?</p>
+<blockquote>
+<p>例如：事务 A 要对一行记录 R 进行上 X 锁，那么 InnoDB 会先申请表的 IX 锁，再锁定记录 R 的 X 锁。在事务 A 完成之前，事务 B 想要来个全表操作，此时直接在表级别的 IX 就告诉事务 B 需要等待而不需要在表上判断每一行是否有锁。<br>
+意向排它锁存在的价值在于节约 InnoDB 对于锁的定位和处理性能。另外注意了，除了全表扫描以外意向锁都不会阻塞。</p>
+</blockquote>
+<h3><span id="意向锁的存在意义">意向锁的存在意义</span></h3>
+<p>如果另一个任务试图在该表级别上应用共享或排它锁，则受到由第一个任务控制的表级别意向锁的阻塞。第二个任务在锁定该表前不必检查各个页或行锁，而只需检查表上的意向锁。</p>
+<p>假设 我们有一张users表</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>zhangsan</td>
+</tr>
+<tr>
+<td>2</td>
+<td>lisi</td>
+</tr>
+</tbody>
+</table>
+<p>当事务A 想要更新id=2的user 的时候，会做以下操作</p>
+<ol>
+<li>DB引擎给表增加一个意向排它锁</li>
+<li>事务A给id=2的行增加一个排它锁</li>
+</ol>
+<blockquote>
+<p>这里的排他 / 共享锁指的都是表锁！！！意向锁不会与行级的共享 / 排他锁互斥！！！</p>
+</blockquote>
+<p>此时若有事务B想获取 User表的共享锁（注意，这里是表级别的锁） 这个时候，因为是要锁表，所以意味着表中的所有数据都不能修改，但是此时A 已经对2 加了锁，所有如果没有意向锁，事务B 必须在获取表级别的共享锁的时候，检测每一行是否有排他锁。</p>
+<p>但是一旦有了意向共享锁，所以事务B 因此不用每一行都扫描。</p>
+<p>因此此时事务 B 检测事务 A 持有 users 表的意向排他锁，就可以得知事务 A 必然持有该表中某些数据行的排他锁，那么事务 B 对 users 表的加锁请求就会被排斥（阻塞），而无需去检测表中的每一行数据是否存在排他锁。</p>
+<p>我们可以根据下表来看一下各个锁的兼容性</p>
+<h3><span id="锁的兼容互斥性">锁的兼容互斥性</span></h3>
+<p>看一下意向锁的排斥性</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>意向共享锁（IS）</strong></th>
+<th><strong>意向排他锁（IX</strong>）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>意向共享锁（IS）</strong></td>
+<td>兼容</td>
+<td>兼容</td>
+</tr>
+<tr>
+<td><strong>意向排他锁（IX）</strong></td>
+<td>兼容</td>
+<td>兼容</td>
+</tr>
+</tbody>
+</table>
+<p>意义： 意向锁不会跟对意向锁产生排斥，这设计到表的并发。<br>
+举个例子：还是刚才的User 表<br>
+事务A 要对id = 2 的表进行更新，那么事务A 会产生两个效果</p>
+<ol>
+<li>表级别的意向排它锁</li>
+<li>行级别的排他锁。<br>
+此时B 事务想更新 id = 1 的行,</li>
+<li>首要获取User 的意向排它锁，</li>
+<li>发现User 表已经有意向排它锁</li>
+<li>但是意向排他锁是互相兼容的，因此，事务B 加锁成功</li>
+<li>id = 1的数据行上不存在任何排他锁，最终事务 B 成功获取到了该数据行上的排他锁。</li>
+</ol>
+<p>意向锁对共享和排他锁的互斥性</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>意向共享锁（IS）</strong></th>
+<th><strong>意向排他锁（IX）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>共享锁（IS）</strong></td>
+<td>兼容</td>
+<td>互斥</td>
+</tr>
+<tr>
+<td><strong>排他锁（IX）</strong></td>
+<td>互斥</td>
+<td>互斥</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="锁的算法">锁的算法</span></h3>
+<p>InnoDB 有 3 种行锁的算法：</p>
+<ul>
+<li><strong>Record Lock</strong>： 单个行记录上的锁。</li>
+<li><strong>Gap Lock</strong>：    间隙锁，锁定一个范围，而非记录本身。</li>
+<li><strong>Next-Key Lock</strong>：结合 Gap Lock 和 Record Lock，锁定一个范围，并且锁定记录本身。主要解决的问题是 RR 隔离级别下的幻读。</li>
+</ul>
+<p><code>Next-Key Lock</code> 和 <code>Gap Lock</code> 的区别就是：会首先对索引（如果我们的查询语句命中索引记录的话）记录加上行锁（Record Lock），再对索引记录两边的间隙加上间隙锁（Gap Lock）。加上间隙锁之后，其他事务就不能在这个间隙修改或者插入记录。<br>
+如果没有命中索引记录，则直接退化成 <code>Gap Lock</code></p>
+<h4><span id="gap-lock-和-next-key-lock">Gap Lock 和 Next-Key Lock</span></h4>
+<ul>
+<li>产生间隙锁的条件（RR事务隔离级别下；）：
+<ul>
+<li>使用普通索引锁定；</li>
+<li>使用多列唯一索引；</li>
+<li>使用唯一索引锁定多行记录。</li>
+<li>不使用索引则加全局锁</li>
+</ul>
+</li>
+<li>举例说明，假若我们有如下表</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>id（主键）</th>
+<th>v1（索引）</th>
+<th>v2（无索引）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5</td>
+<td>9</td>
+</tr>
+<tr>
+<td>7</td>
+<td>7</td>
+<td>4</td>
+</tr>
+<tr>
+<td>10</td>
+<td>9</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>间隙锁（Gap Lock）一般是针对非唯一索引而言的，test表中的v1（非唯一索引）字段值可以划分的区间为：<br>
+<code>-∞,1）（1,3）（3,4）（4,5）（5,7）（7,9）（9, +∞）</code></p>
+<p>假如要更新<code>v1=7</code>的数据行，锁定的区间是（5,7）和（7,9）。同时找到,v1=7的数据行的主键索引和非唯一索引，对key加上锁。</p>
+<ul>
+<li>
+<p>插入锁</p>
+<table>
+<thead>
+<tr>
+<th>事物1</th>
+<th>事物2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UPDATE test set v2=10 where v1=7（加锁范围（5，9））</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into test values(15,6,3)（阻塞））</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into test values(9,9,3)（阻塞））</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into test values(11,9,3)（成功））</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into test values(4,5,3)（成功））</td>
+</tr>
+</tbody>
+</table>
+<p>看一下 插入图<br>
+<img src="/article/databases-lock/1577760232986distributed-transaction_.png" alt></p>
+</li>
+<li>
+<p>更新锁</p>
+<table>
+<thead>
+<tr>
+<th>事物1</th>
+<th>事物2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UPDATE test set v2=10 where v1=7（加锁范围（5，9））</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update test set v1=6 where v1=5（阻塞））</td>
+</tr>
+<tr>
+<td></td>
+<td>update test set v1=9 where v1=7（阻塞））</td>
+</tr>
+<tr>
+<td></td>
+<td>update test set v1=10 where v1=9（成功））</td>
+</tr>
+</tbody>
+</table>
+<p>v1 = 6 相当于在 5 7 范围内加入</p>
+</li>
+</ul>
+<h4><span id="锁选择">锁选择</span></h4>
+<ul>
+<li>1）、如果更新条件没有走索引，此时会进行全表扫描，扫表的时候，要阻止其<br>
+他任何的更新操作，所以上升为表锁。</li>
+<li>2）如果更新条件为索引字段，但是并非唯一索引（包括主键索引）那么此时<br>
+更新会使用Next-Key Lock。使用Next-Key Lock的原因：<br>
+a）、首先要保证在符合条件的记录上加上排他锁，会锁定当前非唯一索引和对应的主键索引的值；<br>
+b）、还要保证锁定的区间不能插入新的数据。</li>
+<li>3）、如果更新条件为唯一索引，则使用Record Lock（记录锁）。</li>
+</ul>
+<h4><span id="锁应用">锁应用</span></h4>
+<ul>
+<li>在不通过索引条件查询时，InnoDB 会锁定表中的所有记录。所以，如果考虑性能，WHERE语句中的条件查询的字段都应该加上索引。</li>
+<li>InnoDB通过索引来实现行锁，而不是通过锁住记录。因此，当操作的两条不同记录拥有相同的索引时，也会因为行锁被锁而发生等待。</li>
+<li>由于InnoDB的索引机制，数据库操作使用了主键索引，InnoDB会锁住主键索引；使用非主键索引时，InnoDB会先锁住非主键索引，再锁定主键索引。</li>
+<li>当查询的索引是唯一索引(不存在两个数据行具有完全相同的键值)时，InnoDB存储引擎会将Next-Key Lock降级为Record Lock，即只锁住索引本身，而不是范围。</li>
+<li>InnoDB对于辅助索引有特殊的处理，不仅会锁住辅助索引值所在的范围，还会将其下一键值加上Gap LOCK。</li>
+<li>InnoDB使用Next-Key Lock机制来避免Phantom Problem（幻读问题）。</li>
+</ul>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://juejin.im/post/5c0fc472e51d451ac27c47eb" target="_blank" rel="noopener">MySQL探秘(七):InnoDB行锁算法</a></li>
+<li><a href="https://www.gaoyaxuan.net/blog/296.html" target="_blank" rel="noopener">快速理解脏读、不可重复读、幻读</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1100494" target="_blank" rel="noopener">扫盲贴-分布式数据一致性：两阶段提交，三阶段提交</a></li>
+<li><a href="https://juejin.im/post/5aa3c7736fb9a028bb189bca" target="_blank" rel="noopener">常用的分布式事务解决方案</a></li>
+<li><a href="https://my.oschina.net/tridays/blog/791124" target="_blank" rel="noopener">事务并发的可能问题与其解决方案 </a></li>
+<li><a href="https://juejin.im/post/5c9040e95188252d92095a9e" target="_blank" rel="noopener">MySQL的可重复读级别能解决幻读吗</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_499740cb0100ugs7.html" target="_blank" rel="noopener">MySQL的InnoDB的幻读问题</a></li>
+<li><a href="https://github.com/Yhzhtk/note/issues/42" target="_blank" rel="noopener">Innodb 中 RR 隔离级别能否防止幻读？</a></li>
+<li><a href="https://draveness.me/database-concurrency-control" target="_blank" rel="noopener">浅谈数据库并发控制 - 锁和 MVCC</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=Mzg2NjE5NDQyOA==&amp;mid=2247483782&amp;idx=1&amp;sn=b5548efc354a04cf986709af4b7efdd8&amp;source=41#wechat_redirect" target="_blank" rel="noopener">MySQL探秘(六):InnoDB一致性非锁定读</a></li>
+<li><a href="https://database.51cto.com/art/201904/594446.htm" target="_blank" rel="noopener">一文快速搞懂MySQL InnoDB事务ACID实现原理</a></li>
+<li><a href="https://www.jianshu.com/p/1573c4dcecd6" target="_blank" rel="noopener">InnoDB逻辑存储结构</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIxNTQ3NDMzMw==&amp;mid=2247483678&amp;idx=1&amp;sn=913780d42e7a81fd3f9b747da4fba8ec&amp;chksm=979688eca0e101fa0913c3d2e6107dfa3a6c151a075c8d68ab3f44c7c364d9510f9e1179d94d&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">InnoDB数据页结构</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/java-AQS3-read-write-lock/" data-toggle="tooltip" data-placement="top" title="JAVA多线程之AQS分析(3)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-transaction-1/" data-toggle="tooltip" data-placement="top" title="分布式事务详解（1）">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">InnoDB 介绍</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">InnoDB 中的锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">InnoDB的行级锁：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">InnoDB 支持两种意向锁(即为表级别的锁)：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">意向锁的存在意义</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">锁的兼容互斥性</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">锁的算法</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.5.1.</span> <span class="toc-nav-text">Gap Lock 和 Next-Key Lock</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.5.2.</span> <span class="toc-nav-text">锁选择</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.5.3.</span> <span class="toc-nav-text">锁应用</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

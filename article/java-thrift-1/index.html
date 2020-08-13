@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Thrift框架详解（一） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/java-thrift-1/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Thrift" title="Thrift">Thrift</a>
+                            
+                              <a class="tag" href="/tags/#RPC" title="RPC">RPC</a>
+                            
+                        </div>
+                        <h1>Thrift框架详解（一）</h1>
+                        <h2 class="subheading">概诉与入门</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2020-02-29
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="thrift-简介">Thrift 简介</span></h2>
+<p>Thrift是一个轻量级、跨语言的远程服务调用框架，最初由Facebook开发，后面进入Apache开源项目。它通过自身的IDL中间语言, 并借助代码生成引擎生成各种主流语言的RPC服务端/客户端模板代码。<br>
+Thrift支持多种不同的编程语言，包括C++、Java、Python、PHP、Ruby等，本系列主要讲述基于Java语言的Thrift的配置方式和具体使用。</p>
+<p>Thrift的主要特点有：</p>
+<ol>
+<li>基于二进制的高性能的编解码框架</li>
+<li>基于NIO的底层通信</li>
+<li>相对简单的服务调用模型</li>
+<li>使用IDL支持跨平台调用</li>
+</ol>
+<h2><span id="thrift-安装">Thrift 安装</span></h2>
+<p>具体的安装不做介绍，可以去官网查询，本系列主要使用的是0.8.0， 截止到目前，最新版本是0.13.0， 由于目前就职的公司普遍使用的是0.8.0，则就以这个为准，后边会单独开一片0.8.0和0.13.0的区别。</p>
+<h2><span id="thrift-设计">Thrift 设计</span></h2>
+<h2><span id="设计架构">设计架构</span></h2>
+<div align="center">
+<p><img src="/article/java-thrift-1/java-thrift-1-112101.png" alt></p>
+</div>
+<p>Thrift软件栈分层从下向上分别为：</p>
+<ul>
+<li>
+<p><strong>传输层(Transport Layer)</strong>：传输层负责直接从网络中读取和写入数据，它定义了具体的网络传输协议；比如说TCP/IP传输等。</p>
+</li>
+<li>
+<p><strong>协议层(Protocol Layer)</strong>：协议层定义了数据传输格式，负责网络传输数据的序列化和反序列化；比如说JSON、XML、二进制数据等。</p>
+</li>
+<li>
+<p><strong>处理层(Processor Layer)</strong>：处理层是由具体的IDL（接口描述语言）生成的，封装了具体的底层网络传输和序列化方式，并委托给用户实现的Handler进行处理。</p>
+</li>
+<li>
+<p><strong>服务层(Server Layer)</strong>：整合上述组件，提供具体的网络线程/IO服务模型，形成最终的服务。</p>
+</li>
+</ul>
+<h2><span id="特性">特性</span></h2>
+<h3><span id="一-开发速度快">(一) 开发速度快</span></h3>
+<p>通过编写RPC接口<strong>Thrift IDL</strong>文件，利用编译生成器自动生成服务端骨架(<code>Skeletons</code>)和客户端桩(Stubs)。从而省去开发者自定义和维护接口编解码、消息传输、服务器多线程模型等基础工作。</p>
+<p>服务端：只需要按照服务骨架即接口，编写好具体的业务处理程序(<code>Handler</code>)即实现类即可。<br>
+客户端：只需要拷贝IDL定义好的客户端桩和服务对象，然后就像调用本地对象的方法一样调用远端服务。</p>
+<h3><span id="二-接口维护简单">(二) 接口维护简单</span></h3>
+<p>通过维护<code>Thrift格</code>式的IDL（接口描述语言）文件（注意写好注释），即可作为给Client使用的接口文档使用，也自动生成接口代码，始终保持代码和文档的一致性。且Thrift协议可灵活支持接口的可扩展性。</p>
+<h3><span id="三-学习成本低">(三) 学习成本低</span></h3>
+<p>因为其来自Google Protobuf开发团队，所以其IDL文件风格类似Google Protobuf，且更加易读易懂；特别是RPC服务接口的风格就像写一个面向对象的Class一样简单。<br>
+初学者只需参照：<a href="thrift.apache.org"></a>，一个多小时就可以理解Thrift IDL文件的语法使用。</p>
+<h3><span id="四-多语言跨语言支持">(四) 多语言/跨语言支持</span></h3>
+<p>Thrift支持<code>C++、 Java、Python、PHP、Ruby、Erlang、Perl、Haskell、C#、Cocoa、JavaScript、Node.js、Smalltalk</code>等多种语言，即可生成上述语言的服务器端和客户端程序。<br>
+对于我们经常使用的<code>Java、PHP、Python、C++</code>支持良好。</p>
+<h3><span id="五-稳定广泛使用">(五) 稳定/广泛使用</span></h3>
+<p>Thrift在很多开源项目中已经被验证是稳定和高效的，例如<code>Cassandra、Hadoop、HBase</code>等；国外在Facebook中有广泛使用，国内包括百度、美团小米、和饿了么等公司。</p>
+<h2><span id="thrift-快速入门">Thrift 快速入门</span></h2>
+<h3><span id="项目包路径">项目包路径</span></h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">com.thrift</span><br><span class="line">    |- client</span><br><span class="line">        |- client.java          <span class="comment">//主要存放 client的代码</span></span><br><span class="line">    |- constant</span><br><span class="line">        | - ServerConfig.java  <span class="comment">// 主要存放服务器配置等关键信息</span></span><br><span class="line">    |- idl</span><br><span class="line">        |- hello.thrift         <span class="comment">// IDL描述文件</span></span><br><span class="line">    |- idlcode</span><br><span class="line">        | - HelloWorldService.java <span class="comment">// 主要存放根据IDL自动生成的文件</span></span><br><span class="line">    | -server   </span><br><span class="line">        |- handler              <span class="comment">// rpc 接口的具体实现</span></span><br><span class="line">            |- HelloWorldServiceImpl.java</span><br><span class="line">        server.java             <span class="comment">// 服务器测试代码</span></span><br><span class="line">    gen_code.sh                 <span class="comment">// IDL生成命令</span></span><br></pre></td></tr></table></figure>
+<h3><span id="具体实现">具体实现</span></h3>
+<ul>
+<li>（1） 编写IDL 文件,命名为 <code>hello.thrift</code>放到<code>com.thrift.idl</code> 这个包名下。如果需要提示，在Idea上安装 <code>Thrift</code> 编辑插件，具体可以搜索 <code>ThirftSupport</code> 这个插件。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service HelloWorldService &#123;</span><br><span class="line">  string say(<span class="number">1</span>: string username)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(2) 运行gen_code.sh 用于生成 <code>thrift</code> 的各种代码块。<br>
+我们来看一下 gen_code.sh 的代码</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/zsh</span></span><br><span class="line">path_root=`<span class="built_in">pwd</span>`</span><br><span class="line">idlDir=<span class="variable">$path_root</span>/idl</span><br><span class="line">idlCode=<span class="variable">$path_root</span>/idlCode</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> `ls <span class="variable">$idlDir</span>/*.thrift`</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">   thrift --gen java -out <span class="variable">$idlCode</span> <span class="variable">$f</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>运行完成或，我们会在 <code>idlcode</code> 生成一个<code>HelloWorldService.java</code> 文件，这个就是上文中服务器和客户端交互的核心代码。</p>
+<p>我们来简单看一下这个java文件的结构</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldService</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 同步接口定义</span></span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">(String username)</span> <span class="keyword">throws</span> org.apache.thrift.TException</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 异步接口定义</span></span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AsyncIface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">(String username, org.apache.thrift.async.AsyncMethodCallback&lt;AsyncClient.say_call&gt; resultHandler)</span> <span class="keyword">throws</span> org.apache.thrift.TException</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 客户端</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> <span class="keyword">extends</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">TServiceClient</span> <span class="keyword">implements</span> <span class="title">Iface</span> </span>&#123;<span class="comment">/** ...*/</span>&#125;</span><br><span class="line">  <span class="comment">// 异步客户端</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncClient</span> <span class="keyword">extends</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">async</span>.<span class="title">TAsyncClient</span> <span class="keyword">implements</span> <span class="title">AsyncIface</span> </span>&#123;<span class="comment">/** ...*/</span>&#125;</span><br><span class="line">  <span class="comment">// Processor 组件</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Processor</span>&lt;<span class="title">I</span> <span class="keyword">extends</span> <span class="title">Iface</span>&gt; <span class="keyword">extends</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">TBaseProcessor</span>&lt;<span class="title">I</span>&gt; <span class="keyword">implements</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">TProcessor</span> </span>&#123;<span class="comment">/** ...*/</span>&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">say_args</span> <span class="keyword">implements</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">TBase</span>&lt;<span class="title">say_args</span>, <span class="title">say_args</span>.<span class="title">_Fields</span>&gt;, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span>, <span class="title">Cloneable</span> </span>&#123;<span class="comment">/** ...*/</span>&#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">say_result</span> <span class="keyword">implements</span> <span class="title">org</span>.<span class="title">apache</span>.<span class="title">thrift</span>.<span class="title">TBase</span>&lt;<span class="title">say_result</span>, <span class="title">say_result</span>.<span class="title">_Fields</span>&gt;, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span>, <span class="title">Cloneable</span>  </span>&#123;<span class="comment">/** ...*/</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于开发人员而言，使用原生的Thrift框架，仅需要关注以下四个核心内部接口/类：<code>Iface, AsyncIface, Client和AsyncClient</code>。</p>
+<ul>
+<li>Iface：服务端通过实现HelloWorldService.Iface接口，向客户端的提供具体的同步业务逻辑。</li>
+<li>AsyncIface：服务端通过实现HelloWorldService.Iface接口，向客户端的提供具体的异步业务逻辑。</li>
+<li>Client：客户端通过HelloWorldService.Client的实例对象，以同步的方式访问服务端提供的服务方法。</li>
+<li>AsyncClient：客户端通过HelloWorldService.AsyncClient的实例对象，以异步的方式访问服务端提供的服务方法。</li>
+</ul>
+<p>这里的结构不做详细分析，等到下一章节在做分析。</p>
+<ul>
+<li>（3） 安装thrift插件，我这里用的是0.8.0版本，所以在pom.xml 文件添加如下</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.thrift<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>libthrift<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.8.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>(4) 编写RPC的实现类<br>
+首先 我们要对 <code>HelloWorldService</code> 服务做实现，也就是我们要提供更多具体的RPC 方法<br>
+在 <code>server.handler</code> 包下创建 <code>HelloWorldServiceImpl.java</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldServiceImpl</span> <span class="keyword">implements</span> <span class="title">HelloWorldService</span>.<span class="title">Iface</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">(String username)</span> <span class="keyword">throws</span> TException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"hello ==&gt; "</span> + username;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>（5） 编写服务器代码</li>
+<li>Thrift的服务端类型
+<ol>
+<li><strong>TSimpleServer</strong> ：单线程服务器端，使用标准的阻塞式I/O</li>
+<li><strong>TThreadPoolServer</strong> ：多线程服务器端，使用标准的阻塞式I/O</li>
+<li><strong>TNonblockingServer</strong> ：单线程服务器端，使用非阻塞式I/O</li>
+<li><strong>THsHaServer</strong> ：半同步半异步服务器端，基于非阻塞式IO读写和多线程工作任务处理</li>
+<li><strong>TThreadedSelectorServer</strong> ：多线程选择器服务器端，对THsHaServer在异步IO模型上进行增强</li>
+</ol>
+</li>
+</ul>
+<p>这里我们使用<code>TSimpleServer</code>，在 server包下新建 <code>server.java</code>以及定义 <code>ServerConfig</code> 参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        SimpleServer();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SimpleServer</span> <span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(ServerConfig.SERVER_PORT);</span><br><span class="line">        <span class="comment">// 转换层</span></span><br><span class="line">        TServerSocket serverTransport = <span class="keyword">new</span> TServerSocket(serverSocket);</span><br><span class="line">        <span class="comment">// processor 层</span></span><br><span class="line">        HelloWorldService.Processor processor =</span><br><span class="line">                <span class="keyword">new</span> HelloWorldService.Processor&lt;HelloWorldService.Iface&gt;(<span class="keyword">new</span> HelloWorldServiceImpl());</span><br><span class="line">        <span class="comment">// 协议工厂</span></span><br><span class="line">        TBinaryProtocol.Factory protocolFactory = <span class="keyword">new</span> TBinaryProtocol.Factory();</span><br><span class="line">        TSimpleServer.Args tArgs = <span class="keyword">new</span> TSimpleServer.Args(serverTransport);</span><br><span class="line">        tArgs.processor(processor);</span><br><span class="line">        tArgs.protocolFactory(protocolFactory);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 简单的单线程服务模型 一般用于测试</span></span><br><span class="line">        TServer tServer = <span class="keyword">new</span> TSimpleServer(tArgs);</span><br><span class="line">        System.out.println(<span class="string">"Running Simple Server"</span>);</span><br><span class="line">        tServer.serve();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ServerConfig.java 代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SERVER_IP = <span class="string">"127.0.0.1"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SERVER_PORT = <span class="number">9988</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIMEOUT = <span class="number">30</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>（6） client 代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SimpleClient();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SimpleClient</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        TTransport transport = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            transport = <span class="keyword">new</span> TSocket(ServerConfig.SERVER_IP, ServerConfig.SERVER_PORT, ServerConfig.TIMEOUT);</span><br><span class="line">            TProtocol protocol = <span class="keyword">new</span> TBinaryProtocol(transport);</span><br><span class="line">            HelloWorldService.Client client = <span class="keyword">new</span> HelloWorldService.Client(protocol);</span><br><span class="line">            transport.open();</span><br><span class="line">            String result = client.say(<span class="string">"Leo"</span>);</span><br><span class="line">            System.out.println(<span class="string">"Result =: "</span> + result);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (TException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> != transport) &#123;</span><br><span class="line">                transport.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>(7) 运行server<br>
+server控制台输出</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Running Simple Server</span><br></pre></td></tr></table></figure>
+<p>client 输出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Result =: hello ==&gt; Leo</span><br></pre></td></tr></table></figure>
+<h2><span id="总结">总结</span></h2>
+<p>Thrift是一个RPC框架，内部实现的机制和概念还有很多，更重要的留下几个问题。、<br>
+1、Thrift如何做服务发现？ 这个留着下次再分析。<br>
+2、生成的java文件起着什么样的作用。<br>
+3、Rpc的流程是什么。</p>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://juejin.im/post/5b290dbf6fb9a00e5c5f7aaa" target="_blank" rel="noopener">Apache Thrift系列详解</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/java-thrift-2/" data-toggle="tooltip" data-placement="top" title="Thrift框架详解（二）">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/java-AQS3-read-write-lock/" data-toggle="tooltip" data-placement="top" title="JAVA多线程之AQS分析(3)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Thrift 简介</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Thrift 安装</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Thrift 设计</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">设计架构</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">特性</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">(一) 开发速度快</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">(二) 接口维护简单</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">(三) 学习成本低</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text">(四) 多语言/跨语言支持</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.5.</span> <span class="toc-nav-text">(五) 稳定/广泛使用</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Thrift 快速入门</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">项目包路径</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.2.</span> <span class="toc-nav-text">具体实现</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">总结</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Thrift" title="Thrift">Thrift</a>
+                        
+                          <a class="tag" href="/tags/#RPC" title="RPC">RPC</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

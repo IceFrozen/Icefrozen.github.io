@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Java8使用@sun.misc.Contended避免伪共享 - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/reduce-cache-contention/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#JAVA" title="JAVA">JAVA</a>
+                            
+                              <a class="tag" href="/tags/#JVM" title="JVM">JVM</a>
+                            
+                        </div>
+                        <h1>Java8使用@sun.misc.Contended避免伪共享</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-05-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <hr>
+<h2><span id="什么是伪共享">什么是伪共享</span></h2>
+<p>缓存系统中是以缓存行（cache line）为单位存储的。缓存行是2的整数幂个连续字节，一般为32-256个字节。最常见的缓存行大小是64个字节。当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。</p>
+<p>缓存行上的写竞争是运行在SMP系统中并行线程实现可伸缩性最重要的限制因素。有人将伪共享描述成无声的性能杀手，因为从代码中很难看清楚是否会出现伪共享。</p>
+<p>为了让可伸缩性与线程数呈线性关系，就必须确保不会有两个线程往同一个变量或缓存行中写。两个线程写同一个变量可以在代码中发现。为了确定互相独立的变量是否共享了同一个缓存行，就需要了解缓存行和对象的内存布局。<a href="https://www.jianshu.com/p/900554f11881" target="_blank" rel="noopener">理解CPU Cache</a>和<a href="https://icefrozen.github.io/article/java-mem-objecat/" target="_blank" rel="noopener">Java对象内存布局</a>。</p>
+<p>下面的图说明了伪共享的问题：<br>
+<img src="/article/reduce-cache-contention/1557738129608Reduce-Cache-Contention_.png" alt></p>
+<p>假设在核心1上运行的线程想更新变量X，同时核心2上的线程想要更新变量Y。不幸的是，这两个变量在同一个缓存行中。每个线程都要去竞争缓存行的所有权来更新变量。如果核心1获得了所有权，缓存子系统将会使核心2中对应的缓存行失效。当核心2获得了所有权然后执行更新操作，核心1就要使自己对应的缓存行失效。这会来来回回的经过L3缓存，大大影响了性能。如果互相竞争的核心位于不同的插槽，就要额外横跨插槽连接，问题可能更加严重。</p>
+<h2><span id="避免伪共享">避免伪共享</span></h2>
+<p>假设有一个类中，只有一个long类型的变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileLong</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value = <span class="number">0L</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时定义一个VolatileLong类型的数组，然后让多个线程同时并发访问这个数组，这时可以想到，在多个线程同时处理数据时，数组中的多个VolatileLong对象可能存在同一个缓存行中，通过上文可知，这种情况就是伪共享。</p>
+<p>怎么样避免呢？在Java 7之前，可以在属性的前后进行padding，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileLong</span> </span>&#123;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">long</span> p0, p1, p2, p3, p4, p5, p6;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">long</span> q0, q1, q2, q3, q4, q5, q6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过<a href="https://www.jianshu.com/p/91e398d5d17c" target="_blank" rel="noopener">Java对象内存布局</a>文章中结尾对paddign的分析可知，由于都是long类型的变量，这里就是按照声明的顺序分配内存，那么这可以保证在同一个缓存行中只有一个VolatileLong对象。</p>
+<p>在Java 8中，提供了@sun.misc.Contended注解来避免伪共享，原理是在使用此注解的对象或字段的前后各增加128字节大小的padding，使用2倍于大多数硬件缓存行的大小来避免相邻扇区预取导致的伪共享冲突。具体可以参考<a href="https://link.jianshu.com?t=http://mail.openjdk.java.net/pipermail/hotspot-dev/2012-November/007309.html" target="_blank" rel="noopener">http://mail.openjdk.java.net/pipermail/hotspot-dev/2012-November/007309.html</a>。</p>
+<p>下面用代码来看一下加padding和不加的效果：</p>
+<blockquote>
+<p>运行环境：JDK 1.8，macOS 10.12.4，2.2 GHz Intel Core i7，四核-八线程</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FalseSharing</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> NUM_THREADS = <span class="number">4</span>; <span class="comment">// change</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">long</span> ITERATIONS = <span class="number">500L</span> * <span class="number">1000L</span> * <span class="number">1000L</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> arrayIndex;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> VolatileLong[] longs = <span class="keyword">new</span> VolatileLong[NUM_THREADS];</span><br><span class="line"><span class="comment">//    private static VolatileLong2[] longs = new VolatileLong2[NUM_THREADS];</span></span><br><span class="line"><span class="comment">//    private static VolatileLong3[] longs = new VolatileLong3[NUM_THREADS];</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; longs.length; i++) &#123;</span><br><span class="line">            longs[i] = <span class="keyword">new</span> VolatileLong();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FalseSharing</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> arrayIndex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.arrayIndex = arrayIndex;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(<span class="keyword">final</span> String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.nanoTime();</span><br><span class="line">        runTest();</span><br><span class="line">        System.out.println(<span class="string">"duration = "</span> + (System.nanoTime() - start));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">runTest</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread[] threads = <span class="keyword">new</span> Thread[NUM_THREADS];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threads.length; i++) &#123;</span><br><span class="line">            threads[i] = <span class="keyword">new</span> Thread(<span class="keyword">new</span> FalseSharing(i));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Thread t : threads) &#123;</span><br><span class="line">            t.start();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Thread t : threads) &#123;</span><br><span class="line">            t.join();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> i = ITERATIONS + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">0</span> != --i) &#123;</span><br><span class="line">            longs[arrayIndex].value = i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileLong</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value = <span class="number">0L</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// long padding避免false sharing</span></span><br><span class="line">    <span class="comment">// 按理说jdk7以后long padding应该被优化掉了，但是从测试结果看padding仍然起作用</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileLong2</span> </span>&#123;</span><br><span class="line">        <span class="keyword">volatile</span> <span class="keyword">long</span> p0, p1, p2, p3, p4, p5, p6;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value = <span class="number">0L</span>;</span><br><span class="line">        <span class="keyword">volatile</span> <span class="keyword">long</span> q0, q1, q2, q3, q4, q5, q6;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * jdk8新特性，Contended注解避免false sharing</span></span><br><span class="line"><span class="comment">     * Restricted on user classpath</span></span><br><span class="line"><span class="comment">     * Unlock: -XX:-RestrictContended</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileLong3</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value = <span class="number">0L</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>VolatileLong对象只有一个long类型的字段，VolatileLong2加了padding，下面分别执行看下时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">duration = 57293259577</span><br><span class="line">duration = 4679059000</span><br></pre></td></tr></table></figure>
+<p>没加padding时用了大概57秒，加padding后用时大概4.6秒，可见加padding后有效果了。</p>
+<p>在Java8中提供了@sun.misc.Contended来避免伪共享，例如这里的VolatileLong3，在运行时需要设置JVM启动参数<code>-XX:-RestrictContended</code>，运行一下结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">duration = 4756952426</span><br></pre></td></tr></table></figure>
+<p>结果与加padding的时间差不多。</p>
+<p>下面看一下VolatileLong对象在运行时的内存大小（参考<a href="https://www.jianshu.com/p/91e398d5d17c" target="_blank" rel="noopener">Java对象内存布局</a>）：</p>
+<p><img src="/article/reduce-cache-contention/1557738622454Reduce-Cache-Contention_.png" alt></p>
+<p>再来看下VolatileLong2对象在运行时的内存大小：</p>
+<p><img src="/article/reduce-cache-contention/1557738646359Reduce-Cache-Contention_.png" alt></p>
+<p>因为多了14个long类型的变量，所以24+8*14=136字节。</p>
+<p>下面再来看下使用@sun.misc.Contended注解后的对象内存大小：</p>
+<p><img src="/article/reduce-cache-contention/1557738659924Reduce-Cache-Contention_.png" alt></p>
+<p>在堆内存中并没有看到对变量进行padding，大小与VolatileLong对象是一样的。</p>
+<p>这就奇怪了，看起来与VolatileLong没什么不一样，但看一下内存的地址，用十六进制算一下，两个VolatileLong对象地址相差24字节，而两个VolatileLong3对象地址相差280字节。这就是前面提到的@sun.misc.Contended注解会在对象或字段的前后各增加128字节大小的padding，那么padding的大小就是256字节，再加上对象的大小24字节，结果就是280字节，所以确实是增加padding了。</p>
+<h2><span id="八线程运行比四线程运行还快">八线程运行比四线程运行还快？</span></h2>
+<p>根据上面的代码，把NUM_THREADS改为8，测试看下结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">VolatileLong:  44305002641</span><br><span class="line">VolatileLong2: 7100172492</span><br><span class="line">VolatileLong3: 7335024041</span><br></pre></td></tr></table></figure>
+<p>可以看到，加了padding和@sun.misc.Contended注解的运行时间多了不到1倍，而VolatileLong运行的时间比线程数是4的时候还要短，这是为什么呢？</p>
+<p>再说一下，我的CPU是四核八线程，每个核有一个L1 Cache，那么我的环境一共有4个L1 Cache，所以，2个CPU线程会共享同一个L1 Cache；由于VolatileLong对象占用24字节内存，而代码中VolatileLong对象是保存在数组中的，所以内存是连续的，2个VolatileLong对象的大小是48字节，这样一来，对于缓存行大小是64字节来说，每个缓存行只能存放2个VolatileLong对象。</p>
+<p>通过上面的分析可知，伪共享发生在L3 Cache，如果每个核操作的数据不在同一个缓存行中，那么就会避免伪共享的发生，所以，8个线程的情况下其实是CPU线程共享了L1 Cache，所以执行的时间可能比4线程的情况还要短。下面看下执行时4线程和8线程的CPU使用情况：</p>
+<p><img src="/article/reduce-cache-contention/1557741617009Reduce-Cache-Contention_.png" alt></p>
+<p>可以看到，在4线程时，线程被平均分配到了4个核中，这样一来，L1 Cache肯定是不能共享的，这时会发生伪共享；而8线程时，每个核都使用了2个线程，这时L1 Cache是可以共享的，如果线程1和线程2在同一个核心中，线程1修改了L1 的数据，此时L2 可以感知并获取，这样一来就会减少对L3 的穿透，这在一定程度上能减少伪共享的发生，从而时间会变短（也不一定，但总体来说8线程的情况与4线程的运行时间几乎不会向加padding和注解的方式差那么多）。</p>
+<h2><span id="sunmisccontended注解">@sun.misc.Contended注解</span></h2>
+<p>上文中将@sun.misc.Contended注解用在了对象上，@sun.misc.Contended注解还可以指定某个字段，并且可以为字段进行分组，下面通过代码来看下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * VM Options: </span></span><br><span class="line"><span class="comment"> * -javaagent:/Users/sangjian/dev/source-files/classmexer-0_03/classmexer.jar</span></span><br><span class="line"><span class="comment"> * -XX:-RestrictContended</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContendedTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span> a;</span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"a"</span>)</span><br><span class="line">    <span class="keyword">long</span> b;</span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"a"</span>)</span><br><span class="line">    <span class="keyword">long</span> c;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Unsafe UNSAFE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Field f = Unsafe.class.getDeclaredField("theUnsafe");</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            UNSAFE = (Unsafe) f.get(<span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchFieldException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchFieldException </span>&#123;</span><br><span class="line">        System.out.println("offset-a: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("a")));</span><br><span class="line">        System.out.println("offset-b: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("b")));</span><br><span class="line">        System.out.println("offset-c: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("c")));</span><br><span class="line">        System.out.println("offset-d: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("d")));</span><br><span class="line"></span><br><span class="line">        ContendedTest contendedTest = <span class="keyword">new</span> ContendedTest();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印对象的shallow size</span></span><br><span class="line">        System.out.println(<span class="string">"Shallow Size: "</span> + MemoryUtil.memoryUsageOf(contendedTest) + <span class="string">" bytes"</span>);</span><br><span class="line">        <span class="comment">// 打印对象的 retained size</span></span><br><span class="line">        System.out.println(<span class="string">"Retained Size: "</span> + MemoryUtil.deepMemoryUsageOf(contendedTest) + <span class="string">" bytes"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里还是使用到了classmexer.jar，可以参考<a href="https://www.jianshu.com/p/91e398d5d17c" target="_blank" rel="noopener">Java对象内存布局</a>中的说明。</p>
+<p>这里在变量b和c中使用了@sun.misc.Contended注解，并将这两个变量分为1组，执行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">offset-a: 16</span><br><span class="line">offset-b: 152</span><br><span class="line">offset-c: 160</span><br><span class="line">offset-d: 12</span><br><span class="line">Shallow Size: 296 bytes</span><br><span class="line">Retained Size: 296 bytes</span><br></pre></td></tr></table></figure>
+<p>可见int类型的变量的偏移地址是12，也就是在对象头后面，因为它正好是4个字节，然后是变量a。<code>@sun.misc.Contended</code>注解的变量会加到对象的最后面，这里就是b和c了，那么b的偏移地址是152，之前说过<code>@sun.misc.Contended</code>注解会在变量前后各加128字节，而byte类型的变量a分配完内存后这时起始地址应该是从17开始，因为byte类型占1字节，那么应该补齐到24，所以b的起始地址是24+128=152，而c的前面并不用加128字节，因为b和c被分为了同一组。</p>
+<p>我们算一下c分配完内存后，这时的地址应该到了168，然后再加128字节，最后大小就是296。内存结构如下：</p>
+<p>| d:12~16 | — | a:16~17 | — | 17~24 | — | 24~152 | — | b:152~160 | — | c:160~168 | — | 168~296 |</p>
+<p>现在把b和c分配到不同的组中，代码做如下修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * VM Options:</span></span><br><span class="line"><span class="comment"> * -javaagent:/Users/sangjian/dev/source-files/classmexer-0_03/classmexer.jar</span></span><br><span class="line"><span class="comment"> * -XX:-RestrictContended</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContendedTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">byte</span> a;</span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"a"</span>)</span><br><span class="line">    <span class="keyword">long</span> b;</span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"b"</span>)</span><br><span class="line">    <span class="keyword">long</span> c;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Unsafe UNSAFE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Field f = Unsafe.class.getDeclaredField("theUnsafe");</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            UNSAFE = (Unsafe) f.get(<span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchFieldException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchFieldException </span>&#123;</span><br><span class="line">        System.out.println("offset-a: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("a")));</span><br><span class="line">        System.out.println("offset-b: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("b")));</span><br><span class="line">        System.out.println("offset-c: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("c")));</span><br><span class="line">        System.out.println("offset-d: " + UNSAFE.objectFieldOffset(ContendedTest.class.getDeclaredField("d")));</span><br><span class="line"></span><br><span class="line">        ContendedTest contendedTest = <span class="keyword">new</span> ContendedTest();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印对象的shallow size</span></span><br><span class="line">        System.out.println(<span class="string">"Shallow Size: "</span> + MemoryUtil.memoryUsageOf(contendedTest) + <span class="string">" bytes"</span>);</span><br><span class="line">        <span class="comment">// 打印对象的 retained size</span></span><br><span class="line">        System.out.println(<span class="string">"Retained Size: "</span> + MemoryUtil.deepMemoryUsageOf(contendedTest) + <span class="string">" bytes"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">offset-a: 16</span><br><span class="line">offset-b: 152</span><br><span class="line">offset-c: 288</span><br><span class="line">offset-d: 12</span><br><span class="line">Shallow Size: 424 bytes</span><br><span class="line">Retained Size: 424 bytes</span><br></pre></td></tr></table></figure>
+<p>可以看到，这时b和c中增加了128字节的padding，结构也就变成了：</p>
+<p>| d:12~16 | — | a:16~17 | — | 17~24 | — | 24~152 | — | b:152~160 | — | 160~288 | — | c:288~296 | — | 296~424 |</p>
+<h2><span id="原文地址">原文地址</span></h2>
+<p><img src="https://www.jianshu.com/p/c3c108c3dcfd" alt="原文地址"></p>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/distributed-redis-data-structure-object/" data-toggle="tooltip" data-placement="top" title="Redis系列之数据结构篇(4)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/java-class-loader/" data-toggle="tooltip" data-placement="top" title="Java类加载机制">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">什么是伪共享</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">避免伪共享</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">八线程运行比四线程运行还快？</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">@sun.misc.Contended注解</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">原文地址</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#JAVA" title="JAVA">JAVA</a>
+                        
+                          <a class="tag" href="/tags/#JVM" title="JVM">JVM</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

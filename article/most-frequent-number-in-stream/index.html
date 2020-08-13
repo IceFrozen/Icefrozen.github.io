@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          大数据算法之空间亚线性算法（二） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/most-frequent-number-in-stream/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#大数据" title="大数据">大数据</a>
+                            
+                              <a class="tag" href="/tags/#空间亚线性算法" title="空间亚线性算法">空间亚线性算法</a>
+                            
+                              <a class="tag" href="/tags/#大数据算法篇" title="大数据算法篇">大数据算法篇</a>
+                            
+                        </div>
+                        <h1>大数据算法之空间亚线性算法（二）</h1>
+                        <h2 class="subheading">Misra-Gries 算法（数据流中最频繁的的数字）</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-05-24
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="概诉">概诉</span></h2>
+<p><a href="https://icefrozen.github.io/article/reservoir-sampling/" target="_blank" rel="noopener">水库抽样算法</a> 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。</p>
+<p>Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那些在数据流中出现频率最高的数据项。频繁项挖掘，这个看似简单的任务却是很多复杂算法的基础，同时也有着广泛的应用。</p>
+<p>对于频繁项挖掘而言，一个简单的想法是，为所有的数据项分配计数器，当一个数据项到达，我们即增加相应计数器的值。但当数据流的规模较大时，出于内存的限制，我们往往不可能为每个数据项分配计数器。而Misra-Gries算法则是以一种清奇的思路解决了这个问题，实现了在内存受限的情况下，以较小的错误率统计数据流中的频繁项。</p>
+<h5><span id="问题描述">问题描述</span></h5>
+<ul>
+<li>
+<p>先讲解一下大数据的数据流模型特点：</p>
+<ul>
+<li>数据只能扫描1次或几次；</li>
+<li>能够使用的内存是有限的（内存&lt;&lt;数据规模）；</li>
+<li>希望通过维护一个内存结果（数据流概要）来给出相关性质的一个评估；</li>
+</ul>
+</li>
+</ul>
+<p>总结来说：<strong>数据要快速处理；空间亚线性。</strong></p>
+<ul>
+<li>
+<p>问题描述</p>
+<ul>
+<li>输入：大数据流序列&lt;x1,x2,x3… …&gt;。</li>
+<li>输出：找出数据流中当前扫描的元素序列中出现最频繁的元素的信息。</li>
+</ul>
+</li>
+<li>
+<p>问题定义</p>
+<p><strong><em>对于流<img src="/article/most-frequent-number-in-stream/1560856790132most-frequent-number-in-stream_.png" alt> 隐式地定义了一个频率向量f=(f1,…,fn)。注意f1+…+fn=m。</em></strong></p>
+<p><strong><em>对于一个参数k，输出集合<img src="/article/most-frequent-number-in-stream/1560856883155most-frequent-number-in-stream_.png" alt></em></strong></p>
+</li>
+</ul>
+<pre><code>频繁元素问题有广泛的应用。在网络当中找到“elephant flow”、ip地址等，在搜索引擎中找到频繁查询，可以给这些最频繁的查询做一些优化。在应用当中求频繁元素时有一个假设，即**Zipf原则:典型的频率分布是高度偏斜的，只有少数频繁元素，大多数元素是非常不频繁的**。这个假设是合法的，根据统计一般最多10%的元素占元素总个数的90%。
+</code></pre>
+<h2><span id="问题分析">问题分析</span></h2>
+<ul>
+<li>
+<p>举个简单的例子，例如<br>
+输入 ： <code>&lt;32,12,14,32,7,12,32,7,6,12,4&gt;</code> 其中 <code>n=6，k=3，m=11</code></p>
+<ul>
+<li>算法如下：
+<ol>
+<li>对于接收到的元素x，如果已经为其分配计数器，则把相应计数器加1；</li>
+<li>如果没有相应计数器，但计数器个数少于k,就为其分配计数器，并设为1，意味着内存中还有空间；</li>
+<li>如果当前计数器的个数为k，说明内存已经满了，则把所有计数器减1，然后删除取值为0的计数器，这样内存就又有空间了，再依次处理下一个。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>计算过程如下</p>
+<ul>
+<li>
+<ol>
+<li>接收<code>32</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>接收<code>12</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>，<code>&lt;12,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>接收<code>14</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>接收<code>7，7</code>不在内存当中，需要为其分配新的计数器，但是内存没有空间了。这时将所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除，这时候，<code>12</code>和<code>14</code>的计数器就没有了。注意此时不将<code>7</code>的计数器加<code>1</code>,内存状态<code>&lt;32,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>接收<code>12</code>，内存又有空间，为其重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>接收<code>7</code>，为其分配计数器，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;7,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>接收<code>6</code>，这时候内存满了，把所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除,内存状态<code>&lt;32,1&gt;</code>。</li>
+</ol>
+</li>
+<li>
+<ol start="10">
+<li>接收<code>12</code>，内存又有空间，为其再重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</li>
+</ol>
+<p>这时候，将内存里最后的数据定为x出现的次数，计数器在内存中将x返回，没有则返回0。很显然这种方法低估了计数问题，32出现了3次，但是最后只返回1次。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2><span id="算法精确性分析">算法精确性分析</span></h2>
+<p><img src="/article/most-frequent-number-in-stream/1560858227232most-frequent-number-in-stream_.png" alt><br>
+<img src="/article/most-frequent-number-in-stream/1560858254559most-frequent-number-in-stream_.png" alt></p>
+<h2><span id="代码实现">代码实现</span></h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span><span class="params">(total = <span class="number">2000</span>)</span>:</span></span><br><span class="line">    data = np.random.zipf(<span class="number">2</span>, total)</span><br><span class="line">    count_map = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> data:</span><br><span class="line">        oldValue = count_map.get(value, <span class="number">0</span>)</span><br><span class="line">        oldValue +=<span class="number">1</span></span><br><span class="line">        count_map[value] = oldValue</span><br><span class="line">    <span class="keyword">return</span> data,count_map</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">misra_gries</span><span class="params">(S,k)</span>:</span></span><br><span class="line">    c = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> S:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> c:</span><br><span class="line">            c[i]+=<span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> len(c)&lt;k<span class="number">-1</span>:</span><br><span class="line">            c[i]=<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> list(c):</span><br><span class="line">                c[j]-=<span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> c[j]==<span class="number">0</span>:</span><br><span class="line">                    c.pop(j)</span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    s, cmap = getData()</span><br><span class="line">    result = misra_gries(s, <span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    print(result)</span><br><span class="line">    print(result.keys())</span><br></pre></td></tr></table></figure>
+<h2><span id="总结">总结</span></h2>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/distributed-redis-data-structure-skip-zip-list/" data-toggle="tooltip" data-placement="top" title="Redis系列之数据结构篇(3)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/reservoir-sampling/" data-toggle="tooltip" data-placement="top" title="大数据算法之空间亚线性算法(一)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.0.0.1.</span> <span class="toc-nav-text">问题描述</span></a></li></ol></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">问题分析</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">算法精确性分析</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">代码实现</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">总结</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#大数据" title="大数据">大数据</a>
+                        
+                          <a class="tag" href="/tags/#空间亚线性算法" title="空间亚线性算法">空间亚线性算法</a>
+                        
+                          <a class="tag" href="/tags/#大数据算法篇" title="大数据算法篇">大数据算法篇</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

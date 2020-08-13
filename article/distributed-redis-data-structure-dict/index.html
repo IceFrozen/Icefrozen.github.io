@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Redis系列之数据结构篇(2) - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/distributed-redis-data-structure-dict/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
+                            
+                              <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                            
+                        </div>
+                        <h1>Redis系列之数据结构篇(2)</h1>
+                        <h2 class="subheading">字典</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-04-29
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <blockquote>
+<p>本文转自 <a href="http://redisbook.com/" target="_blank" rel="noopener">redis 的设计与实现</a></p>
+</blockquote>
+<h2><span id="结构">结构</span></h2>
+<p>Redis 的 Hash 类型键使用以下两种数据结构作为底层实现:</p>
+<ul>
+<li>字典；</li>
+<li>压缩列表；</li>
+</ul>
+<p>因为压缩列表比字典更节省内存， 所以程序在创建新 Hash 键时， 默认使用压缩列表作为底层实现， 当有需要时， 程序才会将底层实现从压缩列表转换到字典。</p>
+<h2><span id="dict哈希表">Dict哈希表</span></h2>
+<p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line"></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。</p>
+</li>
+<li>
+<p>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。</p>
+</li>
+<li>
+<p>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。</p>
+</li>
+</ul>
+<p>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br>
+<img src="/article/distributed-redis-data-structure-dict/1561628837627distributed-redis-data-structure-dict_.png" alt></p>
+<h2><span id="dict节点">Dict节点</span></h2>
+<p>哈希表节点使用 dictEntry 结构表示， 每个 dictEntry 结构都保存着一个键值对：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">    <span class="comment">// 键</span></span><br><span class="line">    <span class="keyword">void</span> *key;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="keyword">void</span> *val;</span><br><span class="line">        <span class="keyword">uint64_t</span> u64;</span><br><span class="line">        <span class="keyword">int64_t</span> s64;</span><br><span class="line">    &#125; v;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure>
+<p>举个例子， 图 4-2 就展示了如何通过 next 指针， 将两个索引值相同的键 k1 和 k0 连接在一起。</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561630405037distributed-redis-data-structure-dict_.png" alt></p>
+<h2><span id="dict-结构">Dict 结构</span></h2>
+<p>Redis 中的字典由 dict.h/dict 结构表示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型特定函数</span></span><br><span class="line">    dictType *type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 私有数据</span></span><br><span class="line">    <span class="keyword">void</span> *privdata;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表</span></span><br><span class="line">    dictht ht[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// rehash 索引</span></span><br><span class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></span><br><span class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
+<p>type 属性和 privdata 属性是针对不同类型的键值对， 为创建多态字典而设置的：</p>
+<blockquote>
+<p>type 属性是一个指向 dictType 结构的指针， 每个 dictType 结构保存了一簇用于操作特定类型键值对的函数， Redis 会为用途不同的字典设置不同的类型特定函数。<br>
+而 privdata 属性则保存了需要传给那些类型特定函数的可选参数。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictType</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算哈希值的函数</span></span><br><span class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="title">int</span> <span class="params">(*hashFunction)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 复制键的函数</span></span><br><span class="line">    <span class="keyword">void</span> *(*keyDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 复制值的函数</span></span><br><span class="line">    <span class="keyword">void</span> *(*valDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *obj);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对比键的函数</span></span><br><span class="line">    <span class="keyword">int</span> (*keyCompare)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key1, <span class="keyword">const</span> <span class="keyword">void</span> *key2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 销毁键的函数</span></span><br><span class="line">    <span class="keyword">void</span> (*keyDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 销毁值的函数</span></span><br><span class="line">    <span class="keyword">void</span> (*valDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *obj);</span><br><span class="line"></span><br><span class="line">&#125; dictType;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>ht 属性是一个包含两个项的数组， 数组中的每个项都是一个 dictht 哈希表， 一般情况下， 字典只使用 ht[0] 哈希表， ht[1] 哈希表只会在对 ht[0] 哈希表进行 rehash 时使用。</p>
+</li>
+<li>
+<p>除了 ht[1] 之外， 另一个和 rehash 有关的属性就是 rehashidx ： 它记录了 rehash 目前的进度， 如果目前没有在进行 rehash ， 那么它的值为 -1 。</p>
+</li>
+</ul>
+<p>图 4-3 展示了一个普通状态下（没有进行 rehash）的字典：</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561630558107distributed-redis-data-structure-dict_.png" alt></p>
+<h2><span id="哈希算法以及解决冲突">哈希算法以及解决冲突</span></h2>
+<ul>
+<li>哈希算法</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用字典设置的哈希函数，计算键 key 的哈希值</span></span><br><span class="line">hash = dict-&gt;type-&gt;hashFunction(key);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用哈希表的 sizemask 属性和哈希值，计算出索引值</span></span><br><span class="line"><span class="comment"># 根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span></span><br><span class="line">index = hash &amp; dict-&gt;ht[x].sizemask;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>解决冲突</p>
+<p>在哈希表实现中， 当两个不同的键拥有相同的哈希值时， 称这两个键发生碰撞（collision）， 而哈希表实现必须想办法对碰撞进行处理。</p>
+<p>字典哈希表所使用的碰撞解决方法被称之为链地址法： 这种方法使用链表将多个哈希值相同的节点串连在一起， 从而解决冲突问题。</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631101522distributed-redis-data-structure-dict_.png" alt></p>
+</li>
+</ul>
+<h2><span id="rehash">rehash</span></h2>
+<h3><span id="rehash-发生的原因">rehash 发生的原因</span></h3>
+<p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。</p>
+<p>其中哈希表的负载因子可以通过公式：</p>
+<p><strong>负载因子 = 哈希表已保存节点数量 / 哈希表大小</strong><br>
+<code>load_factor = ht[0].used / ht[0].size</code><br>
+计算得出。<br>
+比如说， 对于一个大小为 4 ， 包含 4 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
+<p><code>load_factor = 4 / 4 = 1</code><br>
+又比如说， 对于一个大小为 512 ， 包含 256 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
+<p><code>load_factor = 256 / 512 = 0.5</code></p>
+<p>根据 <code>BGSAVE</code> 命令或 <code>BGREWRITEAOF</code> 命令是否正在执行， 服务器执行扩展操作所需的负载因子并不相同， 这是因为在执行 <code>BGSAVE</code> 命令或 <code>BGREWRITEAOF</code> 命令的过程中， <code>Redis</code> 需要创建当前服务器进程的子进程， 而大多数操作系统都采用写时复制<code>（copy-on-write）</code>技术来优化子进程的使用效率， 所以在子进程存在期间， 服务器会提高执行扩展操作所需的负载因子， 从而尽可能地避免在子进程存在期间进行哈希表扩展操作， 这可以避免不必要的内存写入操作， 最大限度地节约内存。</p>
+<p>另一方面， 当哈希表的负载因子小于 0.1 时， 程序自动开始对哈希表执行收缩操作。</p>
+<h3><span id="rehash-过程">rehash 过程</span></h3>
+<ul>
+<li>
+<p>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）：</p>
+</li>
+<li>
+<p>如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂）；<br>
+如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n 。</p>
+</li>
+<li>
+<p>将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</p>
+</li>
+<li>
+<p>当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。<br>
+举个例子， 假设程序要对图 4-8 所示字典的 ht[0] 进行扩展操作， 那么程序将执行以下步骤：</p>
+</li>
+<li>
+<p>ht[0].used 当前的值为 4 ， 4 * 2 = 8 ， 而 8 （2^3）恰好是第一个大于等于 4 的 2 的 n 次方， 所以程序会将 ht[1] 哈希表的大小设置为 8 。 图 4-9 展示了 ht[1] 在分配空间之后， 字典的样子。</p>
+</li>
+<li>
+<p>将 ht[0] 包含的四个键值对都 rehash 到 ht[1] ， 如图 4-10 所示。</p>
+</li>
+<li>
+<p>释放 ht[0] ，并将 ht[1] 设置为 ht[0] ，然后为 ht[1] 分配一个空白哈希表，如图 4-11 所示。</p>
+</li>
+</ul>
+<p>至此， 对哈希表的扩展操作执行完毕， 程序成功将哈希表的大小从原来的 4 改为了现在的 8 。</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631365627distributed-redis-data-structure-dict_.png" alt></p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631373754distributed-redis-data-structure-dict_.png" alt></p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631382607distributed-redis-data-structure-dict_.png" alt></p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631389393distributed-redis-data-structure-dict_.png" alt></p>
+<h2><span id="渐进式rehash">渐进式rehash</span></h2>
+<p>在上一节，我们了解了字典的 rehash 过程， 需要特别指出的是， rehash 程序并不是在激活之后，就马上执行直到完成的， 而是分多次、渐进式地完成的。</p>
+<p>假设这样一个场景：在一个有很多键值对的字典里， 某个用户在添加新键值对时触发了 rehash 过程， 如果这个 rehash 过程必须将所有键值对迁移完毕之后才将结果返回给用户， 这样的处理方式将是非常不友好的。</p>
+<p>另一方面， 要求服务器必须阻塞直到 rehash 完成， 这对于 Redis 服务器本身也是不能接受的。</p>
+<p>为了解决这个问题， Redis 使用了渐进式（incremental）的 rehash 方式： 通过将 rehash 分散到多个步骤中进行， 从而避免了集中式的计算。</p>
+<p>渐进式 rehash 主要由 <code>_dictRehashStep</code> 和 <code>dictRehashMilliseconds</code> 两个函数进行：</p>
+<p><code>_dictRehashStep</code> 用于对数据库字典、以及哈希键的字典进行被动 rehash ；<br>
+<code>dictRehashMilliseconds</code> 则由 Redis 服务器常规任务程序（server cron job）执行，用于对数据库字典进行主动 rehash ；<br>
+<code>_dictRehashStep</code><br>
+每次执行 <code>_dictRehashStep</code> ， ht[0]-&gt;table 哈希表第一个不为空的索引上的所有节点就会全部迁移到 ht[1]-&gt;table 。</p>
+<p>在 rehash 开始进行之后（d-&gt;rehashidx 不为 -1）， 每次执行一次添加、查找、删除操作， <code>_dictRehashStep</code> 都会被执行一</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631651242distributed-redis-data-structure-dict_.png" alt></p>
+<p>因为在进行渐进式 rehash 的过程中， 字典会同时使用 ht[0] 和 ht[1] 两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。</p>
+<p>另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1] 里面， 而 ht[0] 则不再进行任何添加操作： 这一措施保证了 ht[0] 包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</p>
+<h2><span id="字典的收缩">字典的收缩</span></h2>
+<p>扩展 rehash 和收缩 rehash 执行完全相同的过程， 一个 rehash 是扩展还是收缩字典， 关键在于新分配的 ht[1]-&gt;table 的大小</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 检查字典的使用率是否低于系统允许的最小比率</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 是的话返回 1 ，否则返回 0 。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">htNeedsResize</span><span class="params">(dict *dict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> size, used;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    size = dictSlots(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表已用节点数量</span></span><br><span class="line">    used = dictSize(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当哈希表的大小大于 DICT_HT_INITIAL_SIZE</span></span><br><span class="line">    <span class="comment">// 并且字典的填充率低于 REDIS_HT_MINFILL 时</span></span><br><span class="line">    <span class="comment">// 返回 1</span></span><br><span class="line">    <span class="keyword">return</span> (size &amp;&amp; used &amp;&amp; size &gt; DICT_HT_INITIAL_SIZE &amp;&amp;</span><br><span class="line">            (used*<span class="number">100</span>/size &lt; REDIS_HT_MINFILL));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在默认情况下， <code>REDIS_HT_MINFILL</code> 的值为 <code>10</code> ， 也即是说， 当字典的填充率低于 <code>10%</code> 时， 程序就可以对这个字典进行收缩操作了。</p>
+<p>字典收缩和字典扩展的一个区别是：</p>
+<ul>
+<li>字典的扩展操作是自动触发的（不管是自动扩展还是强制扩展）；</li>
+<li>而字典的收缩操作则是由程序手动执行。</li>
+</ul>
+<p>因此， 使用字典的程序可以决定何时对字典进行收缩：</p>
+<ul>
+<li>当字典用于实现哈希键的时候， 每次从字典中删除一个键值对， 程序就会执行一次 <code>htNeedsResize</code> 函数， 如果字典达到了收缩的标准， 程序将立即对字典进行收缩；</li>
+<li>当字典用于实现数据库键空间（key space）的时候， 收缩的时机由 redis.c/tryResizeHashTables 函数决定。</li>
+</ul>
+<h2><span id="字典的迭代">字典的迭代</span></h2>
+<p>字典带有自己的迭代器实现 —— 对字典进行迭代实际上就是对字典所使用的哈希表进行迭代：<br>
+迭代器首先迭代字典的第一个哈希表，然后，如果 rehash 正在进行的话，就继续对第二个哈希表进行迭代。</p>
+<ul>
+<li>当迭代哈希表时，找到第一个不为空的索引，然后迭代这个索引上的所有节点。</li>
+<li>当这个索引迭代完了，继续查找下一个不为空的索引，如此反覆，直到整个哈希表都迭代完为止。</li>
+</ul>
+<p>整个迭代过程可以用伪代码表示如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">iter_dict</span><span class="params">(dict)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 迭代 0 号哈希表</span></span><br><span class="line">    iter_table(ht[0]-&gt;table)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果正在执行 rehash ，那么也迭代 1 号哈希表</span></span><br><span class="line">    if dict.is_rehashing(): iter_table(ht[1]-&gt;table)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">iter_table</span><span class="params">(table)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历哈希表上的所有索引</span></span><br><span class="line">    <span class="keyword">for</span> index <span class="keyword">in</span> table:</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 跳过空索引</span></span><br><span class="line">        <span class="keyword">if</span> table[index].empty():</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 遍历索引上的所有节点</span></span><br><span class="line">        <span class="keyword">for</span> node <span class="keyword">in</span> table[index]:</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 处理节点</span></span><br><span class="line">            do_something_with(node)</span><br></pre></td></tr></table></figure>
+<p>字典的迭代器有两种：</p>
+<ul>
+<li>安全迭代器：在迭代进行过程中，可以对字典进行修改。</li>
+<li>不安全迭代器：在迭代进行过程中，不对字典进行修改。</li>
+</ul>
+<p>以下是迭代器的数据结构定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * 字典迭代器</span><br><span class="line"> */</span><br><span class="line">typedef struct dictIterator &#123;</span><br><span class="line"></span><br><span class="line">    dict *d;                // 正在迭代的字典</span><br><span class="line"></span><br><span class="line">    int table,              // 正在迭代的哈希表的号码（<span class="number">0</span> 或者 <span class="number">1</span>）</span><br><span class="line">        index,              // 正在迭代的哈希表数组的索引</span><br><span class="line">        safe;               // 是否安全？</span><br><span class="line"></span><br><span class="line">    dictEntry *entry,       // 当前哈希节点</span><br><span class="line">              *nextEntry;   // 当前哈希节点的后继节点</span><br><span class="line"></span><br><span class="line">&#125; dictIterator;</span><br></pre></td></tr></table></figure>
+<h2><span id="api">API</span></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%">
+<col width="47%">
+<col width="32%">
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">函数</th>
+<th class="head">作用</th>
+<th class="head">时间复杂度</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">dictCreate</span></code></td>
+<td>创建一个新的字典。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">dictAdd</span></code></td>
+<td>将给定的键值对添加到字典里面。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">dictReplace</span></code></td>
+<td>将给定的键值对添加到字典里面，
+如果键已经存在于字典，那么用新值取代原有的值。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">dictFetchValue</span></code></td>
+<td>返回给定键的值。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">dictGetRandomKey</span></code></td>
+<td>从字典中随机返回一个键值对。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">dictDelete</span></code></td>
+<td>从字典中删除给定键所对应的键值对。</td>
+<td><span class="math">O(1)</span></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">dictRelease</span></code></td>
+<td>释放给定字典，以及字典中包含的所有键值对。</td>
+<td><span class="math">O(N)</span> ，
+<code class="docutils literal"><span class="pre">N</span></code> 为字典包含的键值对数量。</td>
+</tr>
+</tbody>
+</table>
+<h3><span id="skiplist与平衡树-哈希表的比较">skiplist与平衡树、哈希表的比较</span></h3>
+<ul>
+<li>
+<p>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。因此，在哈希表上只能做单个key的查找，不适宜做范围查找。所谓范围查找，指的是查找那些大小在指定的两个值之间的所有节点。</p>
+</li>
+<li>
+<p>在做范围查找的时候，平衡树比skiplist操作要复杂。在平衡树上，我们找到指定范围的小值之后，还需要以中序遍历的顺序继续寻找其它不超过大值的节点。如果不对平衡树进行一定的改造，这里的中序遍历并不容易实现。而在skiplist上进行范围查找就非常简单，只需要在找到小值之后，对第1层链表进行若干步的遍历就可以实现。</p>
+</li>
+<li>
+<p>平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而skiplist的插入和删除只需要修改相邻节点的指针，操作简单又快速。</p>
+</li>
+<li>
+<p>从内存占用上来说，skiplist比平衡树更灵活一些。一般来说，平衡树每个节点包含2个指针（分别指向左右子树），而skiplist每个节点包含的指针数目平均为1/(1-p)，具体取决于参数p的大小。如果像Redis里的实现一样，取p=1/4，那么平均每个节点包含1.33个指针，比平衡树更有优势。</p>
+</li>
+<li>
+<p>查找单个key，skiplist和平衡树的时间复杂度都为O(log n)，大体相当；而哈希表在保持较低的哈希值冲突概率的前提下，查找时间复杂度接近O(1)，性能更高一些。所以我们平常使用的各种Map或dictionary结构，大都是基于哈希表实现的。</p>
+</li>
+</ul>
+<p>从算法实现难度上来比较，skiplist比平衡树要简单得多。</p>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/java-class-loader/" data-toggle="tooltip" data-placement="top" title="Java类加载机制">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-redis-data-structure-sds-link/" data-toggle="tooltip" data-placement="top" title="Redis系列之数据结构篇(1)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">结构</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Dict哈希表</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Dict节点</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Dict 结构</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">哈希算法以及解决冲突</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">rehash</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.1.</span> <span class="toc-nav-text">rehash 发生的原因</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.2.</span> <span class="toc-nav-text">rehash 过程</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">渐进式rehash</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">字典的收缩</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">字典的迭代</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">API</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.1.</span> <span class="toc-nav-text">skiplist与平衡树、哈希表的比较</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
+                        
+                          <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

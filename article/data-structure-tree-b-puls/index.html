@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          算法探秘系列之数据结构篇——树（2） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/data-structure-tree-b-puls/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                            
+                              <a class="tag" href="/tags/#数据结构" title="数据结构">数据结构</a>
+                            
+                              <a class="tag" href="/tags/#树" title="树">树</a>
+                            
+                        </div>
+                        <h1>算法探秘系列之数据结构篇——树（2）</h1>
+                        <h2 class="subheading">B+树</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-06-26
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="概诉">概诉</span></h2>
+<p><span style="font-family: 方正姚体; font-size: large;">概诉 </span></p>
+<hr>
+<h2><span id="b-树的定义">B+ 树的定义</span></h2>
+<p><img src="/article/data-structure-tree-b-puls/1577764304776data-structure-tree-b-puls_.png" alt></p>
+<p>关于B树的阶数和度数已经在上一篇<a href="https://icefrozen.github.io/article/B-Tree-And-B-Tree/" target="_blank" rel="noopener">算法探秘系列之数据结构篇——树（1）</a></p>
+<p><span style="font-family: 仿宋; font-size: large;">除此之外B+树还有以下的要求。</span></p>
+<ul>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">1）B+树包含2种类型的结点：内部结点（也称索引结点）和叶子结点。根结点本身即可以是内部结点，也可以是叶子结点。根结点的关键字个数最少可以只有1个。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">2）B+树与B树最大的不同是内部结点不保存数据，只用于索引，所有数据（或者说记录）都保存在叶子结点中。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">3） m阶B+树表示了内部结点最多有m-1个关键字（或者说内部结点最多有m个子树），阶数m同时限制了叶子结点最多存储m-1个记录。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">4）内部结点中的key都按照从小到大的顺序排列，对于内部结点中的一个key，左树中的所有key都<strong>小于</strong>它，右子树中的key都<strong>大于等于</strong>它。叶子结点中的记录也按照key的大小排列。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">5）每个叶子结点都存有相邻叶子结点的指针，叶子结点本身依关键字的大小自小而大顺序链接。</span></p>
+</li>
+</ul>
+<p> </p>
+<h2><span id="b-树的操作">B+ 树的操作</span></h2>
+<h1><span id="一-b树的插入操作"><span style="font-family: 黑体; font-size: x-large;">一、B+树的插入操作</span></span></h1>
+<ul>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">1）若为空树，创建一个叶子结点，然后将记录插入其中，此时这个叶子结点也是根结点，插入操作结束。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">2）针对叶子类型结点：根据key值找到叶子结点，向这个叶子结点插入记录。插入后，若当前结点key的个数小于等于m-1，则插入结束。否则将这个叶子结点分裂成左右两个叶子结点，左叶子结点包含前m/2个记录，右结点包含剩下的记录，将第m/2+1个记录的key进位到父结点中（父结点一定是索引类型结点），进位到父结点的key左孩子指针向左结点,右孩子指针向右结点。将当前结点的指针指向父结点，然后执行第3步。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">3）针对索引类型结点：若当前结点key的个数小于等于m-1，则插入结束。否则，将这个索引类型结点分裂成两个索引结点，左索引结点包含前(m-1)/2个key，右结点包含m-(m-1)/2个key，将第m/2个key进位到父结点中，进位到父结点的key左孩子指向左结点, 进位到父结点的key右孩子指向右结点。将当前结点的指针指向父结点，然后重复第3步。</span></p>
+</li>
+</ul>
+<p><span style="font-family: 仿宋; font-size: large;">下面是一颗5阶B树的插入过程，5阶B数的结点最少2个key，最多4个key。</span></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">a）空树中插入5</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764324380data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">b）依次插入8，10，15</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764335394data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">c）插入16</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764346561data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">插入16后超过了关键字的个数限制，所以要进行分裂。在叶子结点分裂时，分裂出来的左结点2个记录，右边3个记录，中间key成为索引结点中的key，分裂后当前结点指向了父结点（根结点）。结果如下图所示。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764357872data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当然我们还有另一种分裂方式，给左结点3个记录，右结点2个记录，此时索引结点中的key就变为15。</span></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">d）插入17</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764368991data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">e）插入18，插入后如下图所示</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764378857data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当前结点的关键字个数大于5，进行分裂。分裂成两个结点，左结点2个记录，右结点3个记录，关键字16进位到父结点（索引类型）中，将当前结点的指针指向父结点。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764389302data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当前结点的关键字个数满足条件，插入结束。</span></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">f）插入若干数据后</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764399238data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">g）在上图中插入7，结果如下图所示 </span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764406347data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当前结点的关键字个数超过4，需要分裂。左结点2个记录，右结点3个记录。分裂后关键字7进入到父结点中，将当前结点的指针指向父结点，结果如下图所示。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764418069data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当前结点的关键字个数超过4，需要继续分裂。左结点2个关键字，右结点2个关键字，关键字16进入到父结点中，将当前结点指向父结点，结果如下图所示。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764428601data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">当前结点的关键字个数满足条件，插入结束。</span></p>
+<p> </p>
+<h1><span id="二-b树的删除操作"><span style="font-family: 黑体;"><span style="font-size: x-large;">二、B+树的删除操作</span></span></span></h1>
+<p><span style="font-family: 仿宋; font-size: large;">如果叶子结点中没有相应的key，则删除失败。否则执行下面的步骤</span></p>
+<ul>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">1）删除叶子结点中对应的key。删除后若结点的key的个数大于等于Math.ceil(m-1)/2 – 1，删除操作结束,否则执行第2步。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">2）若兄弟结点key有富余（大于Math.ceil(m-1)/2 – 1），向兄弟结点借一个记录，同时用借到的key替换父结（指当前结点和兄弟结点共同的父结点）点中的key，删除结束。否则执行第3步。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">3）若兄弟结点中没有富余的key,则当前结点和兄弟结点合并成一个新的叶子结点，并删除父结点中的key（父结点中的这个key两边的孩子指针就变成了一个指针，正好指向这个新的叶子结点），将当前结点指向父结点（必为索引结点），执行第4步（第4步以后的操作和B树就完全一样了，主要是为了更新索引结点）。</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">4）若索引结点的key的个数大于等于Math.ceil(m-1)/2 – 1，则删除操作结束。否则执行第5步</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">5）若兄弟结点有富余，父结点key下移，兄弟结点key上移，删除结束。否则执行第6步</span></p>
+</li>
+<li>
+<p><span style="font-family: 仿宋; font-size: large;">6）当前结点和兄弟结点及父结点下移key合并成一个新的结点。将当前结点指向父结点，重复第4步。</span></p>
+</li>
+</ul>
+<p><span style="font-family: 仿宋; font-size: large;">注意，通过B+树的删除操作后，索引结点中存在的key，不一定在叶子结点中存在对应的记录。</span></p>
+<p><span style="font-family: 仿宋; font-size: large;">下面是一颗5阶B树的删除过程，5阶B数的结点最少2个key，最多4个key。</span></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">a）初始状态</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764441677data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">b）删除22,删除后结果如下图</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764449973data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">删除后叶子结点中key的个数大于等于2，删除结束</span></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">c）删除15，删除后的结果如下图所示</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764460004data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">删除后当前结点只有一个key,不满足条件，而兄弟结点有三个key，可以从兄弟结点借一个关键字为9的记录,同时更新将父结点中的关键字由10也变为9，删除结束。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764479201data-structure-tree-b-puls_.png" alt></p>
+<hr>
+<p><span style="font-family: 仿宋; font-size: large;">d）删除7，删除后的结果如下图所示</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764487719data-structure-tree-b-puls_.png" alt><br>
+<span style="font-family: 仿宋; font-size: large;">当前结点关键字个数小于2，（左）兄弟结点中的也没有富余的关键字（当前结点还有个右兄弟，不过选择任意一个进行分析就可以了，这里我们选择了左边的），所以当前结点和兄弟结点合并，并删除父结点中的key，当前结点指向父结点。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764500392data-structure-tree-b-puls_.png" alt></p>
+<p><span style="font-family: 仿宋; font-size: large;">此时当前结点的关键字个数小于2，兄弟结点的关键字也没有富余，所以父结点中的关键字下移，和两个孩子结点合并，结果如下图所示。</span></p>
+<p><img src="/article/data-structure-tree-b-puls/1577764509124data-structure-tree-b-puls_.png" alt></p>
+<h4><span id> </span></h4>
+<h4><span id="3参考内容"><span style="font-family: 黑体; font-size: large; font-weight: normal;">3.参考内容</span></span></h4>
+<p>[1] <a href="https://www.cnblogs.com/wade-luffy/p/6292784.html" target="_blank" rel="noopener">B+树介绍</a><br>
+[2] <a href="http://hedengcheng.com/?p=525" target="_blank" rel="noopener">从MySQL Bug#67718浅谈B+树索引的分裂优化</a><br>
+[3] <a href="https://www.jianshu.com/p/6f68d3c118d6" target="_blank" rel="noopener">B+树的几点总结</a></p>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/tcpip-overview/" data-toggle="tooltip" data-placement="top" title="TCP/IP系列(1)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/bloomfilter/" data-toggle="tooltip" data-placement="top" title="算法探秘系列之概率随机算法(1)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">B+ 树的定义</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">B+ 树的操作</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">一、B+树的插入操作</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">二、B+树的删除操作</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.0.1.</span> <span class="toc-nav-text"> </span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.0.2.</span> <span class="toc-nav-text">3.参考内容</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                        
+                          <a class="tag" href="/tags/#数据结构" title="数据结构">数据结构</a>
+                        
+                          <a class="tag" href="/tags/#树" title="树">树</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

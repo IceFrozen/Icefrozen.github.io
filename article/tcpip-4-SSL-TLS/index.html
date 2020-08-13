@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          TCP/IP系列(4)-SSL/TLS详解(1) - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/tcpip-4-SSL-TLS/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#TCP/IP" title="TCP/IP">TCP/IP</a>
+                            
+                              <a class="tag" href="/tags/#TLS" title="TLS">TLS</a>
+                            
+                        </div>
+                        <h1>TCP/IP系列(4)-SSL/TLS详解(1)</h1>
+                        <h2 class="subheading">SSL/TLS详解(1)--安全规范</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2020-03-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="概述">概述</span></h2>
+<h2><span id="ssltsl-协议">SSL/TSL 协议</span></h2>
+<p>**SSL（安全套接字层）**是一种标准安全协议，用于在在线通信中建立Web服务器和浏览器之间的加密链接。</p>
+<p><strong>TLS:(Transport Layer Security)</strong>: 是SSL协议（Secure Sockets Layer）的升级版，TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。现在习惯将这个两个组合在一起称为<strong>SSL/TLS</strong>，它是一种用于加密的安全协议就好了。</p>
+<h2><span id="发展史">发展史</span></h2>
+<ul>
+<li>1995: SSL 2.0. 由 Netscape 提出，这个版本由于设计缺陷，并不安全，很快被发现有严重漏洞，已经废弃。</li>
+<li>1996: SSL 3.0. 写成 RFC，开始流行。目前（2015年）已经不安全，必须禁用。</li>
+<li>1999: TLS 1.0. 互联网标准化组织 ISOC 接替 NetScape 公司，发布了 SSL 的升级版 TLS 1.0 版。</li>
+<li>2006: TLS 1.1. 作为 RFC 4346 发布。主要 fix 了 CBC 模式相关的如 BEAST 攻击等漏洞。</li>
+<li>2008: TLS 1.2. 作为 RFC 5246 发布。增进安全性。目前（2015 年）应该主要部署的版本，请确保你使用的是这个版本。</li>
+<li>2018：8月10日 RFC8446 TLS 1.3 协议正式发布，它剔除了 TLS 1.2 协议中不安全的因素，极大地增强了协议的安全性和性能。</li>
+</ul>
+<h2><span id="作用">作用</span></h2>
+<p>TCP/IP 协议栈</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-123531.png" alt></p>
+<p>不使用SSL/TLS的HTTP通信，就是不加密的通信。所有信息明文传播，带来了三大风险。</p>
+<ul>
+<li>（1） 窃听风险（eavesdropping）：第三方可以获知通信内容。</li>
+<li>（2） 篡改风险（tampering）：第三方可以修改通信内容。</li>
+<li>（3） 冒充风险（pretending）：第三方可以冒充他人身份参与通信。</li>
+</ul>
+<p>SSL/TLS协议是为了解决这三大风险而设计的，希望达到：</p>
+<ul>
+<li>（1） 所有信息都是加密传播，第三方无法窃听。</li>
+<li>（2） 具有校验机制，一旦被篡改，通信双方会立刻发现。</li>
+<li>（3） 配备身份证书，防止身份被冒充。</li>
+</ul>
+<p>互联网是开放环境，通信双方都是未知身份，这为协议的设计带来了很大的难度。而且，协议还必须能够经受所有匪夷所思的攻击，这使得SSL/TLS协议变得异常复杂。</p>
+<h2><span id="加密算法">加密算法</span></h2>
+<h2><span id="单项加密">单项加密</span></h2>
+<p>单项加密，又称不可逆的加密<br>
+特性：</p>
+<ul>
+<li>定长输出: 无论原始数据是多大，结果大小都相同的</li>
+<li>雪崩效应: 输入的微小改变，将会引起结果的巨大改变</li>
+<li>单向加密算法：MD5（128位）、SHA1、SHA256、SHA384、SHA512</li>
+</ul>
+<p>缺点： 雪崩，不可逆</p>
+<p>主要用途： 特征码</p>
+<h2><span id="对称加密">对称加密</span></h2>
+<p>在对称加密算法中，数据发信方将明文（原始数据）和加密密钥一起经过特殊加密算法处理后，使其变成复杂的加密密文发送出去。</p>
+<p>收信方收到密文后，若想解读原文，则需要使用<strong>加密用过的密钥及相同算法的逆算法</strong>对密文进行解密，在对称加密算法中，使用的密钥只有一个，发收信双方都使用这个密钥对数据进行加密和解密，这就要求解密方事先必须知道加密密钥和加密算法。</p>
+<p>缺点： 不安全，局限性，需要知道对称加密秘钥</p>
+<p>优点：加密解密速度快</p>
+<h2><span id="公钥加密非对称加密">公钥加密（非对称加密）</span></h2>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-214134.png" alt></p>
+<p>现代互联网普遍用的加密手段。</p>
+<ul>
+<li>
+<p>特点：</p>
+<ul>
+<li>公钥公开，私钥保密</li>
+<li>公钥加密，私钥解密</li>
+<li>私钥加密，公钥解密</li>
+</ul>
+</li>
+<li>
+<p>用途:  接收方用发送方的公钥解密，若能解密就以为这这个数据一定是拥有该公钥对应的私钥的人发送的，实现了身份认证机制。</p>
+<ul>
+<li>数字签名</li>
+<li>HTTPS/OPENSSL/SSL</li>
+<li>区块链</li>
+</ul>
+</li>
+<li>
+<p>公钥加密算法<br>
+RSA、Elgamal、背包算法、Rabin、D-H、ECC（椭圆曲线加密算法）。<br>
+使用最广泛的是RSA算法，Elgamal是另一种常用的非对称加密算法。</p>
+</li>
+<li>
+<p>缺点： 加密解密速度较慢，无法对大规模的数据进行加密<br>
+一般情况下非对称加密用来数字签名的。</p>
+</li>
+<li>
+<p>RSA 算法原理<br>
+做个连接 不做过多解读 <a href="https://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html" target="_blank" rel="noopener">RSA 算法原理</a></p>
+</li>
+<li>
+<p>ECC 算法<br>
+<a href="https://andrea.corbellini.name/2015/05/17/elliptic-curve-cryptography-a-gentle-introduction/" target="_blank" rel="noopener">Elliptic Curve Cryptography: a gentle introduction</a></p>
+</li>
+</ul>
+<h2><span id="数字签名">数字签名</span></h2>
+<p>私钥是保密的，而公钥是公开的，用私钥加密，那相当于所有人都可以用公钥解密,在这个意义上来说，加密就毫无意义。</p>
+<p>在实际应用的时候，签名实际上并不是针对原始消息，而是针对原始消息的哈希进行签名，也就是说对原始消息的哈希特征值进行加密，保证这个消息不会被其他第三方串改。</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-110824.png" alt></p>
+<ul>
+<li>数字签名的作用
+<ul>
+<li>防止伪造；</li>
+<li>防止抵赖；</li>
+<li>检测篡改。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成RSA公钥/私钥:</span></span><br><span class="line">    KeyPairGenerator kpGen = KeyPairGenerator.getInstance(<span class="string">"RSA"</span>);</span><br><span class="line">    kpGen.initialize(<span class="number">1024</span>);</span><br><span class="line">    KeyPair kp = kpGen.generateKeyPair();</span><br><span class="line">    PrivateKey sk = kp.getPrivate();</span><br><span class="line">    PublicKey pk = kp.getPublic();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 待签名的消息:</span></span><br><span class="line">    <span class="keyword">byte</span>[] message = <span class="string">"Hello, I am Bob!"</span>.getBytes(StandardCharsets.UTF_8);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用私钥签名:</span></span><br><span class="line">    Signature s = Signature.getInstance(<span class="string">"SHA1withRSA"</span>);</span><br><span class="line">    s.initSign(sk);</span><br><span class="line">    s.update(message);</span><br><span class="line">    <span class="keyword">byte</span>[] signed = s.sign();</span><br><span class="line">    System.out.println(String.format(<span class="string">"signature: %x"</span>, <span class="keyword">new</span> BigInteger(<span class="number">1</span>, signed)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用公钥验证:</span></span><br><span class="line">    Signature v = Signature.getInstance(<span class="string">"SHA1withRSA"</span>);</span><br><span class="line">    v.initVerify(pk);</span><br><span class="line">    v.update(message);</span><br><span class="line">    <span class="keyword">boolean</span> valid = v.verify(signed);</span><br><span class="line">    System.out.println(<span class="string">"valid? "</span> + valid);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="现代加密过程">现代加密过程</span></h2>
+<p>非对称加密既然也有缺陷，那我们就将对称加密，非对称加密两者结合起来，取其精华、去其糟粕，发挥两者的各自的优势</p>
+<p>如下图：</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-110512.png" alt></p>
+<p><strong>加密解密过程和原理详细说明：</strong><br>
+<strong>1、发送端B :</strong></p>
+<ul>
+<li>
+<p>（1）为保证安全，要对报文加密。加密方法有三类：对称加密、公钥加密和单向加密。对称加密不安全，单向加密是不可逆的，因而使用公钥加密。<br>
+公钥加密安全（一般为2048位），但是加密过程太慢了，不适用当前网络需求</p>
+</li>
+<li>
+<p>（2）为了解决上述问题，B可以用单向加密提取出报文的特征码（<strong>特征码能保证报文的数据完整性</strong>），再使用自身的私钥对特征码进行公钥加密（特征码数据小，对其进行公钥加密速度快），并把加密后的特征码附加到报文后。（使用私钥加密是为了验证身份）但是，这种方式能实现数据完整性和身份验证的检验，但是却缺失了报文的数据保密性</p>
+</li>
+<li>
+<p>（3）为了解决上述问题，B在把加密的特征码附加到报文后，把特征码和报文当做一个数据（假设为data），使用对称加密算法对该数据(data)加密得出一个密码，再把密码附加到该数据(data)后。为了使得在传输过程中密码不被其他人获取或篡改，使用A的公钥对密码进行加密（只有A的私钥能对其解密），把加密的密码附加到数据data后，再这些数据一并发送给A。</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>对称加密算法有很多种，那么如何选择加密算法呢？ 这是因为前面会有个加密算法协商的过程，客户端和服务器各自支持的加密算法不一样，所有在数据加密传输过程中工会有加密算法协商的过程</strong>。</p>
+</blockquote>
+<p><strong>2、接收端A：</strong></p>
+<ul>
+<li>（1）A接收到B传来的报文，利用自身的私钥对其解密，获得密码。因为只有A的私钥能对B传来的报文（使用A的公钥加密密码）解密，所以能防止其他人对该传输的报文进行解密而获得其中的信息，保证了数据的保密性。</li>
+<li>（2）A利用获得的密码解密其中对称加密的数据，获得经过加密的特征码和原报文。</li>
+<li>（3）A使用B的公钥对该特征码解密，能解密则说明该报文是B发送过来的，实现了身份验证。（假设解密后的特征码是fcode）</li>
+<li>（4）A使用同等单向加密算法对接收到的原报文提取其特征码。使用该特征码和解密后获得的特征码(fcode)做比较，如果一样，则说明原报文的数据完整。</li>
+</ul>
+<p>以上这种方式能保证数据完整性、身份验证和数据的保密性，在加密和解密的过程中都要用到对方的公钥，<strong>如何在传输过程中安全可靠地获得对方的公钥就成了关键的一环</strong>，</p>
+<p>遗留问题</p>
+<ul>
+<li><strong>1. 公钥如何安全的获取服务器公钥？</strong></li>
+<li><strong>2. 对称加密的秘钥如何生成，加密算法如何协商？</strong></li>
+</ul>
+<p>要解决三个问题必须要客户端和服务器进行协商，协商出双方一致的秘钥算法。所以，客户端和服务器必须有一个完整的秘钥交换机制。</p>
+<h2><span id="秘钥交换">秘钥交换</span></h2>
+<h2><span id="直接秘钥交换">直接秘钥交换</span></h2>
+<p>由于公钥公开，所以当客户端连接服务器的时候，服务器会给客户端发自己公钥，然后客户端用公钥加密密码（也就是对称秘钥），发送给服务器，服务器有私钥，可以解密数据。这样就实现了数据加密的传输。 这种秘钥交换在https 里映射为对<strong>称秘钥的交换</strong></p>
+<blockquote>
+<p>虽然公钥是公开的，但是也并不意味着和所有人都可以拥有公钥,公钥的公开是指公钥可以在网络上传输。<br>
+如果你能保证公钥和私钥一样，能安全的进行交换，那么双方的传输安全是没有问题。一般情况下为<strong>人肉传输/线下传输</strong>。比如：公钥放到专用的安全U盘上，然后在去服务器传输。</p>
+</blockquote>
+<p><strong>漏洞</strong>： 公钥会暴露给中间人。</p>
+<p>原因：秘钥在网络上传输导致的。但是很多时候，无法进行线下传输，秘钥交换必不可少。</p>
+<p>实现：RSA秘钥交换算法</p>
+<h2><span id="dh算法解决秘钥交换漏洞">DH算法解决秘钥交换漏洞</span></h2>
+<p>如果要解决中间人替换漏洞：<strong>Diffie-Hellman</strong>算法应运而生。<br>
+DH算法解决了密钥在双方不直接传递密钥的情况下完成密钥交换，这个神奇的交换原理完全由数学理论支持。</p>
+<p><strong>DH算法的过程</strong>：</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-214429.png" alt></p>
+<p>我们来看DH算法交换密钥的步骤。假设甲乙双方需要传递密钥，他们之间可以这么做：</p>
+<ul>
+<li>
+<p>1、通信方A和通信方B约定一个初始数 <code>g</code>，如<code>g=5</code>，一个质数<code>p</code>，如p=23，g和p是公开的,且<code>1&lt; g &lt; p</code></p>
+</li>
+<li>
+<p>2、Alice生成一个随机数<code>a</code>，<code>a</code>是保密的，如<code>a=6</code></p>
+</li>
+<li>
+<p>3、Alice 计算 <code>A=g^a%p</code> 发送给B  即：<code>g^a%p=5^6%23=8</code></p>
+</li>
+<li>
+<p>4、B生成一个随机数b，b是保密的，如 <code>b=15</code></p>
+</li>
+<li>
+<p>5、Bob计算<code>B=g^b%p</code>发送给A，B=g^b%p=5^15%23=19</p>
+</li>
+<li>
+<p>6、A接收到<code>g^b%p</code>后，再使用保密的a，计算<code>(g^b%p)^a%p=19^6%23=2</code></p>
+</li>
+<li>
+<p>7、B接收到<code>g^a%p</code>后，再使用保密的b，计算(<code>g^a%p)^b%p=8^15%23=2</code></p>
+</li>
+<li>
+<p>算法实现如下</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> &#123; createDiffieHellman &#125; = <span class="built_in">require</span>(<span class="string">'crypto'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> client = createDiffieHellman(<span class="number">512</span>)   <span class="comment">// 内部已经有随机值a</span></span><br><span class="line"><span class="keyword">let</span> clientKey = client.generateKeys();  <span class="comment">// 生成A</span></span><br><span class="line"><span class="keyword">let</span> prime = client.getPrime();          <span class="comment">// 生成 p</span></span><br><span class="line"><span class="keyword">let</span> generator = client.getGenerator()   <span class="comment">// 生成g</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 第一次传输   传输prime（p） 和 generator（g）  和 clientKey (A  </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> server = createDiffieHellman(prime, generator)  <span class="comment">// 内部生成随机值b 保存 p 和 g </span></span><br><span class="line"><span class="keyword">let</span> serverKey = server.generateKeys()               <span class="comment">//  生成B</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//第二次传输 服务传输  serverKey (B)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算  B^a%p</span></span><br><span class="line"><span class="keyword">let</span> secretClient = client.computeSecret(serverKey)</span><br><span class="line"><span class="comment">// 计算  A^b%p</span></span><br><span class="line"><span class="keyword">let</span> secretServer = server.computeSecret(clientKey)</span><br><span class="line"><span class="comment">//  secretServer == secretClient</span></span><br><span class="line"><span class="built_in">console</span>.log(secretClient.toString(<span class="string">"hex"</span>))</span><br><span class="line"><span class="built_in">console</span>.log(secretServer.toString(<span class="string">"hex"</span>))</span><br></pre></td></tr></table></figure>
+<p>解决：秘钥不用再公开传输<br>
+详见：<a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange" target="_blank" rel="noopener">Diffie–Hellman_key_exchange</a></p>
+<blockquote>
+<p>ECC 算法就是DH算法的一个实现</p>
+</blockquote>
+<h2><span id="秘钥交换协议的常用实现">秘钥交换协议的常用实现</span></h2>
+<h3><span id="rsa密钥交换算法直接交换">RSA密钥交换算法（直接交换）</span></h3>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-122153.png" alt></p>
+<ul>
+<li>
+<p>（1）：任意客户端对服务器发起请求，服务器首先发回复自己的公钥到客户端（公钥明文传输）。</p>
+</li>
+<li>
+<p>（2）：客户端使用随机数算法，生成一个密钥S，使用收到的公钥进行 加密，生成C，把C发送到服务器。</p>
+</li>
+<li>
+<p>（3）：服务器收到C，使用公钥对应的私钥进行解密，得到S。</p>
+</li>
+<li>
+<p>（4）：上述交换步骤后，客户端和服务器都得到了S，S为密钥（<strong>预主密钥</strong>）。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般预备主密钥还要经过一个随机数及其序列号生成主密钥，用于防止重放攻击使用</p>
+</blockquote>
+<h3><span id="dhe算法流程文字描述如下">DHE算法流程文字描述如下：</span></h3>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-122821.png" alt></p>
+<p>DHE算法流程文字描述如下：</p>
+<ul>
+<li>
+<p>（1）：客户端计算一个随机值Xa，使用Xa作为指数，即计算Pa = q^Xa mod p，其中q和p是全世界公认的一对值。客户端把Pa发送至服务器，Xa作为自己私钥，仅且自己知道。</p>
+</li>
+<li>
+<p>（2）：服务器和客户端计算流程一样，生成一个随机值Xb，使用Xb作为指数，计算   Pb = q^Xb mod p，将结果Pb发送至客户端，Xb仅自己保存。</p>
+</li>
+<li>
+<p>（3）：客户端收到Pb后计算Sa = Pb ^Xa mod p；服务器收到Pa后计算Sb = Pa^Xb mod p</p>
+</li>
+<li>
+<p>（4）：算法保证了Sa = Sb = S，故密钥交换成功，S为密钥（预主密钥）。</p>
+</li>
+</ul>
+<p>上述密钥交换流程中，和RSA密钥交换有较大不同，DHE密钥交换时，服务器私钥没有参与进来。也就是说，私钥即使泄漏，也不会导致会话加密密钥S被第三方解密。</p>
+<p>实际使用过程中，私钥的功能被削弱到用来身份认证（上图中没有画出）。</p>
+<p>上图中DHE参数和Pb都是通过server key exchange发送给客户端，Pa通过client key exchange发送给服务器。server key exchange的结尾处需要使用服务器私钥对该报文本身进行签名，以表明自己拥有私钥（图中为了表明私钥没有参与密钥计算，没有画出，但不影响理解DHE算法）。</p>
+<h3><span id="ecdhe-or-ecdh-密钥交换算法">ECDHE or ECDH 密钥交换算法</span></h3>
+<p>只要理解DHE密钥交换原理，那么理解ECDHE密钥交换原理其实并不难（如果不想深究的话）。<br>
+ECDHE的运算是把DHE中模幂运算替换成了点乘运算，速度更快，可逆更难。</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-123219.png" alt></p>
+<p>ECDHE算法流程文字描述如下：</p>
+<ul>
+<li>
+<p>（1）：客户端随机生成随机值Ra，计算Pa(x, y) = Ra * Q(x, y)，Q(x, y)为全世界公认的某个椭圆曲线算法的基点。将Pa(x, y)发送至服务器。</p>
+</li>
+<li>
+<p>（2）：服务器随机生成随机值Rb，计算Pb(x,y) - Rb * Q(x, y)。将Pb(x, y)发送至客户端。</p>
+</li>
+<li>
+<p>（3）：客户端计算Sa(x, y) = Ra * Pb(x, y)；服务器计算Sb(x, y) = Rb *Pa(x, y)</p>
+</li>
+<li>
+<p>（4）：算法保证了Sa = Sb = S，提取其中的S的x向量作为密钥（预主密钥）。</p>
+</li>
+</ul>
+<p><strong>ECDHE与ECDH算法的区别</strong><br>
+字面少了一个E，E代表了“临时”，即在握手流程中，作为服务器端，ECDH少了一步计算Pb的过程，Pb用证书中的公钥代替，而证书对应的私钥就是Xb。由此可见，使用ECDH密钥交换算法，服务器必须采用ECC证书；服务器不发送server key exchange报文，因为发送certificate报文时，证书本身就包含了Pb信息。</p>
+<p><strong>ECDHE与RSA的区别</strong><br>
+    ECDHE（DHE）算法属于DH类密钥交换算法， 私钥不参与密钥的协商，故即使私钥泄漏，客户端和服务器之间加密的报文都无法被解密，这叫 前向安全（forward secrity）。由于ECDHE每条会话都重新计算一个密钥（Ra、Rb），故一条会话被解密后，其他会话仍旧安全。（随机数 + 会话序列帧）</p>
+<p>然而，ECDH算法服务器端的私钥是固定的，即证书的私钥作为Rb，故ECDH不被认为前向安全，因为私钥泄漏相当于Rb泄漏，Rb泄漏，导致会话密钥可被第三方计算。ECDH交换算法已经被OpenSSL废</p>
+<h2><span id="中间人劫持-man-in-the-middle-attack-mitm">中间人劫持-Man-In-The-Middle attack MITM。</span></h2>
+<p>中间人攻击</p>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-103447.png" alt></p>
+<h2><span id="mitmproxy模拟中间人挟持">mitmproxy模拟中间人挟持</span></h2>
+<p>解决：当发送方要发送公钥的时候，不发送公钥，而是发送一个<strong>数字证书</strong>，证书中会包含一些具体信息。接收方收到证书后验证证书真伪，然后获取证书内的公钥。<br>
+所以安全可靠地获取对方的公钥靠CA(Certificate Authority )证书授权中心来实现。</p>
+<h2><span id="ca证书体系">CA证书体系</span></h2>
+<h2><span id="ca是什么">CA是什么？</span></h2>
+<p>上面提到的数字证书就是CA发行的。CA是<strong>Certificate Authority</strong>的缩写，也叫“证书授权中心”。它是负责管理和签发证书的第三方机构，作用是检查证书持有者身份的合法性，并签发证书，以防证书被伪造或篡改。</p>
+<p>所以，CA实际上是一个机构，负责“证件”印制核发。就像负责颁发身份证的公安局、负责发放行驶证、驾驶证的车管所。</p>
+<h2><span id="ca证书的信任链">CA证书的信任链</span></h2>
+<p>实际上，证书之间的信任关系，是可以嵌套的。比如，C 信任 A1，A1 信任 A2，A2 信任 A3…这个叫做证书的信任链。只要你信任链上的头一个证书，那后续的证书，都是可以信任滴。<br>
+　<br>
+<img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-110350.png" alt></p>
+<p>处于最顶上的树根位置的那个证书，就是“根证书”。除了根证书，其它证书都要依靠上一级的证书，来证明自己。那谁来证明“根证书”可靠捏？实际上，根证书自己证明自己是可靠滴（或者换句话说，根证书是不需要被证明滴）。<br>
+　　聪明的同学此刻应该意识到了：根证书是整个证书体系安全的根本。所以，如果某个证书体系中，根证书出了问题（不再可信了），那么所有被根证书所信任的其它证书，也就不再可信了。</p>
+<h2><span id="ca证书的结构">CA证书的结构</span></h2>
+<ul>
+<li><strong>1、CA证书标准：x.509</strong><br>
+x.509: 定义了证书结构和认证协议标准；（基于公钥和数字签名）<br>
+用于：IP安全、TLS/SSL（传输层安全）和S/MIME（安全电子邮件通信）<br>
+<img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-112110.png" alt></li>
+</ul>
+<p><strong>x.509证书标准详细说明：</strong></p>
+<ul>
+<li>（1）版本号（默认为1，如果有多个扩展，可能为3）</li>
+<li>（2）证书序列号（是一个整数，在CA中唯一标识，表明发行了多少个证书）</li>
+<li>（3）算法参数 （标志用了那种算法）</li>
+<li>（4）发行者的名称（CA自己的名字）</li>
+<li>（5）有效期限</li>
+<li>（6）主体名称（证书拥有者名称）(很关键！！！)（个人用户使用的是个人用户名，主机使用的必须是主机名而不是ip地址）</li>
+<li>（7）<strong>公钥（最重要）（公钥由证书拥有者提供）</strong></li>
+<li>（8）发行者的ID（CA的唯一编号）</li>
+<li>（9）主体的ID（CA生成的证书拥有者唯一编号）</li>
+<li>（10）扩展</li>
+<li><strong>（11）CA的签名（用于验证CA的来源合法性） CA是相对于发送方B和接收方A的第三方，是具有公信力的机构。</strong></li>
+</ul>
+<h2><span id="证书的验证过程">证书的验证过程</span></h2>
+<p>假设你想要成为一个受信任的网站或机构，只需要找你的上级机构去颁发证书给你</p>
+<ul>
+<li>
+<p>颁发时你将自己的公钥，host等信息发送到颁发机构，该机构会将自己的证书附上你的信息，并用自己的私钥签名，做成一张新的证书发给你；而这个上级机构他的证书又是同样的方法由CA颁发的。</p>
+</li>
+<li>
+<p>首先你的证书会在https握手过程中被传递到浏览器，浏览器从你的证书中找到了颁发者，从颁发者的证书（如果你电脑上有的话）又找到了CA的证书（CA证书会在操作系统安装时就安装好，所以每个人电脑上都有根证书），使用CA证书中带的公钥来对颁发者证书做验签，一旦匹配，说明你电脑上的颁发者证书不是伪造的</p>
+</li>
+<li>
+<p>颁发者证书的公钥，解密你的证书的特征码，然后再用收到的证书中的加密算法，再使用同样的单向加密算法提取收到证书的特征码，比较这两个特征码是否一样，如果一样，则表示获得你的的数字证书是完整的。</p>
+</li>
+<li>
+<p>从证书中获取你的公钥</p>
+</li>
+</ul>
+<p><img src="/article/tcpip-4-SSL-TLS/tcpip-4-SSL-TLS-120425.png" alt></p>
+<h2><span id="遗留问题">遗留问题</span></h2>
+<p>通过我们前面的认识，我们来回答下了几个问题</p>
+<ul>
+<li><strong>1. 公钥如何安全的获取</strong>：        通过CA证书的方式来获取 解决中间人攻击</li>
+<li><strong>2. 对称加密的秘钥如何生成/获取</strong>  通过DH算法来获取（秘钥协商）</li>
+</ul>
+<p>那么我们接下来就要讨论一下，在应用层面上来说，服务器客户端双方怎么能快速的达成秘钥的交换和生成。<br>
+如果要交换秘钥，TLS在连接之前会进行握手操作，该操作用于交换秘钥，协商加密算法等等，用于建立安全的连接。</p>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://www.liaoxuefeng.com/wiki/1252599548343744/1304227943022626" target="_blank" rel="noopener">签名算法</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="noopener">SSL/TLS协议运行机制的概述</a></li>
+<li><a href="https://blog.csdn.net/mrpre/article/details/78025940" target="_blank" rel="noopener">TLS/SSL 协议详解 (30) SSL中的RSA、DHE、ECDHE、ECDH流程与区别</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/tcpip-4-SSL-TLS-2/" data-toggle="tooltip" data-placement="top" title="TCP/IP系列(4)-SSL/TSL详解(2)">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/java-thrift-4-2/" data-toggle="tooltip" data-placement="top" title="Thrift框架详解（四）">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">SSL/TSL 协议</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">发展史</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">作用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">加密算法</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">单项加密</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">对称加密</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">公钥加密（非对称加密）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">数字签名</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">现代加密过程</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">秘钥交换</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.</span> <span class="toc-nav-text">直接秘钥交换</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">13.</span> <span class="toc-nav-text">DH算法解决秘钥交换漏洞</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">14.</span> <span class="toc-nav-text">秘钥交换协议的常用实现</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">14.1.</span> <span class="toc-nav-text">RSA密钥交换算法（直接交换）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">14.2.</span> <span class="toc-nav-text">DHE算法流程文字描述如下：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">14.3.</span> <span class="toc-nav-text">ECDHE or ECDH 密钥交换算法</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">15.</span> <span class="toc-nav-text">中间人劫持-Man-In-The-Middle attack MITM。</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">16.</span> <span class="toc-nav-text">mitmproxy模拟中间人挟持</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">17.</span> <span class="toc-nav-text">CA证书体系</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">18.</span> <span class="toc-nav-text">CA是什么？</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">19.</span> <span class="toc-nav-text">CA证书的信任链</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">20.</span> <span class="toc-nav-text">CA证书的结构</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">21.</span> <span class="toc-nav-text">证书的验证过程</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">22.</span> <span class="toc-nav-text">遗留问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">23.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#TCP/IP" title="TCP/IP">TCP/IP</a>
+                        
+                          <a class="tag" href="/tags/#TLS" title="TLS">TLS</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

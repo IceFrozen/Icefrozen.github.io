@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          JAVA多线程之Atomic和LongAddr类（2） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/java-concurrence-2-1/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#JAVA" title="JAVA">JAVA</a>
+                            
+                              <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                            
+                        </div>
+                        <h1>JAVA多线程之Atomic和LongAddr类（2）</h1>
+                        <h2 class="subheading">LongAddr 类详解</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2020-05-15
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="概诉">概诉</span></h2>
+<p>上一节，我们讨论了Atomic类的实现原理，以及代码分析。这一节我来看 <code>LongAddr</code> 类。<code>LongAdder</code> 是JDK8添加到JUC中的。它是一个线程安全的、比Atomic*系工具性能更好的&quot;计数器&quot;。</p>
+<p>首先我们来看一下 Doug Lea 大神对这个类的概述 <code>LongAddr</code></p>
+<blockquote>
+<p><code>LongAdder</code> 中会维护一个或多个变量，这些变量共同组成一个long型的和(这个和就是 <code>LongAddr</code> 的值)。<br>
+当多个线程同时更新值时，为了减少竞争，可能会动态地增加这组变量的数量。“sum”方法（等效于longValue方法）返回这组变量的“和”值。</p>
+</blockquote>
+<blockquote>
+<p>当我们的场景是为了统计技术，而不是为了更细粒度的同步控制时，并且是在多线程更新的场景时，<code>LongAdder</code> 类比<code>AtomicLong</code>更好用。</p>
+</blockquote>
+<p>在小并发的环境下，论更新的效率，两者都差不多。但是高并发的场景下，LongAdder有着明显更高的吞吐量，但是有着更高的空间复杂度。</p>
+<h2><span id="atomic缺陷">Atomic缺陷</span></h2>
+<p>AtomicLong 的 Add() 是依赖自旋不断的 CAS 去累加一个 Long 值。如果在竞争激烈的情况下，CAS 操作不断的失败，就会有大量的线程不断的自旋尝试 CAS 会造成 CPU 的极大的消耗。</p>
+<h2><span id="longaddr详解">LongAddr详解</span></h2>
+<h2><span id="longaddr-类图">LongAddr 类图</span></h2>
+<p><img src="/article/java-concurrence-2-1/java-concurrence-2-1-105130.png" alt></p>
+<p>这里主要涉及两个主要的类</p>
+<ul>
+<li>Striped64</li>
+<li>LongAddr<br>
+如果我们要了解 <code>LongAddr</code>， 就要先了解 <code>LongAddr</code> 如何使用。</li>
+</ul>
+<h2><span id="longaddr的使用">LongAddr的使用</span></h2>
+<p>LongAddr 在主要方法体现在一下几个地方</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">LongAdder longAdder = <span class="keyword">new</span> LongAdder();</span><br><span class="line">longAdder.add(<span class="number">20L</span>);     <span class="comment">// 增加20</span></span><br><span class="line">longAdder.increment();     <span class="comment">// +1</span></span><br><span class="line">longAdder.decrement();     <span class="comment">// -1 </span></span><br><span class="line"><span class="keyword">long</span> sum = longAdder.sum(); <span class="comment">// 获取 longaddr 值</span></span><br><span class="line"><span class="keyword">long</span> sumThenReset = longAdder.sumThenReset();   <span class="comment">// 将long addr 置零并且获取值</span></span><br><span class="line">longAdder.reset();  <span class="comment">//置零</span></span><br></pre></td></tr></table></figure>
+<h2><span id="add-方法">Add 方法</span></h2>
+<p>对于累加器 最核心的方法就是 add 方法了，我们来看一下add 方法的实现代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">    Cell[] as; <span class="keyword">long</span> b, v; <span class="keyword">int</span> m; Cell a;</span><br><span class="line">    <span class="keyword">if</span> ((as = cells) != <span class="keyword">null</span> || !casBase(b = base, b + x)) &#123;</span><br><span class="line">        <span class="keyword">boolean</span> uncontended = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (as == <span class="keyword">null</span> || (m = as.length - <span class="number">1</span>) &lt; <span class="number">0</span> ||</span><br><span class="line">            (a = as[getProbe() &amp; m]) == <span class="keyword">null</span> ||</span><br><span class="line">            !(uncontended = a.cas(v = a.value, v + x)))</span><br><span class="line">            longAccumulate(x, <span class="keyword">null</span>, uncontended);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果 cells 数组不为空，对参数进行 casBase 操作，如果 casBase 操作失败。可能是竞争激烈，进入第二步。</li>
+<li>如果 cells 为空，直接进入 <code>longAccumulate()</code>;</li>
+<li>m = cells 数组长度减一，如果数组长度小于 1，则进入 <code>longAccumulate()</code></li>
+</ol>
+<p>如果都没有满足以上条件，则对当前线程进行某种 hash 生成一个数组下标，对下标保存的值进行 cas 操作。如果操作失败，则说明竞争依然激烈，则进入 <code>longAccumulate()</code>.</p>
+<p>从类图上来看，<code>LongAdder</code> 没有任何的成员比变量，那么add 方法所用的基本上都是<code>Striped64</code> 类中的变量。<code>LongAddr</code> 继承了 <code>Striped64</code> 类，而 <code>Striped64</code> 是计数器的核心功能点.</p>
+<p>这里我们提一个问题:</p>
+<ol>
+<li>Cell 是什么？</li>
+<li>CasBase 方法是什么？</li>
+<li>LongAccumulate 方法又在干什么？</li>
+</ol>
+<p>要解答以上三个问题，我们需要了解一下  Striped64 到底干了什么事情。</p>
+<h2><span id="striped64">Striped64</span></h2>
+<p><code>Striped64</code> 是在java8中添加用来支持累加器的并发组件，它可以在并发环境下使用来做某种计数。</p>
+<h3><span id="设计思路">设计思路</span></h3>
+<p><code>Striped64</code>: 设计思路是在竞争激烈的时候尽量分散竞争，在实现上 <code>Striped64</code> 维护了一个<code>base Count</code>和一个<code>Cell</code>数组。</p>
+<p>计数线程会首先试图更新 <code>base</code> 变量，如果成功则退出计数，否则会认为当前竞争是很激烈的，那么就会通过 <code>Cell</code> 数组来分散计数</p>
+<p><code>Striped64</code> 根据线程来计算哈希，然后将不同的线程分散到不同的Cell数组的 <code>index</code> 上，然后这个线程的计数内容就会保存在该 <code>Cell</code> 的位置上面，基于这种设计，最后的总计数需要结合 <code>base</code> 以及散落在Cell数组中的计数内容。</p>
+<p><img src="/article/java-concurrence-2-1/java-concurrence-2-1-102933.png" alt></p>
+<p>我们来看一下代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Striped64</span> <span class="keyword">extends</span> <span class="title">Number</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Cell组</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Cell</span> </span>&#123;</span><br><span class="line">        <span class="keyword">volatile</span> <span class="keyword">long</span> value;</span><br><span class="line">        Cell(<span class="keyword">long</span> x) &#123; value = x; &#125;</span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">cas</span><span class="params">(<span class="keyword">long</span> cmp, <span class="keyword">long</span> val)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> UNSAFE.compareAndSwapLong(<span class="keyword">this</span>, valueOffset, cmp, val);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取Unsafe方法，用于</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> sun.misc.Unsafe UNSAFE;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> valueOffset;</span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                UNSAFE = sun.misc.Unsafe.getUnsafe();</span><br><span class="line">                Class&lt;?&gt; ak = Cell<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">                valueOffset = UNSAFE.objectFieldOffset</span><br><span class="line">                    (ak.getDeclaredField(<span class="string">"value"</span>));</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Error(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** CPU数量 */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NCPU = Runtime.getRuntime().availableProcessors();</span><br><span class="line">    <span class="comment">/**Cell数组 2的平方. */</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> Cell[] cells;</span><br><span class="line">    <span class="comment">/** Base value 基础值 */</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">long</span> base;</span><br><span class="line">    <span class="comment">/** cells 正在扩容的标志位*/</span></span><br><span class="line">    <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> cellsBusy;</span><br><span class="line">    Striped64() &#123;&#125;</span><br><span class="line">    <span class="comment">// Cas基础值</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">casBase</span><span class="params">(<span class="keyword">long</span> cmp, <span class="keyword">long</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> UNSAFE.compareAndSwapLong(<span class="keyword">this</span>, BASE, cmp, val);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** casCellsBusy cas替换，表示正在扩容*/</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">casCellsBusy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> UNSAFE.compareAndSwapInt(<span class="keyword">this</span>, CELLSBUSY, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** 获取线程的 Probe 可以理解为随机数种子  */</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getProbe</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> UNSAFE.getInt(Thread.currentThread(), PROBE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">advanceProbe</span><span class="params">(<span class="keyword">int</span> probe)</span> </span>&#123;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">13</span>;   <span class="comment">// xorshift</span></span><br><span class="line">        probe ^= probe &gt;&gt;&gt; <span class="number">17</span>;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">5</span>;</span><br><span class="line">        UNSAFE.putInt(Thread.currentThread(), PROBE, probe);</span><br><span class="line">        <span class="keyword">return</span> probe;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// Unsafe mechanics</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> sun.misc.Unsafe UNSAFE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> BASE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> CELLSBUSY;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> PROBE;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            UNSAFE = sun.misc.Unsafe.getUnsafe();</span><br><span class="line">            Class&lt;?&gt; sk = Striped64<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">            BASE = UNSAFE.objectFieldOffset</span><br><span class="line">                (sk.getDeclaredField(<span class="string">"base"</span>));</span><br><span class="line">            CELLSBUSY = UNSAFE.objectFieldOffset</span><br><span class="line">                (sk.getDeclaredField(<span class="string">"cellsBusy"</span>));</span><br><span class="line">            Class&lt;?&gt; tk = Thread<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">            PROBE = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomProbe"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ... ... ... ... </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到这，我们可以回答一下上面的几个问题了<br>
+我们在看一下 <code>add</code> 的代码,分析得到了一下结论</p>
+<p>1、 <code>Cell</code> 是什么<br>
+<code>Cell</code> 就是加了 避免为共享的类 <code>Cell</code> 里面只有一个value值， 更新Cell 的value 值值能通过 cas 方法</p>
+<p>2、 <code>casBase</code> 是更新 <code>base value</code> 的方法， <code>Striped64</code> 有 <code>cell</code> 数组，如果竞争激烈，也就是 <code>casBase</code> 方法 失败，那么意味着多个线程竞争修改 <code>base</code> value值</p>
+<p>3、发生竞争，就去 <code>cell</code> 数组中选择一个 <code>cell</code> 去更新，选择计算 <code>getProbe() &amp; m</code>的值，其中m为 <code>cell</code> 数组个数。</p>
+<p>4、 如果找到了 cell 则执行cell 的cas操作，如果找不到，或者cas操作也失败了则执行 <code>longAccumulate</code> 方法</p>
+<h3><span id="longaccumulate">longAccumulate</span></h3>
+<p>来看一下 <code>longAccumulate</code> 的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">longAccumulate</span><span class="params">(<span class="keyword">long</span> x, LongBinaryOperator fn,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="keyword">boolean</span> wasUncontended)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> h;</span><br><span class="line">        <span class="keyword">if</span> ((h = getProbe()) == <span class="number">0</span>) &#123;</span><br><span class="line">            ThreadLocalRandom.current(); <span class="comment">// ThreadLocalRandom 初始化主要是为了得到 threadLocalRandomProbe 值</span></span><br><span class="line">            h = getProbe();</span><br><span class="line">            wasUncontended = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">boolean</span> collide = <span class="keyword">false</span>;                <span class="comment">// True if last slot nonempty</span></span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            Cell[] as; Cell a; <span class="keyword">int</span> n; <span class="keyword">long</span> v;</span><br><span class="line">            <span class="keyword">if</span> ((as = cells) != <span class="keyword">null</span> &amp;&amp; (n = as.length) &gt; <span class="number">0</span>) &#123;  <span class="comment">// cells 数组不为空</span></span><br><span class="line">                <span class="keyword">if</span> ((a = as[(n - <span class="number">1</span>) &amp; h]) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (cellsBusy == <span class="number">0</span>) &#123;       <span class="comment">// 判断是否有其他线程在扩容</span></span><br><span class="line">                        Cell r = <span class="keyword">new</span> Cell(x);   <span class="comment">// 创建一个 Cell </span></span><br><span class="line">                        <span class="keyword">if</span> (cellsBusy == <span class="number">0</span> &amp;&amp; casCellsBusy()) &#123; <span class="comment">// casCellsBusy</span></span><br><span class="line">                            <span class="keyword">boolean</span> created = <span class="keyword">false</span>;        </span><br><span class="line">                            <span class="keyword">try</span> &#123;               <span class="comment">// 在cas 下做二次校验 </span></span><br><span class="line">                                Cell[] rs; <span class="keyword">int</span> m, j;</span><br><span class="line">                                <span class="keyword">if</span> ((rs = cells) != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                                    (m = rs.length) &gt; <span class="number">0</span> &amp;&amp;</span><br><span class="line">                                    rs[j = (m - <span class="number">1</span>) &amp; h] == <span class="keyword">null</span>) &#123;</span><br><span class="line">                                    rs[j] = r;</span><br><span class="line">                                    created = <span class="keyword">true</span>;     <span class="comment">// 赋值成功</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                                cellsBusy = <span class="number">0</span>;      <span class="comment">// cells 变成0 以防出异常退出</span></span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">if</span> (created)</span><br><span class="line">                                <span class="keyword">break</span>;          <span class="comment">// 如果创建了这退出</span></span><br><span class="line">                            <span class="keyword">continue</span>;           <span class="comment">// 没有创建成功则继续循环，说明在复制的时候出错了</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    collide = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (!wasUncontended)       <span class="comment">// CAS already known to fail</span></span><br><span class="line">                    wasUncontended = <span class="keyword">true</span>;      <span class="comment">// Continue after rehash</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (a.cas(v = a.value, ((fn == <span class="keyword">null</span>) ? v + x :</span><br><span class="line">                                             fn.applyAsLong(v, x))))    <span class="comment">// 如果找到cell 直接用cas操作</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (n &gt;= NCPU || cells != as)</span><br><span class="line">                    collide = <span class="keyword">false</span>;            <span class="comment">// At max size or stale</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (!collide)</span><br><span class="line">                    collide = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (cellsBusy == <span class="number">0</span> &amp;&amp; casCellsBusy()) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;                       <span class="comment">// 这里仅仅是扩容 没有负责</span></span><br><span class="line">                        <span class="keyword">if</span> (cells == as) &#123;      <span class="comment">// Cell数组扩容 </span></span><br><span class="line">                            Cell[] rs = <span class="keyword">new</span> Cell[n &lt;&lt; <span class="number">1</span>];</span><br><span class="line">                            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i)</span><br><span class="line">                                rs[i] = as[i];</span><br><span class="line">                            cells = rs;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        cellsBusy = <span class="number">0</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    collide = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">continue</span>;                   <span class="comment">// Retry with expanded table</span></span><br><span class="line">                &#125;</span><br><span class="line">                h = advanceProbe(h);         </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 一下代表cell 为空 cells == as 表示前面已经经历过 第一层的判断了 </span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (cellsBusy == <span class="number">0</span> &amp;&amp; cells == as &amp;&amp; casCellsBusy()) &#123;</span><br><span class="line">                <span class="keyword">boolean</span> init = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">try</span> &#123;                           <span class="comment">// 初始化</span></span><br><span class="line">                    <span class="keyword">if</span> (cells == as) &#123;</span><br><span class="line">                        Cell[] rs = <span class="keyword">new</span> Cell[<span class="number">2</span>];</span><br><span class="line">                        rs[h &amp; <span class="number">1</span>] = <span class="keyword">new</span> Cell(x);</span><br><span class="line">                        cells = rs;</span><br><span class="line">                        init = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    cellsBusy = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (init)</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// case操作</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (casBase(v = base, ((fn == <span class="keyword">null</span>) ? v + x :</span><br><span class="line">                                        fn.applyAsLong(v, x))))</span><br><span class="line">                <span class="keyword">break</span>;                          <span class="comment">// Fall back on using base</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>从判断上来看，我们一共发现了三个主要逻辑判断<br>
+在 longAccumulate 中有几个标记位，我们也先理解一下</p>
+<ol>
+<li><code>cellsBusy</code> <code>cells</code> 的操作标记位，如果正在修改、新建、操作 <code>cells</code> 数组中的元素会,会将其 cas 为 1，否则为0。</li>
+<li><code>wasUncontended</code> 表示 <code>cas</code> 是否失败，如果失败则考虑操作升级。</li>
+<li><code>collide</code> 是否冲突，如果冲突，则考虑扩容 <code>cells</code> 的长度。</li>
+</ol>
+<p>整个 for(;;) 死循环，都是以 cas 操作成功而告终。否则则会修改上述描述的几个标记位，重新进入循环。</p>
+<ul>
+<li>
+<p>1、如果Cell不为空 (<code>if ((as = cells) != null &amp;&amp; (n = as.length) &gt; 0)</code>)</p>
+<ul>
+<li>果 cell[i] 某个下标为空，则 new 一个 cell，并初始化值，然后退出</li>
+<li>如果 上层传过来的结果是 cas 失败，继续循环。</li>
+<li>如果 cell 不为空，且 cell cas 成功，退出</li>
+<li>如果 cell 的数量，大于等于 cpu 数量或者已经扩容了，继续重试。（扩容没意义）</li>
+<li>设置 collide 为 true。</li>
+<li>获取 cellsBusy 成功就对 cell 进行扩容，获取 cellBusy 失败则重新 hash 再重试。</li>
+</ul>
+</li>
+<li>
+<p>2、 是否能 更新 <code>cellsBusy</code> 值 ，走到这里表示 如果Cell 为空, 这个步骤讲的是需要开始初始化 cell(<code>(cellsBusy == 0 &amp;&amp; cells == as &amp;&amp; casCellsBusy())</code>)</p>
+</li>
+<li>
+<p>3、<code>cellsBusy</code> 获取失败,表示有可能别的进程在扩容，则自己去更新 base 值， <code>baseCas</code> ，操作成功退出，不成功则重试<br>
+<code>if (casBase(v = base, ((fn == null) ? v + x :fn.applyAsLong(v, x))</code></p>
+</li>
+</ul>
+<p>至此 longAccumulate 就分析完了。之所以这个方法那么复杂，我认为有两个原因</p>
+<ol>
+<li>是因为并发环境下要考虑各种操作的原子性，所以对于锁都进行了 double check。</li>
+<li>操作都是逐步升级，以最小的代价实现功能。</li>
+</ol>
+<h3><span id="sum-方法">Sum 方法</span></h3>
+<p>它需要累计base和Cell数组中的Cell中的计数，base中的计数为线程竞争不是很激烈的时候累计的数，而在线程竞争比较激烈的时候就会将计数的任务分散到Cell数组中，所以在sum方法里，需要合并两处的计数值。</p>
+<p>除了获取总计数，我们有时候想reset一下，下面的代码展示了这种操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">sum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Cell[] as = cells; Cell a;</span><br><span class="line">    <span class="keyword">long</span> sum = base;</span><br><span class="line">    <span class="keyword">if</span> (as != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; as.length; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((a = as[i]) != <span class="keyword">null</span>)</span><br><span class="line">                sum += a.value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意： 大家注意到，这里并没有加锁，也就是标明，sum 调用的时候是允许，其他线程继续更新的。这种只是调用返回的一个快照值，在返回sum的过程中，有可能更新还在继续</strong>。</p>
+<h2><span id="reset-方法">reset 方法</span></h2>
+<p>reset 方法将 base 和每个cell 当中的 value 值重置成0<br>
+但是有几个需要注意的地方</p>
+<ol>
+<li>reset 方法不会重置 cell 数组的数量。</li>
+<li>reset 调用的前提 是没有线程再去更新值。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reset</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Cell[] as = cells; Cell a;</span><br><span class="line">    base = <span class="number">0L</span>;</span><br><span class="line">    <span class="keyword">if</span> (as != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; as.length; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((a = as[i]) != <span class="keyword">null</span>)</span><br><span class="line">                a.value = <span class="number">0L</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="striped64在concurrenthashmap">Striped64在ConcurrentHashMap</span></h2>
+<p><code>Striped64</code> 的计数方法在java8的 <code>ConcurrentHashMap</code> 中也有使用，具体的实现细节可以参考 <code>addCount</code> 方法，下面来看一下 <code>ConcurrentHashMap</code> 的size方法的实现细节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> cellsBusy;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> CounterCell[] counterCells;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">addCount</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">int</span> check)</span> </span>&#123;</span><br><span class="line">    CounterCell[] as; <span class="keyword">long</span> b, s;</span><br><span class="line">    <span class="keyword">if</span> ((as = counterCells) != <span class="keyword">null</span> ||</span><br><span class="line">        !U.compareAndSwapLong(<span class="keyword">this</span>, BASECOUNT, b = baseCount, s = b + x)) &#123;</span><br><span class="line">        CounterCell a; <span class="keyword">long</span> v; <span class="keyword">int</span> m;</span><br><span class="line">        <span class="keyword">boolean</span> uncontended = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (as == <span class="keyword">null</span> || (m = as.length - <span class="number">1</span>) &lt; <span class="number">0</span> ||</span><br><span class="line">            (a = as[ThreadLocalRandom.getProbe() &amp; m]) == <span class="keyword">null</span> ||</span><br><span class="line">            !(uncontended =</span><br><span class="line">            U.compareAndSwapLong(a, CELLVALUE, v = a.value, v + x))) &#123;</span><br><span class="line">            fullAddCount(x, uncontended);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (check &lt;= <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        s = sumCount();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (check &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab, nt; <span class="keyword">int</span> n, sc;</span><br><span class="line">        <span class="keyword">while</span> (s &gt;= (<span class="keyword">long</span>)(sc = sizeCtl) &amp;&amp; (tab = table) != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">            (n = tab.length) &lt; MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            <span class="keyword">int</span> rs = resizeStamp(n);</span><br><span class="line">            <span class="keyword">if</span> (sc &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((sc &gt;&gt;&gt; RESIZE_STAMP_SHIFT) != rs || sc == rs + <span class="number">1</span> ||</span><br><span class="line">                    sc == rs + MAX_RESIZERS || (nt = nextTable) == <span class="keyword">null</span> ||</span><br><span class="line">                    transferIndex &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc, sc + <span class="number">1</span>))</span><br><span class="line">                    transfer(tab, nt);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, SIZECTL, sc,</span><br><span class="line">                                        (rs &lt;&lt; RESIZE_STAMP_SHIFT) + <span class="number">2</span>))</span><br><span class="line">                transfer(tab, <span class="keyword">null</span>);</span><br><span class="line">            s = sumCount();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://www.jianshu.com/p/30d328e9353b" target="_blank" rel="noopener">Java 并发计数组件Striped64详解</a></li>
+<li><a href="https://xilidou.com/2018/11/27/LongAdder/" target="_blank" rel="noopener">从 LongAdder 中窥见并发组件的设计思路</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/retry-2-spring-retry/" data-toggle="tooltip" data-placement="top" title="Spring-Retry 源码分析">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/java-concurrence-2/" data-toggle="tooltip" data-placement="top" title="JAVA多线程之Atomic和LongAddr类（1）">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Atomic缺陷</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">LongAddr详解</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">LongAddr 类图</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">LongAddr的使用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Add 方法</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">Striped64</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.1.</span> <span class="toc-nav-text">设计思路</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.2.</span> <span class="toc-nav-text">longAccumulate</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.3.</span> <span class="toc-nav-text">Sum 方法</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">reset 方法</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">Striped64在ConcurrentHashMap</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#JAVA" title="JAVA">JAVA</a>
+                        
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

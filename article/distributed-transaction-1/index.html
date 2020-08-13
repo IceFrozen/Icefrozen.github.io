@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          分布式事务详解（1） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/distributed-transaction-1/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                            
+                              <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                            
+                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                            
+                        </div>
+                        <h1>分布式事务详解（1）</h1>
+                        <h2 class="subheading">事务概述</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2019-10-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="分布式事务概述">分布式事务概述</span></h2>
+<h2><span id="什么是事务">什么是事务</span></h2>
+<p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
+<h2><span id="事务的四大特性acid">事务的四大特性ACID</span></h2>
+<ul>
+<li>
+<p><strong>原子性（Atomicity）</strong>: 事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。</p>
+</li>
+<li>
+<p><strong>一致性（Consistency）</strong> : 一致性是指事务必须使数据库从一个一致性状态变成另一个一致性状态，也就是事务执行前后必须处于一致性状态。<br>
+以转账为例，假设用户A和B两者的钱加起来是5000，那么不管A和B之间如何转账，转多少次，事务结束后两个用户的钱加起来应该还得是5000，这就是事务的一致性。</p>
+</li>
+<li>
+<p><strong>隔离性（Isolation）</strong>: 一个事务所做的修改在最终提交以前，对其他事务是不可见，当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其它的事务操作所干扰，多个并发事务之间要相互隔离。</p>
+</li>
+<li>
+<p><strong>持久性（Durability)</strong>：持久性是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即使在数据库系统遇到故障的情况下也不会丢失提交事务的操作。</p>
+</li>
+</ul>
+<h2><span id="事务的隔离级别">事务的隔离级别</span></h2>
+<h3><span id="事务并发的问题">事务并发的问题</span></h3>
+<h3><span id="1脏读读取未提交数据">【1】脏读（读取未提交数据）</span></h3>
+<p>当前事务(A)中可以读到其他事务(B)未提交的数据（脏数据），这种现象是脏读。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>转账事务A</th>
+<th>取款事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td></td>
+<td>查询余额1000</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td></td>
+<td>取出 500 余额为 500</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td>查询账户余额 500</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>出错，撤销事务 余额为1000</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>汇入100 余额 600</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td>提交事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照逻辑，转账事务读取了B 撤销后的事务出现脏读</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3><span id="2不可重复读前后多次读取数据内容不一致">【2】不可重复读（前后多次读取，数据内容不一致）</span></h3>
+<p>在事务A中先后两次读取同一个数据，两次读取的结果不一样，这种现象称为不可重复读。脏读与不可重复读的区别在于：前者读到的是其他事务未提交的数据，后者读到的是其他事务已提交的数据</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>第一次查询余额 100</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td>其他操作</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td></td>
+<td>消费30 余额 变为 70</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>第二次查询 余额为70</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照正确的逻辑，事务A前后两次读取的数据应该一致</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3><span id="3幻读前后多次读取数据总量不一致">【3】幻读（前后多次读取，数据总量不一致）</span></h3>
+<p>在事务A中按照某个条件先后两次查询数据库，两次查询结果的条数不同，这种现象称为幻读。不可重复读与幻读的区别可以通俗的理解为：前者是数据变了，后者是数据的行数变了。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>统计金额事务</th>
+<th>转账事务 B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td>统计金额为（100个账户）10000</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td></td>
+<td>新增一个存款账户，余额为100</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>再次统计存款 为 10100 元</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照正确的逻辑，统计事务后出现了幻读（数据行发生了变化）</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3><span id="4丢失更新">【4】丢失更新</span></h3>
+<ul>
+<li>第一类更新丢失【回滚覆盖】</li>
+</ul>
+<p>撤消一个事务时，在该事务内的写操作要回滚，把其它已提交的事务写入的数据覆盖了</p>
+<table>
+<thead>
+<tr>
+<th>时间顺序</th>
+<th>取款事务A</th>
+<th>转账事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td>3</td>
+<td>读余额为1000</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>取出100，余额改为900</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td></td>
+<td>读余额为1000</td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td>汇入100，余额改为1100</td>
+</tr>
+<tr>
+<td>7</td>
+<td></td>
+<td>提交事务，余额定为1100</td>
+</tr>
+<tr>
+<td>8</td>
+<td>撤销事务，余额改回1000</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>最终余额1000，更新丢失</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>第二类更新丢失 【提交覆盖】</li>
+</ul>
+<p>提交覆盖：提交一个事务时，写操作依赖于事务内读到的数据，读发生在其他事务提交前，写发生在其他事务提交后，把其他已提交的事务写入的数据覆盖了。这是不可重复读的特例。</p>
+<table>
+<thead>
+<tr>
+<th>时间顺序</th>
+<th>转账事务A</th>
+<th>取款事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td>3</td>
+<td>读余额为1000</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td>读余额为1000</td>
+</tr>
+<tr>
+<td>5</td>
+<td></td>
+<td>取出100，余额改为900</td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td>提交事务，余额定为900</td>
+</tr>
+<tr>
+<td>7</td>
+<td>取出100，余额改为1100</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>提交事务，余额定为1100</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>最终余额1100，更新丢失</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3><span id="数据库的隔离级别">数据库的隔离级别</span></h3>
+<ul>
+<li>
+<p><strong>数据库4中隔离级别</strong></p>
+<p>为了解决多个事务并发会引发的问题，进行并发控制。数据库系统提供了四种事务隔离级别供用户选择。</p>
+<ul>
+<li>
+<p><strong>Read Uncommitted 读未提交</strong>：</p>
+<p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。具体课件脏读的原因。</p>
+</li>
+<li>
+<p><strong>Read Committed 读已提交</strong>：</p>
+<p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。见不可重复读的例子。</p>
+</li>
+<li>
+<p><strong>Repeatable Read 重复读</strong></p>
+<p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务<br>
+但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
+<hr>
+</li>
+<li>
+<p><strong>Serializable 串行化</strong>：所有的增删改查串行执行。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2><span id="mvcc">MVCC</span></h2>
+<pre><code>请参见下一篇
+</code></pre>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://www.gaoyaxuan.net/blog/296.html" target="_blank" rel="noopener">快速理解脏读、不可重复读、幻读</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1100494" target="_blank" rel="noopener">扫盲贴-分布式数据一致性：两阶段提交，三阶段提交</a></li>
+<li><a href="https://juejin.im/post/5aa3c7736fb9a028bb189bca" target="_blank" rel="noopener">常用的分布式事务解决方案</a></li>
+<li><a href="https://my.oschina.net/tridays/blog/791124" target="_blank" rel="noopener">事务并发的可能问题与其解决方案 </a></li>
+<li><a href="https://juejin.im/post/5c9040e95188252d92095a9e" target="_blank" rel="noopener">MySQL的可重复读级别能解决幻读吗</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_499740cb0100ugs7.html" target="_blank" rel="noopener">MySQL的InnoDB的幻读问题</a></li>
+<li><a href="https://github.com/Yhzhtk/note/issues/42" target="_blank" rel="noopener">Innodb 中 RR 隔离级别能否防止幻读？</a></li>
+<li><a href="https://draveness.me/database-concurrency-control" target="_blank" rel="noopener">浅谈数据库并发控制 - 锁和 MVCC</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/databases-lock/" data-toggle="tooltip" data-placement="top" title="数据库原理篇（3）">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-transaction-innodb/" data-toggle="tooltip" data-placement="top" title="数据库原理篇(2)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">分布式事务概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">事务的四大特性ACID</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">事务并发的问题</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">【4】丢失更新</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.6.</span> <span class="toc-nav-text">数据库的隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">MVCC</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                        
+                          <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                        
+                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2020 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>
