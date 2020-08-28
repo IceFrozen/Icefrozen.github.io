@@ -350,9 +350,9 @@
 <p>锁主要存在<code>4</code>种状态，级别从低到高依次是：<strong>无锁状态、偏向锁状态、轻量级锁状态和重量级锁状态</strong>，这几个状态会随着竞争的情况逐渐升级，这几个锁只有重量级锁是需要使用操作系统底层<code>mutex</code>互斥原语来实现，其他的锁都是使用对象头来实现的。<strong>需要注意锁可以升级，但是不可以降级。</strong></p>
 <p><img src="/article/java-synchronized/1578391399369java-synchronized_.png" alt></p>
 <p>这里盗个图，这个图总结的挺好的！(图被压缩过了 看不清，可以打开这个地址查看高清图<a href="https://link.juejin.im?target=http%3A%2F%2Fwx2.sinaimg.cn%2Flarge%2Fe0e01e43gy1g1cozajzz3j22zf1e7u0x.jpg" target="_blank" rel="noopener">&gt;&gt;高清图&lt;&lt;</a>)</p>
-<p><img src="https://user-gold-cdn.xitu.io/2019/3/23/169a9246f01f2cb6?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt></p>
+<p><img src="/article/java-synchronized/java-synchronized-1598413598005.png" alt></p>
 <h3><span id="三种锁的优缺点比较">三种锁的优缺点比较</span></h3>
-<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a5f7ba6ea3333?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="image"></p>
+<p><img src="/article/java-synchronized/java-synchronized-1598413582085.png" alt></p>
 <h2><span id="参考">参考</span></h2>
 <ul>
 <li><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Flkforce%2Farticle%2Fdetails%2F81128115%23%25E4%25B8%2580%25EF%25BC%258C%25E5%25AF%25B9%25E8%25B1%25A1%25E5%25A4%25B4" target="_blank" rel="noopener">Java的对象头和对象组成详解</a></li>
@@ -522,6 +522,16 @@
     }
 </style>
 
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
 
 
     <!-- Footer -->

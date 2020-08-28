@@ -225,6 +225,8 @@
 <p>Java字节码类文件（.class）是Java编译器编译Java源文件（.java）产生的“目标文件”。它是一种8位字节的二进制流文件， 各个数据项按顺序紧密的从前向后排列， 相邻的项之间没有间隙， 这样可以使得class文件非常紧凑， 体积轻巧， 可以被JVM快速的加载至内存， 并且占据较少的内存空间（方便于网络的传输）。</p>
 <p>Java源文件在被Java编译器编译之后， 每个类（或者接口）都单独占据一个class文件， 并且类中的所有信息都会在class文件中有相应的描述， 由于class文件很灵活， 它甚至比Java源文件有着更强的描述能力。</p>
 <p>class文件中的信息是一项一项排列的， 每项数据都有它的固定长度， 有的占一个字节， 有的占两个字节， 还有的占四个字节或8个字节， 数据项的不同长度分别用u1, u2, u4, u8表示， 分别表示一种数据项在class文件中占据一个字节， 两个字节， 4个字节和8个字节。 可以把u1, u2, u3, u4看做class文件数据项的“类型” 。</p>
+<p>java文件通过javac编译后将得到一个.class文件，编译后生成Bclass文件，打开后是一堆十六进制数，按字节为单位进行分割后展示如图所示。JVM对于字节码是有规范要求的,规范要求每一个字节码文件都要由十部分按照固定的顺序组成，整体结构如下图所示。<br>
+<img src="/article/bytecode-analysis/bytecode-analysis-1598414451478.png" alt></p>
 <h2><span id="class文件的结构">Class文件的结构</span></h2>
 <p>一个典型的class文件分为：<code>MagicNumber，Version，Constant_pool，Access_flag，This_class，Super_class，Interfaces，Fields，Methods 和Attributes</code>这十个部分，用一个数据结构可以表示如下：</p>
 <p><img src="/article/bytecode-analysis/bytecode-analysis-1552027989197.png" alt></p>
@@ -679,12 +681,17 @@ Attribute结构如下：</p>
 <li><a href="https://yq.aliyun.com/articles/7241?spm=5176.100239.blogcont7243.7.3d63c7fjRFN0C#" target="_blank" rel="noopener">云溪社区–JVM Class详解之一</a></li>
 <li><a href="https://yq.aliyun.com/articles/7243" target="_blank" rel="noopener">云溪社区–JVM Class字节码之三-使用BCEL改变类属性</a></li>
 <li><a href="http://blog.csdn.net/yczz/article/details/14497897" target="_blank" rel="noopener">国外翻译文章：Java 编程的动态性，用 BCEL 设计字节码</a></li>
+<li><a href="https://tech.meituan.com/2019/09/05/java-bytecode-enhancement.html" target="_blank" rel="noopener">字节码增强技术探索</a></li>
 </ol>
 
         
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/bytecode-analysis-2-instance/" data-toggle="tooltip" data-placement="top" title="深入JVM字节码(2)">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
@@ -829,6 +836,16 @@ Attribute结构如下：</p>
     }
 </style>
 
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
 
 
     <!-- Footer -->

@@ -8,8 +8,32 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/bytecode-analysis-2-instance/</loc>
+        <lastmod>2020-08-28T05:17:49.873Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/bytecode-analysis/</loc>
-        <lastmod>2020-08-13T02:22:22.380Z</lastmod>
+        <lastmod>2020-08-27T01:40:37.344Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-synchronized/</loc>
+        <lastmod>2020-08-26T03:46:38.912Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/tcpip-4-SSL-TLS-3/</loc>
+        <lastmod>2020-08-25T02:50:36.467Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -42,14 +66,6 @@
     <url>
         <loc>http://yoursite.com/article/tcpip-4-SSL-TLS/</loc>
         <lastmod>2020-08-10T03:11:48.159Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/tcpip-4-SSL-TLS-3/</loc>
-        <lastmod>2020-08-10T03:11:48.139Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -178,14 +194,6 @@
     <url>
         <loc>http://yoursite.com/article/java-thrift-1/</loc>
         <lastmod>2020-08-10T03:11:48.022Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-synchronized/</loc>
-        <lastmod>2020-08-10T03:11:48.008Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

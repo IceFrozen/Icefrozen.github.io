@@ -87,13 +87,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
-        <lastmod>2020-08-10T03:11:48.008Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://yoursite.com/tags/MQ/</loc>
         <lastmod>2020-08-10T03:11:48.034Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -206,20 +199,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/tags/TLS/</loc>
-        <lastmod>2020-08-10T03:11:48.159Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/tags/TCP-IP/</loc>
-        <lastmod>2020-08-10T03:11:48.201Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://yoursite.com/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/</loc>
         <lastmod>2020-08-10T03:11:48.205Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -227,15 +206,36 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/tags/TCP-IP/</loc>
+        <lastmod>2020-08-25T02:50:36.467Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/tags/TLS/</loc>
+        <lastmod>2020-08-25T02:50:36.467Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+        <lastmod>2020-08-26T03:46:38.912Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://yoursite.com/tags/JAVA/</loc>
-        <lastmod>2020-08-13T02:22:22.380Z</lastmod>
+        <lastmod>2020-08-28T05:17:49.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>http://yoursite.com/tags/JVM/</loc>
-        <lastmod>2020-08-13T02:22:22.380Z</lastmod>
+        <lastmod>2020-08-28T05:17:49.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
