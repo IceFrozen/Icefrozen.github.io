@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/openerating-learning-vfs-2/</loc>
+        <lastmod>2020-11-17T05:54:52.916Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/openerating-learning-vfs-1/</loc>
-        <lastmod>2020-09-30T08:46:25.228Z</lastmod>
+        <lastmod>2020-09-30T09:06:18.033Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -288,7 +296,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-class-loader/</loc>
+        <loc>http://yoursite.com/article/java-cms-gc-2/</loc>
         <lastmod>2020-08-10T03:11:47.951Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -296,7 +304,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-cms-gc-2/</loc>
+        <loc>http://yoursite.com/article/java-class-loader/</loc>
         <lastmod>2020-08-10T03:11:47.951Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -432,7 +440,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -440,7 +448,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

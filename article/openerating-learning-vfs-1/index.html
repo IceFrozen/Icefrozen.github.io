@@ -451,6 +451,7 @@ ext系统将空间（这里的空间是指的一段连续的磁盘空间）划�
 每个块组描述符存储一个块组的描述信息，如在这个块组中从哪里开始是inode Table，从哪里开始是Data Blocks，空闲的inode和数据块还有多少个等等。</p>
 <h2><span id="inode-和-block-位图">Inode 和 Block 位图</span></h2>
 <p>4）inode位图(inode Bitmap)和块位图类似，本身占一个块，其中每个bit表示一个inode是否空闲可用。 Inode bitmap的作用是记录block group中Inode区域的使用情况，Ext文件系统中一个block group中可以有16384个Inode，代表着这个Ext文件系统中一个block group最多可以描述16384个文件。</p>
+<p><img src="/article/openerating-learning-vfs-1/openerating-learning-vfs-1-1601455772886.png" alt></p>
 <h2><span id="inode">inode</span></h2>
 <p>索引表的索引结构称为inode，是&quot;index node&quot;的简称，用来索引，跟踪一个文件的所有块。inode是文件索引结构组织形式的具体体现，一个文件就必须对应一个inode。</p>
 <p>5）inode表(inode Table)由一个块组中的所有inode组成。一个文件除了数据需要存储之外，一些描述信息也需要存储，如文件类型，权限，文件大小，创建、修改、访问时间等，这些信息存在inode中而不是数据块中。</p>
@@ -494,6 +495,10 @@ mke2fs：ext系列文件系统专用管理工具</p>
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/openerating-learning-vfs-2/" data-toggle="tooltip" data-placement="top" title="Linux 操作系统原理-文件系统(2)">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
