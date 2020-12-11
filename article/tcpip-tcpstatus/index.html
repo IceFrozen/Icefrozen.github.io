@@ -217,8 +217,11 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="tcp-状态">TCP 状态</span></h2><p>一个TCP连接在它的生命周期内会有不同的状态。<br><img src="/article/tcpip-tcpstatus/1567651608053tcpip-tcpstatus_.png" alt></p>
-<h3><span id="tcp状态图">TCP状态图</span></h3><p><img src="/article/tcpip-tcpstatus/1567653467803tcpip-tcpstatus_.png" alt></p>
+                <h2><span id="tcp-状态">TCP 状态</span></h2>
+<p>一个TCP连接在它的生命周期内会有不同的状态。<br>
+<img src="/article/tcpip-tcpstatus/1567651608053tcpip-tcpstatus_.png" alt></p>
+<h3><span id="tcp状态图">TCP状态图</span></h3>
+<p><img src="/article/tcpip-tcpstatus/1567653467803tcpip-tcpstatus_.png" alt></p>
 <table>
     <thead>
         <tr>
@@ -270,38 +273,61 @@
         </tr>
     </tbody>
 </table>
-
-
-<h3><span id="三次握手状态">三次握手状态</span></h3><h4><span id="closed">CLOSED：</span></h4><ul>
-<li>起始点，在超时或者连接关闭时候进入此状态，这并不是一个真正的状态，而是这个状态图的假想起点和终点。<h4><span id="listen">LISTEN：</span></h4></li>
+<h3><span id="三次握手状态">三次握手状态</span></h3>
+<h4><span id="closed">CLOSED：</span></h4>
+<ul>
+<li>起始点，在超时或者连接关闭时候进入此状态，这并不是一个真正的状态，而是这个状态图的假想起点和终点。</li>
+</ul>
+<h4><span id="listen">LISTEN：</span></h4>
+<ul>
 <li>服务器端等待连接的状态。服务器经过 socket，bind，listen 函数之后进入此状态，开始监听客户端发过来的连接请求。此称为应用程序被动打开（等到客户端连接请求）。</li>
 </ul>
-<h4><span id="syn_sent">SYN_SENT：</span></h4><ul>
+<h4><span id="syn_sent">SYN_SENT：</span></h4>
+<ul>
 <li>第一次握手发生阶段，客户端发起连接。客户端调用 connect，发送 SYN 给服务器端，然后进入 SYN_SENT 状态，等待服务器端确认（三次握手中的第二个报文）。如果服务器端不能连接，则直接进入CLOSED状态。</li>
 </ul>
-<h4><span id="syn_rcvd">SYN_RCVD：</span></h4><ul>
+<h4><span id="syn_rcvd">SYN_RCVD：</span></h4>
+<ul>
 <li>第二次握手发生阶段，跟 3 对应，这里是服务器端接收到了客户端的 SYN，此时服务器由 LISTEN 进入 SYN_RCVD状态，同时服务器端回应一个 ACK，然后再发送一个 SYN 即 SYN+ACK 给客户端。状态图中还描绘了这样一种情况，当客户端在发送 SYN 的同时也收到服务器端的 SYN请求，即两个同时发起连接请求，那么客户端就会从 SYN_SENT 转换到 SYN_REVD 状态。</li>
 </ul>
-<h4><span id="established">ESTABLISHED：</span></h4><ul>
+<h4><span id="established">ESTABLISHED：</span></h4>
+<ul>
 <li>第三次握手发生阶段，客户端接收到服务器端的 ACK 包（ACK，SYN）之后，也会发送一个 ACK 确认包，客户端进入 ESTABLISHED 状态，表明客户端这边已经准备好，但TCP 需要两端都准备好才可以进行数据传输。服务器端收到客户端的 ACK 之后会从 SYN_RCVD 状态转移到 ESTABLISHED 状态，表明服务器端也准备好进行数据传输了。这样客户端和服务器端都是 ESTABLISHED 状态，就可以进行后面的数据传输了。所以 ESTABLISHED 也可以说是一个数据传送状态。</li>
 </ul>
-<h3><span id="四次回收状态">四次回收状态</span></h3><h4><span id="fin_wait_1">FIN_WAIT_1：</span></h4><ul>
+<h3><span id="四次回收状态">四次回收状态</span></h3>
+<h4><span id="fin_wait_1">FIN_WAIT_1：</span></h4>
+<ul>
 <li>第一次挥手。主动关闭的一方（执行主动关闭的一方既可以是客户端，也可以是服务器端，这里以客户端执行主动关闭为例），终止连接时，发送 FIN 给对方，然后等待对方返回 ACK 。调用 close() 第一次挥手就进入此状态。</li>
 </ul>
-<h4><span id="close_wait">CLOSE_WAIT：</span></h4><ul>
-<li>接收到FIN 之后，被动关闭的一方进入此状态。具体动作是接收到 FIN，同时发送 ACK。之所以叫 CLOSE_WAIT 可以理解为被动关闭的一方此时正在等待上层应用程序发出关闭连接指令。前面已经说过，TCP关闭是全双工过程，这里客户端执行了主动关闭，被动方服务器端接收到FIN 后也需要调用 close 关闭，这个 CLOSE_WAIT 就是处于这个状态，等待发送 FIN，发送了FIN 则进入 LAST_ACK 状态。<h4><span id="fin_wait_2">FIN_WAIT_2：</span></h4></li>
-<li>主动端（这里是客户端）先执行主动关闭发送FIN，然后接收到被动方返回的 ACK 后进入此状态。<h4><span id="last_ack">LAST_ACK：</span></h4></li>
-<li>被动方（服务器端）发起关闭请求，由状态2 进入此状态，具体动作是发送 FIN给对方，同时在接收到ACK 时进入CLOSED状态。<h4><span id="closing">CLOSING：</span></h4></li>
-<li>两边同时发起关闭请求时（即主动方发送FIN，等待被动方返回ACK，同时被动方也发送了FIN，主动方接收到了FIN之后，发送ACK给被动方），主动方会由FIN_WAIT_1 进入此状态，等待被动方返回ACK。<h4><span id="time_wait">TIME_WAIT：</span></h4></li>
+<h4><span id="close_wait">CLOSE_WAIT：</span></h4>
+<ul>
+<li>接收到FIN 之后，被动关闭的一方进入此状态。具体动作是接收到 FIN，同时发送 ACK。之所以叫 CLOSE_WAIT 可以理解为被动关闭的一方此时正在等待上层应用程序发出关闭连接指令。前面已经说过，TCP关闭是全双工过程，这里客户端执行了主动关闭，被动方服务器端接收到FIN 后也需要调用 close 关闭，这个 CLOSE_WAIT 就是处于这个状态，等待发送 FIN，发送了FIN 则进入 LAST_ACK 状态。</li>
+</ul>
+<h4><span id="fin_wait_2">FIN_WAIT_2：</span></h4>
+<ul>
+<li>主动端（这里是客户端）先执行主动关闭发送FIN，然后接收到被动方返回的 ACK 后进入此状态。</li>
+</ul>
+<h4><span id="last_ack">LAST_ACK：</span></h4>
+<ul>
+<li>被动方（服务器端）发起关闭请求，由状态2 进入此状态，具体动作是发送 FIN给对方，同时在接收到ACK 时进入CLOSED状态。</li>
+</ul>
+<h4><span id="closing">CLOSING：</span></h4>
+<ul>
+<li>两边同时发起关闭请求时（即主动方发送FIN，等待被动方返回ACK，同时被动方也发送了FIN，主动方接收到了FIN之后，发送ACK给被动方），主动方会由FIN_WAIT_1 进入此状态，等待被动方返回ACK。</li>
+</ul>
+<h4><span id="time_wait">TIME_WAIT：</span></h4>
+<ul>
 <li>从状态变迁图会看到，四次挥手操作最后都会经过这样一个状态然后进入CLOSED状态。主动关闭方在接收到被动关闭方的FIN请求后，发送成功给对方一个ACK后,将自己的状态由FIN_WAIT2修改为TIME_WAIT，而必须再等2倍 的MSL(Maximum Segment Lifetime,MSL是一个数据报在internetwork中能存在的时间)时间之后双方才能把状态 都改为CLOSED以关闭连接。目前RHEL里保持TIME_WAIT状态的时间为60秒。当然上述很多TCP状态在系统里都有对应的解释或设置,可见man tcp</li>
 </ul>
-<h3><span id="为什么建立连接协议是三次握手而关闭连接却是四次握手呢">为什么建立连接协议是三次握手，而关闭连接却是四次握手呢？</span></h3><ul>
+<h3><span id="为什么建立连接协议是三次握手而关闭连接却是四次握手呢">为什么建立连接协议是三次握手，而关闭连接却是四次握手呢？</span></h3>
+<ul>
 <li>这是因为服务端的LISTEN状态下的SOCKET当收到SYN报文的建连请求后，它可以把ACK和SYN（ACK起应答作用，而SYN起同步作用）放在一个报文里来发送。但关闭连接时，当收到对方的FIN报文通知时，它仅仅表示对方没有数据发送给你了；但未必你所有的数据都全部发送给对方了，所以你可以未必会马上会关闭SOCKET,也即你可能还需要发送一些数据给对方之后，再发送FIN报文给对方来表示你同意现在可以关闭连接了，所以它这里的ACK报文和FIN报文多数情况下都是分开发送的。</li>
 </ul>
-<h3><span id="为什么time_wait状态还需要等2msl后才能返回到closed状态">为什么TIME_WAIT状态还需要等2MSL后才能返回到CLOSED状态？</span></h3><ul>
+<h3><span id="为什么time_wait状态还需要等2msl后才能返回到closed状态">为什么TIME_WAIT状态还需要等2MSL后才能返回到CLOSED状态？</span></h3>
+<ul>
 <li>虽然双方都同意关闭连接了，而且握手的4个报文也都协调和发送完毕，按理可以直接回到CLOSED状态（就好比从SYN_SEND状态到ESTABLISH状态那样）；但是因为我们必须要假想网络是不可靠的，你无法保证你最后发送的ACK报文会一定被对方收到，因此对方处于LAST_ACK状态下的SOCKET可能会因为超时未收到ACK报文，而重发FIN报文，所以这个TIME_WAIT状态的作用就是用来重发可能丢失的ACK报文。</li>
 </ul>
-<h2><span id="常用tcpip抓包命令">常用TCP/IP抓包命令</span></h2><div class="table-container">
+<h2><span id="常用tcpip抓包命令">常用TCP/IP抓包命令</span></h2>
 <table>
 <thead>
 <tr>
@@ -317,94 +343,124 @@
 <td></td>
 </tr>
 <tr>
-<td>`netstat -nat</td>
-<td>grep -i “xx”</td>
-<td>wc -l`</td>
+<td><code>netstat -nat|grep -i &quot;xx&quot;|wc -l</code></td>
 <td>统计xx端口连接数</td>
 <td></td>
 </tr>
 <tr>
-<td>`ps -ef</td>
-<td>grep httpd</td>
-<td>wc -l`</td>
+<td><code>ps -ef|grep httpd|wc -l</code></td>
 <td>统计httpd协议连接数</td>
 <td></td>
 </tr>
 <tr>
-<td>`netstat -na</td>
-<td>grep ESTABLISHED</td>
-<td>wc -l`</td>
+<td><code>netstat -na|grep ESTABLISHED|wc -l</code></td>
 <td>统计已连接上的，状态为established</td>
 <td></td>
 </tr>
 <tr>
-<td>`netstat -n</td>
-<td>awk ‘/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}’`</td>
+<td><code>netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'</code></td>
 <td>查看TCP网络连接情况</td>
+<td></td>
 </tr>
 </tbody>
 </table>
-</div>
-<h2><span id="tcp常见问题排查和解决">TCP常见问题排查和解决</span></h2><h3><span id="tcp的time_wait问题">TCP的TIME_WAIT问题</span></h3><ul>
-<li>问题产生原因<br>由于主动关闭的一方在发送最后一个ACK后就会进入TIME_WAIT状态，并停留2MSL（Max Segment LifeTime）时间。所以，频繁的重复链接相同的IP地址，可能会导致大量的TIME_WAIT 状态。</li>
-<li><p>五元组</p>
+<h2><span id="tcp常见问题排查和解决">TCP常见问题排查和解决</span></h2>
+<h3><span id="tcp的time_wait问题">TCP的TIME_WAIT问题</span></h3>
+<ul>
+<li>
+<p>问题产生原因<br>
+由于主动关闭的一方在发送最后一个ACK后就会进入TIME_WAIT状态，并停留2MSL（Max Segment LifeTime）时间。所以，频繁的重复链接相同的IP地址，可能会导致大量的TIME_WAIT 状态。</p>
+</li>
+<li>
+<p>五元组</p>
 <p>网络中每个通信实体的 <code>socket</code> 是用一个三元组标识的。<strong>三元组指的是：协议族（地址族），网络地址、和传输层端口 （本文目前只介绍 Ipv4 ）。</strong></p>
-<p>通信双方的一个连接是用网络五元组来标识的，它是由双方相同协议族的两个本地三元组合成的。<strong>网络五元组指的是：协议族（地址族）、本地网络地址、本地端口、远程网络地址和远程端口。</strong>上述五元组往往称为全相关。而三元组往往称为半相关</p>
+<p>通信双方的一个连接是用网络五元组来标识的，它是由双方相同协议族的两个本地三元组合成的。**网络五元组指的是：协议族（地址族）、本地网络地址、本地端口、远程网络地址和远程端口。**上述五元组往往称为全相关。而三元组往往称为半相关</p>
 <p>在监听的时候，协议 / 本地 IP/ 本地端口（监听端口）都是确定的，当收到客户端的报文时，远方 IP 就是报文的源 IP 地址，远方端口就是报文的源端口，这样一来五元组就确定了。</p>
 <p>然后服务器进入处理阶段，需要开启一个新的线程与客户端交互，当然就需要确定一个新的五元组，这时候协议 / 本地 IP/ 远方 IP/ 远方端口都来自监听阶段确定的五元组，而本地端口会在 1024 以上随机选取 （不再使用监听端口，以便监听其他客户端的请求）。</p>
 <p>客户端的话正好相反，在发送请求时采用随机的本地端口 ，而接受响应时采用服务器的源端口作为远方端口。</p>
 <p><strong>如果占用本地端口过多，大量的新链接失败。</strong></p>
 </li>
-<li><p>查看TIME_WAIT的数量<br><code>netstat -n | awk &#39;/^tcp/ {++S[$NF]} END { for(a in S) print(a,S[a])}&#39;</code></p>
+<li>
+<p>查看TIME_WAIT的数量<br>
+<code>netstat -n | awk '/^tcp/ {++S[$NF]} END { for(a in S) print(a,S[a])}'</code></p>
 </li>
-<li>短连接最大的缺点是将占用大量的系统资源，例如：本地端口、socket句柄。导致这个问题的原因其实很简单：<strong>tcp协议层并没有长短连接的概念，因此不管长连接还是短连接，连接建立-&gt;数据传输-&gt;连接关闭的流程和处理都是一样的</strong>。</li>
-<li><p>TIME_WAIT的状态，持续的时间一般在1~4分钟，对于连接数不高的场景，1~4分钟其实并不长，对系统也不会有什么影响，但如果短时间内（例如1s内）进行大量的短连接</p>
+<li>
+<p>短连接最大的缺点是将占用大量的系统资源，例如：本地端口、socket句柄。导致这个问题的原因其实很简单：<strong>tcp协议层并没有长短连接的概念，因此不管长连接还是短连接，连接建立-&gt;数据传输-&gt;连接关闭的流程和处理都是一样的</strong>。</p>
 </li>
-<li><p>问题的调优</p>
+<li>
+<p>TIME_WAIT的状态，持续的时间一般在1~4分钟，对于连接数不高的场景，1~4分钟其实并不长，对系统也不会有什么影响，但如果短时间内（例如1s内）进行大量的短连接</p>
+</li>
+<li>
+<p>问题的调优</p>
 </li>
 </ul>
 <ul>
 <li>1）修改<strong>ipv4.ip_local_port_range</strong>，增大可用端口范围，但只能缓解问题，不能根本解决问题；</li>
 <li>2）客户端程序中设置socket的SO_LINGER选项；</li>
-<li>3）客户端机器打开tcp_tw_recycle和tcp_timestamps选项；<ul>
+<li>3）客户端机器打开tcp_tw_recycle和tcp_timestamps选项；
+<ul>
 <li><strong>tcp_tw_reuse</strong>:让TIME_WAIT状态可以重用，这样即使TIME_WAIT占满了所有端口，也不会拒- <strong>tcp_tw_recycle</strong>: 让TIME_WAIT尽快回收</li>
 </ul>
 </li>
 <li>4）客户端机器设置tcp_max_tw_buckets为一个很小的值；</li>
-<li>5) 客户端利用  shutdown() 替换 close()</li>
+<li>
+<ol start="5">
+<li>客户端利用  shutdown() 替换 close()</li>
+</ol>
+</li>
 </ul>
-<h3><span id="tcp的close_wait问题">TCP的CLOSE_WAIT问题</span></h3><h3><span id="tcp-rst-复位报文">TCP RST 复位报文</span></h3><h4><span id="rst-复位">RST 复位</span></h4><p>RST表示复位，用来异常的关闭连接。发送RST包关闭连接时，不必等缓冲区的包都发出去（FIN包），直接就丢弃缓存区的包发送RST包。而接收端收到RST包后，也不必发送ACK包来确认。TCP处理程序会在自己认为的异常时刻发送RST包。<br>举2种情况：</p>
+<h3><span id="tcp的close_wait问题">TCP的CLOSE_WAIT问题</span></h3>
+<h3><span id="tcp-rst-复位报文">TCP RST 复位报文</span></h3>
+<h4><span id="rst-复位">RST 复位</span></h4>
+<p>RST表示复位，用来异常的关闭连接。发送RST包关闭连接时，不必等缓冲区的包都发出去（FIN包），直接就丢弃缓存区的包发送RST包。而接收端收到RST包后，也不必发送ACK包来确认。TCP处理程序会在自己认为的异常时刻发送RST包。<br>
+举2种情况：</p>
 <ul>
 <li>a）C向S发起连接，但S之上并未监听相应的端口，这时S操作系统上的TCP处理程序会发RST包。（UDP没有连接，没有RST）</li>
 <li>b）C和S已经正常建立连接，正在通讯时，C向S发送了FIN包要求关连接，S发送ACK后，C网断了，C通过若干原因放弃了这个连接（例如进程重启）。网络恢复之后，S又开始或重发数据包，C不知道这连接哪来的，就发RST包强制把连接关闭，S收到后会出现connect reset by peer错误。</li>
 </ul>
 <p>RST 出现的三种情况 TCP在下列三种情况下产生RST复位报文段。</p>
 <ul>
-<li>1.到不存在的端口的连接请求<br>　　产生复位的一种常见情况是当连接请求到达时，目的端口没有进程正在监听。对于UDP，当一个数据报到达目的端口时，该端口没在使用，它将产生一个ICMP端口不可达的信息；而TCP则使用复位。</li>
-<li><p>2.异常终止一个连接<br>　　终止一个连接的正常方式是一方发送FIN，这也称为有序释放，因为在所有排队数据都已发送之后才发送FIN，正常情况下没有任何数据丢失。但也有可能发送一个复位报文段而不是FIN来中途释放一个连接，这也称为异常释放。异常终止一个连接对应用程序来说有两个优点：（1）丢弃任何待发数据并立即发送复位报文段；（2）RST的接收方会区分另一端执行的是异常关闭还是正常关闭。</p>
+<li>
+<p>1.到不存在的端口的连接请求<br>
+　　产生复位的一种常见情况是当连接请求到达时，目的端口没有进程正在监听。对于UDP，当一个数据报到达目的端口时，该端口没在使用，它将产生一个ICMP端口不可达的信息；而TCP则使用复位。</p>
 </li>
-<li><p>3.检测半关闭连接<br>　　如果一方已经关闭或异常终止连接而另一方却还不知道，我们将这样的TCP连接称为半打开的。任何一端的主机异常都可能导致发生这种情况。只要不打算在半打开连接上传输数据，仍处于连接状态的一方就不会检测另一方已经出现异常。</p>
+<li>
+<p>2.异常终止一个连接<br>
+　　终止一个连接的正常方式是一方发送FIN，这也称为有序释放，因为在所有排队数据都已发送之后才发送FIN，正常情况下没有任何数据丢失。但也有可能发送一个复位报文段而不是FIN来中途释放一个连接，这也称为异常释放。异常终止一个连接对应用程序来说有两个优点：（1）丢弃任何待发数据并立即发送复位报文段；（2）RST的接收方会区分另一端执行的是异常关闭还是正常关闭。</p>
+</li>
+<li>
+<p>3.检测半关闭连接<br>
+　　如果一方已经关闭或异常终止连接而另一方却还不知道，我们将这样的TCP连接称为半打开的。任何一端的主机异常都可能导致发生这种情况。只要不打算在半打开连接上传输数据，仍处于连接状态的一方就不会检测另一方已经出现异常。</p>
 </li>
 </ul>
-<h4><span id="rst-复位攻击">RST 复位攻击</span></h4><p>　　A和服务器B之间建立了TCP连接，如果此时C伪造了一个TCP包发给B，使B异常的断开了与A之间的TCP连接，就是RST攻击。<br>伪造这样的TCP包能造成什么后果？</p>
+<h4><span id="rst-复位攻击">RST 复位攻击</span></h4>
+<p>A和服务器B之间建立了TCP连接，如果此时C伪造了一个TCP包发给B，使B异常的断开了与A之间的TCP连接，就是RST攻击。<br>
+伪造这样的TCP包能造成什么后果？</p>
 <ul>
 <li>1、假定C伪装成A发过去的包，这个包如果是RST包，冲区上所有数据B将会丢弃与A的缓，强制关掉连接。</li>
-<li>2、如果发过去的包是SYN包，那么，B会表示A已经是正常连接却又来建新连接，B主动向A发个RST包，并在自己这端强制关掉连接。<br><strong>如何伪造成A发给B的包？</strong></li>
+<li>2、如果发过去的包是SYN包，那么，B会表示A已经是正常连接却又来建新连接，B主动向A发个RST包，并在自己这端强制关掉连接。<br>
+<strong>如何伪造成A发给B的包？</strong></li>
 </ul>
 <p>这里有两个关键因素，源端口和序列号。</p>
 <p><strong>一个TCP连接都是四元组，由源IP、源端口、目标IP、目标端口唯一确定一个连接</strong>。所以，如果C要伪造A发给B的包，要在上面提到的IP头和TCP头，把源IP、源端口、目标IP、目标端口都填对。</p>
 <ul>
-<li>1）这里B作为服务器，IP和端口是公开的；</li>
-<li><p>2）A是我们要下手的目标，IP当然知道，但A的源端口就不清楚了，因为这可能是A随机生成的。当然，如果能够对常见的OS如windows和linux找出生成source port规律的话，还是可以进行碰撞。</p>
+<li>
+<p>1）这里B作为服务器，IP和端口是公开的；</p>
 </li>
-<li><p>3）序列号问题是与滑动窗口对应的，伪造的TCP包里需要填序列号，如果序列号的值不在A之前向B发送时B的滑动窗口内，B是会主动丢弃的。所以我们要找到能落到当时的AB间滑动窗口的序列号。这个可以暴力解决，因为一个sequence长度是32位，取值范围0-4294967296，如果窗口大小像上图中我抓到的windows下的65535的话，只需要相除，就知道最多只需要发65537（4294967296/65535=65537）个包就能有一个序列号落到滑动窗口内。RST包是很小，IP头＋TCP头才40字节，算算我们的带宽就知道这实在只需要几秒钟就能搞定。</p>
+<li>
+<p>2）A是我们要下手的目标，IP当然知道，但A的源端口就不清楚了，因为这可能是A随机生成的。当然，如果能够对常见的OS如windows和linux找出生成source port规律的话，还是可以进行碰撞。</p>
 </li>
-<li><p>那么，序列号不是问题，源端口会麻烦点，如果各个操作系统不能完全随机的生成源端口，或者黑客们能通过其他方式获取到source port，RST攻击存在可能。</p>
+<li>
+<p>3）序列号问题是与滑动窗口对应的，伪造的TCP包里需要填序列号，如果序列号的值不在A之前向B发送时B的滑动窗口内，B是会主动丢弃的。所以我们要找到能落到当时的AB间滑动窗口的序列号。这个可以暴力解决，因为一个sequence长度是32位，取值范围0-4294967296，如果窗口大小像上图中我抓到的windows下的65535的话，只需要相除，就知道最多只需要发65537（4294967296/65535=65537）个包就能有一个序列号落到滑动窗口内。RST包是很小，IP头＋TCP头才40字节，算算我们的带宽就知道这实在只需要几秒钟就能搞定。</p>
+</li>
+<li>
+<p>那么，序列号不是问题，源端口会麻烦点，如果各个操作系统不能完全随机的生成源端口，或者黑客们能通过其他方式获取到source port，RST攻击存在可能。</p>
 </li>
 </ul>
-<h2><span id="参考">参考</span></h2><ul>
+<h2><span id="参考">参考</span></h2>
+<ul>
 <li><a href="https://blog.csdn.net/hguisu/article/details/38700899" target="_blank" rel="noopener">TCP连接的状态详解以及故障排查</a></li>
-<li><a href="https://www.cnblogs.com/cslunatic/p/3783281.html" target="_blank" rel="noopener">TCP/IP详解—TCP/IP连接各个状态转换分析</a></li>
+<li><a href="https://www.cnblogs.com/cslunatic/p/3783281.html" target="_blank" rel="noopener">TCP/IP详解–TCP/IP连接各个状态转换分析</a></li>
 <li><a href="https://blog.csdn.net/wenqian1991/article/details/40110703" target="_blank" rel="noopener">【Unix 网络编程】TCP状态转换图详解</a></li>
 <li><a href="https://blog.csdn.net/yunhua_lee/article/details/8146830_" target="_blank" rel="noopener">tcp短连接TIME_WAIT问题解决方法大全（1）</a></li>
 <li><a href="https://www.superltx.com/archives/56" target="_blank" rel="noopener">TCP安全——RST复位攻击简析</a></li>

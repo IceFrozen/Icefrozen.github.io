@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/distributed-redis-advanced/</loc>
+        <lastmod>2020-12-11T10:09:29.838Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/openerating-learning-vfs-2/</loc>
         <lastmod>2020-11-17T05:54:52.916Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -296,7 +304,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-cms-gc-2/</loc>
+        <loc>http://yoursite.com/article/java-class-loader/</loc>
         <lastmod>2020-08-10T03:11:47.951Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -304,7 +312,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-class-loader/</loc>
+        <loc>http://yoursite.com/article/java-cms-gc-2/</loc>
         <lastmod>2020-08-10T03:11:47.951Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

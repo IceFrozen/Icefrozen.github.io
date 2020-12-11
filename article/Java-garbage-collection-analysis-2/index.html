@@ -221,67 +221,99 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h3><span id="为什么需要gc">为什么需要GC？</span></h3><p>当程序创建对象、数组等引用类型实体时，系统都会在堆内存中为之分配一块内存区，对象就保存在这块内存区中，当这块内存不再被任何引用变量引用时，这块内存就变成垃圾，等待垃圾回收机制进行回收。在C和C++中，垃圾的回收是由程序员来手动执行，虽然实时性比较好，但由于内存分配和回收代码繁琐，较容易出错，内存泄露问题比较常见。于是一些语言如Java、python、Go等，通过程序实现了自动化内存管理来解决垃圾回收问题，从而降低了在这些语言中内存使用的门槛。另外，由于GC有一定的滞后性，在一些实时性较高或者内存吃紧的（单片机开发）软件中，还是有不少采用人工回收垃圾的案例。</p>
-<p><em>GC的一些特点：</em><br>1. GC只负责回收内存中的对象，不回收物理资源（如文件流、socket等）。<br>2. 程序无法精确控制GC的运行，GC只会在合适的时候进行。</p>
+                <h3><span id="为什么需要gc">为什么需要GC？</span></h3>
+<p>当程序创建对象、数组等引用类型实体时，系统都会在堆内存中为之分配一块内存区，对象就保存在这块内存区中，当这块内存不再被任何引用变量引用时，这块内存就变成垃圾，等待垃圾回收机制进行回收。在C和C++中，垃圾的回收是由程序员来手动执行，虽然实时性比较好，但由于内存分配和回收代码繁琐，较容易出错，内存泄露问题比较常见。于是一些语言如Java、python、Go等，通过程序实现了自动化内存管理来解决垃圾回收问题，从而降低了在这些语言中内存使用的门槛。另外，由于GC有一定的滞后性，在一些实时性较高或者内存吃紧的（单片机开发）软件中，还是有不少采用人工回收垃圾的案例。</p>
+<p><em>GC的一些特点：</em><br>
+1. GC只负责回收内存中的对象，不回收物理资源（如文件流、socket等）。<br>
+2. 程序无法精确控制GC的运行，GC只会在合适的时候进行。</p>
 <p><em>PS：1其实也是由于2的GC的不确定性导致的，比如一个socket占用了某个端口，当使用完后GC并不会立刻回收这个socket，当需要再用到这个端口的socket时，就会报错。</em></p>
-<h3><span id="gc实现的两种常见方式">GC实现的两种常见方式</span></h3><h4><span id="引用计数reference-counting">引用计数（Reference Counting）</span></h4><p>引用计数的实现比较简单，核心就是给每一个对象增加一个引用计数器，当另一个对象引用当前对象时就给当前对象的引用计数+1，当有对象不再引用当前对象时，就将引用计数-1，当前对象的引用计数变成0时，递归地将该对象引用的子对象的引用计数-1，并把当前对象使用的内存区域释放到空闲链表中。<br><img src="https://coldwalker.com/images/gc_intro/refcount.gif" alt="6efac91db597f7d968d53f68c99e32d4.gif"></p>
+<h3><span id="gc实现的两种常见方式">GC实现的两种常见方式</span></h3>
+<h4><span id="引用计数reference-counting">引用计数（Reference Counting）</span></h4>
+<p>引用计数的实现比较简单，核心就是给每一个对象增加一个引用计数器，当另一个对象引用当前对象时就给当前对象的引用计数+1，当有对象不再引用当前对象时，就将引用计数-1，当前对象的引用计数变成0时，递归地将该对象引用的子对象的引用计数-1，并把当前对象使用的内存区域释放到空闲链表中。<br>
+<img src="https://coldwalker.com/images/gc_intro/refcount.gif" alt="6efac91db597f7d968d53f68c99e32d4.gif"></p>
 <p><em>引用计数算法的优点：</em></p>
 <ol>
-<li><p>引用归0时可立即回收垃圾，实时性好。  </p>
+<li>
+<p>引用归0时可立即回收垃圾，实时性好。</p>
 </li>
-<li><p>应用执行和垃圾回收“自然、依次”发生，GC开销分布在各次应用执行中，最大暂停时间消减（虽然GC次数增加）。  </p>
+<li>
+<p>应用执行和垃圾回收“自然、依次”发生，GC开销分布在各次应用执行中，最大暂停时间消减（虽然GC次数增加）。</p>
 </li>
-<li><p>执行效率高，“事件触发”机制避免了整堆扫描标记的耗时。  </p>
+<li>
+<p>执行效率高，“事件触发”机制避免了整堆扫描标记的耗时。</p>
 </li>
 </ol>
 <p><em>引用计数算法的缺点：</em></p>
 <ol>
-<li><p>循环引用问题无法解决，导致垃圾回收不彻底。  </p>
+<li>
+<p>循环引用问题无法解决，导致垃圾回收不彻底。</p>
 </li>
-<li><p>需要额外的存储空间来存放每一个对象的引用计数。  </p>
+<li>
+<p>需要额外的存储空间来存放每一个对象的引用计数。</p>
 </li>
-<li><p>频繁的计数增减带来的高并发和本身需要的操作原子性的开销较大。  </p>
+<li>
+<p>频繁的计数增减带来的高并发和本身需要的操作原子性的开销较大。</p>
 </li>
-<li><p>引用计数归0时，可能会级联删除大量对象，造成GC耗时不平稳。  </p>
+<li>
+<p>引用计数归0时，可能会级联删除大量对象，造成GC耗时不平稳。</p>
 </li>
 </ol>
 <p><em>以上可知，基于引用计数的GC在实时性和执行效率方面有较大优势，类似 python、perl、swift等语言都使用引用计数算法来实现GC。但由于引用计数GC存在高并发时的性能较低等问题，因此，对性能要求较高的系统在实现时一般不会采用引用计数算法，而是使用和应用隔离的“跟踪回收”方式来实现GC。</em></p>
-<h4><span id="跟踪回收">跟踪回收</span></h4><p>跟踪回收是一种独立于应用程序外的GC方式，定期运行来检查垃圾。跟踪回收通过被称为“GC ROOTS”的对象开始，不断通过深度或者广度遍历的方式来跟踪标记所有”可达的对象“，然后其他“GC ROOTS不可达对象”的未标记对象就被视为垃圾，会被统一回收。跟踪回收是目前被广泛使用的技术，如：Java、Go、.net等都使用跟踪的方式来进行垃圾回收。</p>
+<h4><span id="跟踪回收">跟踪回收</span></h4>
+<p>跟踪回收是一种独立于应用程序外的GC方式，定期运行来检查垃圾。跟踪回收通过被称为“GC ROOTS”的对象开始，不断通过深度或者广度遍历的方式来跟踪标记所有”可达的对象“，然后其他“GC ROOTS不可达对象”的未标记对象就被视为垃圾，会被统一回收。跟踪回收是目前被广泛使用的技术，如：Java、Go、.net等都使用跟踪的方式来进行垃圾回收。</p>
 <p><em>跟踪回收的GC方式在具体的算法实现上，主要包括以下几种垃圾回收算法：</em></p>
-<h5><span id="标记-清除mark-sweep">标记-清除（mark-sweep)</span></h5><p>标记清除算法主要分两个阶段：</p>
+<h5><span id="标记-清除mark-sweep">标记-清除（mark-sweep)</span></h5>
+<p>标记清除算法主要分两个阶段：</p>
 <ol>
-<li><p>第一阶段，从GC ROOTS开始进行遍历，标记所有可直达或间接到达的对象为“使用中”。  </p>
+<li>
+<p>第一阶段，从GC ROOTS开始进行遍历，标记所有可直达或间接到达的对象为“使用中”。</p>
 </li>
-<li><p>第二阶段，扫描整体内存，对上一阶段标记的“使用中”的对象进行回收。<br><img src="https://coldwalker.com/images/gc_intro/A73996FF-5E0A-42D5-AE6B-73D25A1FD000.jpg" alt="3ded3d0575a91f8dfde31dc446642d56.jpeg">  </p>
+<li>
+<p>第二阶段，扫描整体内存，对上一阶段标记的“使用中”的对象进行回收。<br>
+<img src="https://coldwalker.com/images/gc_intro/A73996FF-5E0A-42D5-AE6B-73D25A1FD000.jpg" alt="3ded3d0575a91f8dfde31dc446642d56.jpeg"></p>
 </li>
 </ol>
 <p>原始的标记-清除算法有不少问题，比如：</p>
 <ol>
-<li><p>GC期间，整个业务线程都会被挂起，暂停时间较长。  </p>
+<li>
+<p>GC期间，整个业务线程都会被挂起，暂停时间较长。</p>
 </li>
-<li><p>内存容易出现碎片，多次GC后可用连续内存问题明显。  </p>
+<li>
+<p>内存容易出现碎片，多次GC后可用连续内存问题明显。</p>
 </li>
-<li><p>GC的STW（Stop The World）的时间和heap大小正相关。  </p>
+<li>
+<p>GC的STW（Stop The World）的时间和heap大小正相关。</p>
 </li>
 </ol>
 <p>因此在标记-清除算法的基础上，又产生了很多基于标记-清除的衍生算法来优化这些问题。比如：</p>
-<h6><span id="并发的标记-清除算法">并发的标记-清除算法</span></h6><p>标记-清除过程实际上大部分时间Collector（GC线程）是可以和Mutator（应用程序线程）并发执行，大部分的工作都在并发阶段完成，真正需要暂停应用线程的阶段只需要来解决并发过程中变化的那部分对象即可，从而并不需要整个回收阶段都block住应用线程。比如CMS垃圾回收器除了Init-Mark阶段和Final-Mark阶段外，其他阶段都是可以并发执行的。</p>
-<h6><span id="标记整理算法">标记–整理算法</span></h6><p>针对内存容易出现碎片的问题，衍生的Mark-Compact算法通过将sweep过程替换成compact过程，每次GC都会对内存进行一次移动整理。</p>
+<h6><span id="并发的标记-清除算法">并发的标记-清除算法</span></h6>
+<p>标记-清除过程实际上大部分时间Collector（GC线程）是可以和Mutator（应用程序线程）并发执行，大部分的工作都在并发阶段完成，真正需要暂停应用线程的阶段只需要来解决并发过程中变化的那部分对象即可，从而并不需要整个回收阶段都block住应用线程。比如CMS垃圾回收器除了Init-Mark阶段和Final-Mark阶段外，其他阶段都是可以并发执行的。</p>
+<h6><span id="标记整理算法">标记–整理算法</span></h6>
+<p>针对内存容易出现碎片的问题，衍生的Mark-Compact算法通过将sweep过程替换成compact过程，每次GC都会对内存进行一次移动整理。</p>
 <p><em>标记-整理算法一般分3部分：</em></p>
-<p>a. 先在mark阶段标记存活对象。<br>b. 遍历heap计算出存活对象将要移动到的新位置。<br>c. 将存活对象真正移动到新位置并更新存活对象中被指向移动对象的指针。<br><img src="https://coldwalker.com/images/gc_intro/CD89A12E-1A37-4269-B102-66ADB27404BB.jpg" alt="a0da00148bc1a9638f5ea4256f3c0b1e.jpeg"></p>
+<p>a. 先在mark阶段标记存活对象。<br>
+b. 遍历heap计算出存活对象将要移动到的新位置。<br>
+c. 将存活对象真正移动到新位置并更新存活对象中被指向移动对象的指针。<br>
+<img src="https://coldwalker.com/images/gc_intro/CD89A12E-1A37-4269-B102-66ADB27404BB.jpg" alt="a0da00148bc1a9638f5ea4256f3c0b1e.jpeg"></p>
 <p>由过程可知，标记-整理算法的compact阶段的耗时是和存活对象的多少成正比的。而且虽然解决了碎片的问题，但实际需要多次遍历heap、移动对象、更新指针，所以耗时上会比标记-清除算法要更长一些。所以默认情况下一些垃圾回收器CMS并不直接使用mark-compact算法，而是当由于存在碎片导致发生Full GC时才会使用基于mark-compact算法来进行内存整理。</p>
 <blockquote>
 <p>PS：当然从另一个方面看，mark-compact阶段由于解决了内存碎片问题，在应用线程申请内存的时候就可以用“指针碰撞”（pointer bumping）方式来快速完成内存分配，如果碎片较多，“指针碰撞”就会较大概率导致多次指针挪动，就不适合了，这样就只能使用分配速度更慢的类似freelist的方式来进行内存的管理和分配。</p>
 </blockquote>
-<h5><span id="复制-收集copying-gc">复制-收集（Copying GC)</span></h5><p>由于标记-清除算法存在碎片化的问题，标记-整理算法又由于需要多次遍历heap效率较低，因此“复制-收集”算法采用了一个空间换时间的方式来解决上面的问题。“复制-收集”算法的工作过程如下：</p>
+<h5><span id="复制-收集copying-gc">复制-收集（Copying GC)</span></h5>
+<p>由于标记-清除算法存在碎片化的问题，标记-整理算法又由于需要多次遍历heap效率较低，因此“复制-收集”算法采用了一个空间换时间的方式来解决上面的问题。“复制-收集”算法的工作过程如下：</p>
 <ol>
-<li><p>将可用内存分成大小相等的两块，from space和 to space。  </p>
+<li>
+<p>将可用内存分成大小相等的两块，from space和 to space。</p>
 </li>
-<li><p>同一时刻只有from space会被使用。  </p>
+<li>
+<p>同一时刻只有from space会被使用。</p>
 </li>
-<li><p>GC时，将from space内存活的对象拷贝到to space  </p>
+<li>
+<p>GC时，将from space内存活的对象拷贝到to space</p>
 </li>
-<li><p>拷贝完成后，from space和to space交换身份<br><img src="https://coldwalker.com/images/gc_intro/E583CCB7-47DF-4CE4-8945-8AC2E8135706.jpg" alt="1290c3eb4092bd52de293fbe1be152cb.jpeg">  </p>
+<li>
+<p>拷贝完成后，from space和to space交换身份<br>
+<img src="https://coldwalker.com/images/gc_intro/E583CCB7-47DF-4CE4-8945-8AC2E8135706.jpg" alt="1290c3eb4092bd52de293fbe1be152cb.jpeg"></p>
 </li>
 </ol>
 <blockquote>
@@ -289,56 +321,121 @@
 </blockquote>
 <p><em>上面介绍了主流几种“跟踪回收”类GC的具体实现算法，每一种算法都有其擅长和不足的地方，因此在实际的GC算法选择中，会根据不同的场景和特性选择不同的算法实现，从而将每种算法“扬长避短”。后面我会再继续分析现代化的GC如何进一步优化这些算法过程。</em></p>
 <hr>
-<h4><span id="标记-压缩-mark-compact">标记-压缩 （Mark-Compact）</span></h4><p>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。在基于Compacting算法的收集器的实现中，一般增加句柄和句柄表。<br><img src="/article/Java-garbage-collection-analysis-2/1562814680550Java-garbage-collection-analysis-2_.png" alt></p>
-<h3><span id="垃圾回收器">垃圾回收器</span></h3><p>GC算法是内存回收的方法论，垃圾收集器是内存回收的具体实现。新生代垃圾收集器有Serial、ParNew、Parallel Scavenge、G1，属于老年代的垃圾收集器有CMS、Serial Old、Parallel Old和G1。其中的G1是一种既可以对新生代对象也可以对老年代对象进行回收的垃圾收集器。大部分垃圾回收器之间能相互配合来发挥各自的优势。</p>
+<h4><span id="标记-压缩-mark-compact">标记-压缩 （Mark-Compact）</span></h4>
+<p>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。在基于Compacting算法的收集器的实现中，一般增加句柄和句柄表。<br>
+<img src="/article/Java-garbage-collection-analysis-2/1562814680550Java-garbage-collection-analysis-2_.png" alt></p>
+<h3><span id="垃圾回收器">垃圾回收器</span></h3>
+<p>GC算法是内存回收的方法论，垃圾收集器是内存回收的具体实现。新生代垃圾收集器有Serial、ParNew、Parallel Scavenge、G1，属于老年代的垃圾收集器有CMS、Serial Old、Parallel Old和G1。其中的G1是一种既可以对新生代对象也可以对老年代对象进行回收的垃圾收集器。大部分垃圾回收器之间能相互配合来发挥各自的优势。</p>
 <p><img src="https://coldwalker.com/images/gc_intro/6073827-904b301be72b9f5a.jpg.png" alt="85a94c88d8d3662165484268f0449723.png"></p>
-<h6><span id="serial收集器">Serial收集器</span></h6><p>Serial收集器是最古老、最基本的一种垃圾回收器，采用单线程来进行垃圾回收。新生代回收采用复制算法，回收的整个过程会暂停业务线程（STW）。</p>
+<h6><span id="serial收集器">Serial收集器</span></h6>
+<p>Serial收集器是最古老、最基本的一种垃圾回收器，采用单线程来进行垃圾回收。新生代回收采用复制算法，回收的整个过程会暂停业务线程（STW）。</p>
 <blockquote>
-<p><em>Serial收集器的特性总结：</em><br>收集过程：暂停所有线程<br>算法：复制算法<br>优点：简单高效，拥有很高的单线程收集效率<br>应用：Client模式下的默认新生代收集器<br>参数控制：-XX:+UseSerialGC</p>
+<p><em>Serial收集器的特性总结：</em><br>
+收集过程：暂停所有线程<br>
+算法：复制算法<br>
+优点：简单高效，拥有很高的单线程收集效率<br>
+应用：Client模式下的默认新生代收集器<br>
+参数控制：-XX:+UseSerialGC</p>
 </blockquote>
 <p><img src="https://coldwalker.com/images/gc_intro/6073827-42feae7608310929.png" alt="56c88d3322821a6d6af5909213e888a5.png"></p>
-<h6><span id="parnew收集器">ParNew收集器</span></h6><p>ParNew收集器也是一个新生代垃圾回收器，可以看成是Serial收集器的多线程版本，也是采用复制算法来进行收集，回收整个过程也是暂停业务线程（STW）的，但由于是多线程并行执行的，所以在多CPU机器上一般会比Serial收集器快很多。</p>
+<h6><span id="parnew收集器">ParNew收集器</span></h6>
+<p>ParNew收集器也是一个新生代垃圾回收器，可以看成是Serial收集器的多线程版本，也是采用复制算法来进行收集，回收整个过程也是暂停业务线程（STW）的，但由于是多线程并行执行的，所以在多CPU机器上一般会比Serial收集器快很多。</p>
 <blockquote>
-<p><em>ParNew收集器的特性总结：</em><br>收集过程：暂停所有线程<br>算法：复制算法<br>优点：在CPU多的情况下，拥有比Serial更好的效果。单CPU环境下Serial效果更好<br>应用：许多运行在Server模式下的虚拟机中首选的新生代收集器<br>参数控制：<br>-XX:+UseParNewGC<br>-XX:ParallelGCThreads (限制线程数量)</p>
+<p><em>ParNew收集器的特性总结：</em><br>
+收集过程：暂停所有线程<br>
+算法：复制算法<br>
+优点：在CPU多的情况下，拥有比Serial更好的效果。单CPU环境下Serial效果更好<br>
+应用：许多运行在Server模式下的虚拟机中首选的新生代收集器<br>
+参数控制：<br>
+-XX:+UseParNewGC<br>
+-XX:ParallelGCThreads (限制线程数量)</p>
 </blockquote>
 <p><img src="https://coldwalker.com/images/gc_intro/img_97ff89bcbbc18cd50ba5287850435f43.png" alt="97ff89bcbbc18cd50ba5287850435f43.png"></p>
-<h6><span id="parallel-scavenge收集器">Parallel Scavenge收集器</span></h6><p>和ParNew收集器类似，Parallel Scavenge收集器也是一个新生代垃圾回收器，但和ParNew收集器不同的是Parallel Scavenge收集器更多关注的是可控制的吞吐量，支持自适应调节策略。</p>
+<h6><span id="parallel-scavenge收集器">Parallel Scavenge收集器</span></h6>
+<p>和ParNew收集器类似，Parallel Scavenge收集器也是一个新生代垃圾回收器，但和ParNew收集器不同的是Parallel Scavenge收集器更多关注的是可控制的吞吐量，支持自适应调节策略。</p>
 <blockquote>
 <p>吞吐量 = 运行用户代码的时间/(运行用户代码的时间+垃圾收集时间)</p>
 </blockquote>
 <p>Parallel Scavenge收集器提供几个参数控制垃圾回收的执行：</p>
-<p>-XX:MaxGCPauseMillis<br>最大垃圾回收停顿时间。这个参数的原理是空间换时间，收集器会控制新生代的区域大小，从而尽可能保证回收少于这个最大停顿时间。简单的说就是回收的区域越小，那么耗费的时间也越小。所以这个参数并不是设置得越小越好。设太小的话，新生代空间会太小，从而更频繁的触发GC。</p>
-<p>-XX:GCTimeRatio<br>垃圾回收时间与总时间占比（默认是99%）。这个是吞吐量的倒数，原理和MaxGCPauseMillis相同。</p>
-<p>-XX:UseAdaptiveSizePolicy<br>开启动态自适应调节策略，虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整上面两个参数以提供最合适的停顿时间或者最大吞吐量。</p>
+<p>-XX:MaxGCPauseMillis<br>
+最大垃圾回收停顿时间。这个参数的原理是空间换时间，收集器会控制新生代的区域大小，从而尽可能保证回收少于这个最大停顿时间。简单的说就是回收的区域越小，那么耗费的时间也越小。所以这个参数并不是设置得越小越好。设太小的话，新生代空间会太小，从而更频繁的触发GC。</p>
+<p>-XX:GCTimeRatio<br>
+垃圾回收时间与总时间占比（默认是99%）。这个是吞吐量的倒数，原理和MaxGCPauseMillis相同。</p>
+<p>-XX:UseAdaptiveSizePolicy<br>
+开启动态自适应调节策略，虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整上面两个参数以提供最合适的停顿时间或者最大吞吐量。</p>
 <blockquote>
-<p><em>Parallel Scavenge收集器的特性总结：</em><br>收集过程：暂停所有线程<br>算法：复制算法<br>优点：在CPU多的情况下，拥有比Serial更好的效果；对暂停时间和吞吐量能精细化控制。<br>应用：指定使用<br>参数控制：-XX:+UseParallelGC</p>
+<p><em>Parallel Scavenge收集器的特性总结：</em><br>
+收集过程：暂停所有线程<br>
+算法：复制算法<br>
+优点：在CPU多的情况下，拥有比Serial更好的效果；对暂停时间和吞吐量能精细化控制。<br>
+应用：指定使用<br>
+参数控制：-XX:+UseParallelGC</p>
 </blockquote>
-<h6><span id="serial-old收集器">Serial Old收集器</span></h6><p>老年代的收集器，与上面的Serial一样是单线程回收，不同的是算法用的是标记-整理（Mark-Compact），整个过程和Serial收集器一样都会暂停业务线程。这个收集器的主要意义也是在于给Client模式下的虚拟机使用。<br><img src="https://coldwalker.com/images/gc_intro/serial-old.png" alt="0207d0a7741701cf070520c4f97f065e.png"></p>
-<h6><span id="parallel-old收集器">Parallel Old收集器</span></h6><p>Parallel Old收集器是Parallel Scavenge收集器的老年代版本，JDK 1.6开始推出的，它使用多线程和“标记-整理”算法进行垃圾回收。通常与Parallel Scavenge收集器配合使用，“吞吐量优先”收集器是这个组合的特点，在注重吞吐量和CPU资源敏感的场合，都可以使用这个组合。<br><img src="https://coldwalker.com/images/gc_intro/parallel-old.png" alt="754b629778258dd09ede56a2a9f304b2.png"></p>
-<h6><span id="cms收集器">CMS收集器</span></h6><p>CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的多线程并发收集器，基于“标记-清除”算法实现。CMS垃圾回收器将垃圾回收分成多个阶段，某些阶段可以和业务线程并发执行，这些并发阶段主要来做一些准备工作，这些准备工作能缩小最终的暂停阶段（Init-Mark和Remark）的时间，而且在暂停业务线程的两个阶段也由于多线程并行暂停时间控制也较好，是目前对用户响应时间敏感的且堆大小适中（太大、太小都不好）的应用广泛采用的年老代垃圾回收器。默认配合ParNew回收器作为新生代垃圾回收器。</p>
+<h6><span id="serial-old收集器">Serial Old收集器</span></h6>
+<p>老年代的收集器，与上面的Serial一样是单线程回收，不同的是算法用的是标记-整理（Mark-Compact），整个过程和Serial收集器一样都会暂停业务线程。这个收集器的主要意义也是在于给Client模式下的虚拟机使用。<br>
+<img src="https://coldwalker.com/images/gc_intro/serial-old.png" alt="0207d0a7741701cf070520c4f97f065e.png"></p>
+<h6><span id="parallel-old收集器">Parallel Old收集器</span></h6>
+<p>Parallel Old收集器是Parallel Scavenge收集器的老年代版本，JDK 1.6开始推出的，它使用多线程和“标记-整理”算法进行垃圾回收。通常与Parallel Scavenge收集器配合使用，“吞吐量优先”收集器是这个组合的特点，在注重吞吐量和CPU资源敏感的场合，都可以使用这个组合。<br>
+<img src="https://coldwalker.com/images/gc_intro/parallel-old.png" alt="754b629778258dd09ede56a2a9f304b2.png"></p>
+<h6><span id="cms收集器">CMS收集器</span></h6>
+<p>CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的多线程并发收集器，基于“标记-清除”算法实现。CMS垃圾回收器将垃圾回收分成多个阶段，某些阶段可以和业务线程并发执行，这些并发阶段主要来做一些准备工作，这些准备工作能缩小最终的暂停阶段（Init-Mark和Remark）的时间，而且在暂停业务线程的两个阶段也由于多线程并行暂停时间控制也较好，是目前对用户响应时间敏感的且堆大小适中（太大、太小都不好）的应用广泛采用的年老代垃圾回收器。默认配合ParNew回收器作为新生代垃圾回收器。</p>
 <blockquote>
-<p><em>CMS收集器的7个阶段：</em><br>初始标记（CMS initial mark）<br>并发标记（CMS concurrent mark）<br>并发预清理（CMS concurrent-preclean）<br>并发可取消的预清理 （CMS concurrent-abortable-preclean）<br>重新标记（CMS remark）<br>并发清除（CMS concurrent sweep）<br>并发重置（CMS concurrent-reset）</p>
+<p><em>CMS收集器的7个阶段：</em><br>
+初始标记（CMS initial mark）<br>
+并发标记（CMS concurrent mark）<br>
+并发预清理（CMS concurrent-preclean）<br>
+并发可取消的预清理 （CMS concurrent-abortable-preclean）<br>
+重新标记（CMS remark）<br>
+并发清除（CMS concurrent sweep）<br>
+并发重置（CMS concurrent-reset）</p>
 </blockquote>
 <p><img src="/article/Java-garbage-collection-analysis-2/1552636717386Java-garbage-collection-analysis-2_.png" alt></p>
 <p><em>PS：这个盗的图稍微有点问题，从jdk 1.8开始，initial mark阶段也是多线程并行执行的，可以通过-XX:+CMSParallelInitialMarkEnabled参数控制。</em></p>
 <p><strong>CMS收集器的特性总结：</strong></p>
 <ul>
-<li>收集过程：部分阶段和业务线程并发执行，部分阶段暂停所有业务线程  </li>
-<li>算法：标记-清除算法  </li>
-<li>优点：并发收集、低停顿  </li>
-<li>缺点：清除算法会产生空间碎片、并发阶段会降低吞吐量、无法即时处理并发阶段产生的“浮动垃圾”  </li>
-<li>应用：指定使用  </li>
-<li><p>参数控制：</p>
+<li>
+<p>收集过程：部分阶段和业务线程并发执行，部分阶段暂停所有业务线程</p>
+</li>
+<li>
+<p>算法：标记-清除算法</p>
+</li>
+<li>
+<p>优点：并发收集、低停顿</p>
+</li>
+<li>
+<p>缺点：清除算法会产生空间碎片、并发阶段会降低吞吐量、无法即时处理并发阶段产生的“浮动垃圾”</p>
+</li>
+<li>
+<p>应用：指定使用</p>
+</li>
+<li>
+<p>参数控制：</p>
 <blockquote>
-<p>-XX:+UseConcMarkSweepGC（是否采用CMS回收器）<br>-XX:+UseCMSInitiatingOccupancyOnly（JVM是否基于运行时收集的数据来启动CMS垃圾收集周期还是只根据初始设置来启动）<br>-XX:CMSInitiatingOccupancyFraction=80 （old区在使用了n%的后开始启动CMS backgroud GC）<br>-XX:ConcGCThreads=4 （并发CMS阶段采用多线程时使用的线程数）<br>-XX:+CMSConcurrentMTEnabled （并发阶段是否采用多线程）<br>-XX:+CMSParallelInitialMarkEnabled （初始标记阶段是否采用多线程并行执行）<br>-XX:+CMSParallelRemarkEnabled （重新标记阶段是否采用多线程并行执行）<br>-XX:+UseCMSCompactAtFullCollection （是否允许Full GC时采用整理算法）<br>-XX:CMSFullGCsBeforeCompaction=0 （采用整理算法前需要Full GC次数达到一定阈值）<br>-XX:+CMSClassUnloadingEnabled （GC过程也对永久代进行垃圾回收）<br>-XX:ExplicitGCInvokesConcurrent （允许显示的系统GC调用）<br>-XX:+CMSScavengeBeforeRemark （CMS重新标记阶段之前是否尝试对年轻代进行一次回收，能有效降低remark的时间）<br>-XX:+CMSIncrementalMode （增量模式，基本不开启，cpu资源少时可尝试）<br>-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses （当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内）</p>
+<p>-XX:+UseConcMarkSweepGC（是否采用CMS回收器）<br>
+-XX:+UseCMSInitiatingOccupancyOnly（JVM是否基于运行时收集的数据来启动CMS垃圾收集周期还是只根据初始设置来启动）<br>
+-XX:CMSInitiatingOccupancyFraction=80 （old区在使用了n%的后开始启动CMS backgroud GC）<br>
+-XX:ConcGCThreads=4 （并发CMS阶段采用多线程时使用的线程数）<br>
+-XX:+CMSConcurrentMTEnabled （并发阶段是否采用多线程）<br>
+-XX:+CMSParallelInitialMarkEnabled （初始标记阶段是否采用多线程并行执行）<br>
+-XX:+CMSParallelRemarkEnabled （重新标记阶段是否采用多线程并行执行）<br>
+-XX:+UseCMSCompactAtFullCollection （是否允许Full GC时采用整理算法）<br>
+-XX:CMSFullGCsBeforeCompaction=0 （采用整理算法前需要Full GC次数达到一定阈值）<br>
+-XX:+CMSClassUnloadingEnabled （GC过程也对永久代进行垃圾回收）<br>
+-XX:ExplicitGCInvokesConcurrent （允许显示的系统GC调用）<br>
+-XX:+CMSScavengeBeforeRemark （CMS重新标记阶段之前是否尝试对年轻代进行一次回收，能有效降低remark的时间）<br>
+-XX:+CMSIncrementalMode （增量模式，基本不开启，cpu资源少时可尝试）<br>
+-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses （当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内）</p>
 </blockquote>
 </li>
 </ul>
-<h6><span id="g1收集器">G1收集器</span></h6><p>G1（Garbage First）收集器在JDK 1.7版本正式启用，在JDK 9中，G1被提议设置为默认垃圾收集器。应用在多处理器和大容量内存环境中，在实现高吞吐量的同时，尽可能的满足垃圾收集暂停时间的要求。G1收集器的设计目标是取代CMS收集器，它同CMS相比，在以下方面表现的更出色：</p>
+<h6><span id="g1收集器">G1收集器</span></h6>
+<p>G1（Garbage First）收集器在JDK 1.7版本正式启用，在JDK 9中，G1被提议设置为默认垃圾收集器。应用在多处理器和大容量内存环境中，在实现高吞吐量的同时，尽可能的满足垃圾收集暂停时间的要求。G1收集器的设计目标是取代CMS收集器，它同CMS相比，在以下方面表现的更出色：</p>
 <ul>
-<li><p>G1是一个有整理内存过程的垃圾收集器，不会产生很多内存碎片。  </p>
+<li>
+<p>G1是一个有整理内存过程的垃圾收集器，不会产生很多内存碎片。</p>
 </li>
-<li><p>G1的Stop The World(STW)更可控，G1在停顿时间上添加了预测机制，用户可以指定期望停顿时间。  </p>
+<li>
+<p>G1的Stop The World(STW)更可控，G1在停顿时间上添加了预测机制，用户可以指定期望停顿时间。</p>
 </li>
 </ul>
 <p>与前面介绍回收器只能工作在年轻代或者年老代不同的是，G1收集器将整个Java堆划分为多个大小相等的独立区域（Region），虽然还保留有新生代和老年代的概念，但新生代和老年代不再是物理隔阂了，它们都是一部分（可以不连续）Region的集合。G1的新生代收集跟ParNew类似，当新生代占用达到一定比例的时候，开始出发收集。和CMS类似，G1收集器收集老年代对象会有短暂停顿。</p>
@@ -348,84 +445,116 @@
 </blockquote>
 <p>G1收集器有三种GC模式：</p>
 <ul>
-<li><p>Young GC：</p>
-<p>  发生在年轻代的Region，所有eden类型的Region被分配完时，触发Young GC，将存活对象从eden的Region拷贝到survior类型的Region或者晋升到old Region，然后根据历史统计信息和用户定义的暂停时间来动态调整eden Region和survivor Region的个数，从而尽量让下一次GC的回收时间满足用户期望。和ParNew一样YGC采用的“复制-收集”算法。</p>
+<li>
+<p>Young GC：</p>
+<p>发生在年轻代的Region，所有eden类型的Region被分配完时，触发Young GC，将存活对象从eden的Region拷贝到survior类型的Region或者晋升到old Region，然后根据历史统计信息和用户定义的暂停时间来动态调整eden Region和survivor Region的个数，从而尽量让下一次GC的回收时间满足用户期望。和ParNew一样YGC采用的“复制-收集”算法。</p>
 </li>
-<li><p>Mixed GC：</p>
-<p>  STW阶段，类似CMS一样当old类型的Region占用达到一定阈值的时候，G1会触发一次全局“标记”动作，统计得出收集收益高的老年代Region。“标记”工作完成后，在每次YGC之后或者再次发生Mixed GC前，JVM会检查整个堆的垃圾占比是否达到G1HeapWastePercent的阈值，如果达到了，下次就会触发一次Mixed GC（<em>一次标记后可能会分多次进行Mixed GC</em>）。</p>
-<p>  Mixed GC并不仅仅是一次老年代GC，不仅进行正常的YGC回收整个young区，同时也会选择部分old Region也进行回收，和YGC一样，Mixed GC也是采用的“复制-收集”算法作为清除策略，因此整个G1垃圾回收不会存在和CMS一样的内存碎片问题。Mixed GC步骤包括 “标记”和“回收”两部分。</p>
+<li>
+<p>Mixed GC：</p>
+<p>STW阶段，类似CMS一样当old类型的Region占用达到一定阈值的时候，G1会触发一次全局“标记”动作，统计得出收集收益高的老年代Region。“标记”工作完成后，在每次YGC之后或者再次发生Mixed GC前，JVM会检查整个堆的垃圾占比是否达到G1HeapWastePercent的阈值，如果达到了，下次就会触发一次Mixed GC（<em>一次标记后可能会分多次进行Mixed GC</em>）。</p>
+<p>Mixed GC并不仅仅是一次老年代GC，不仅进行正常的YGC回收整个young区，同时也会选择部分old Region也进行回收，和YGC一样，Mixed GC也是采用的“复制-收集”算法作为清除策略，因此整个G1垃圾回收不会存在和CMS一样的内存碎片问题。Mixed GC步骤包括 “标记”和“回收”两部分。</p>
 </li>
-<li><p>Full gc：</p>
-<p>  如果对象内存分配速度过快，mixed gc来不及回收，导致老年代被填满，就会触发一次full gc，G1的full gc算法就是单线程执行的serial old gc，会导致异常长时间的暂停时间，需要进行不断的调优，尽可能的避免full gc。</p>
+<li>
+<p>Full gc：</p>
+<p>如果对象内存分配速度过快，mixed gc来不及回收，导致老年代被填满，就会触发一次full gc，G1的full gc算法就是单线程执行的serial old gc，会导致异常长时间的暂停时间，需要进行不断的调优，尽可能的避免full gc。</p>
 </li>
 </ul>
 <p>其中YGC和ParNew等回收器的过程类似，比较简单，采用的是»复制-收集»算法，Mixed GC部分过程和CMS也比较相似，略有不同，Mixed GC分为»标记»和»回收»两大阶段。</p>
 <p>Mixed GC的“标记”过程如下：</p>
 <ol>
-<li><p><strong>initial mark（初始标记）</strong>：会暂停所有线程，标记出所有可以直接从GC roots可以到达的对象，这是在Young GC的暂停收集阶段顺带进行的。因为 Young GC 是需要 stop-the-world 的，所以并发周期直接重用这个阶段，虽然会增加 CPU 开销，但是停顿时间只是增加了一小部分。  </p>
+<li>
+<p><strong>initial mark（初始标记）</strong>：会暂停所有线程，标记出所有可以直接从GC roots可以到达的对象，这是在Young GC的暂停收集阶段顺带进行的。因为 Young GC 是需要 stop-the-world 的，所以并发周期直接重用这个阶段，虽然会增加 CPU 开销，但是停顿时间只是增加了一小部分。</p>
 </li>
-<li><p><strong>concurrent-root-region-scan（扫描根引用区）</strong>：找出所有的GC Roots的Region, 然后从这些Region开始标记可到达的对象，是一个并发阶段。  </p>
+<li>
+<p><strong>concurrent-root-region-scan（扫描根引用区）</strong>：找出所有的GC Roots的Region, 然后从这些Region开始标记可到达的对象，是一个并发阶段。</p>
 </li>
-<li><p><strong>concurrent marking（并发标记</strong>）：和CMS的并发标记阶段类似，这个阶段G1递归寻找整个堆的存活对象，是和业务线程并发执行的。  </p>
+<li>
+<p><strong>concurrent marking（并发标记</strong>）：和CMS的并发标记阶段类似，这个阶段G1递归寻找整个堆的存活对象，是和业务线程并发执行的。</p>
 </li>
-<li><p><strong>remark（最终标记）</strong>：STW的阶段，完成最后的存活对象标记。使用了比 CMS 收集器更加高效的 snapshot-at-the-beginning (SATB) 算法。  </p>
+<li>
+<p><strong>remark（最终标记）</strong>：STW的阶段，完成最后的存活对象标记。使用了比 CMS 收集器更加高效的 snapshot-at-the-beginning (SATB) 算法。</p>
 </li>
-<li><p><strong>clean up（清理阶段</strong>）：marking的最后一个阶段，G1统计各个Region的活跃性，完全没有存活对象的Region直接放入空闲可用Region列表中，然后会找出mixed GC的Region候选列表。  </p>
+<li>
+<p><strong>clean up（清理阶段</strong>）：marking的最后一个阶段，G1统计各个Region的活跃性，完全没有存活对象的Region直接放入空闲可用Region列表中，然后会找出mixed GC的Region候选列表。</p>
 </li>
 </ol>
 <p>Mixed GC的“回收”过程如下：</p>
 <ol>
-<li><p>选择所有young regions进行年轻代回收年轻代回收。  </p>
+<li>
+<p>选择所有young regions进行年轻代回收年轻代回收。</p>
 </li>
-<li><p>选取标记阶段之前标记出来的老年代的垃圾最多的部分区块，结合用户“期望”的GC Pause耗时相关，选取收益最大的部分Region进行回收，整个老年代标记完后可能会分多次Mixed GC执行，直到标记后的垃圾分区占比低于“堆废物占比”，之后再恢复到常规的年轻代垃圾收集，然后当堆的使用满足“触发标记周期阈值”会最终再次启动并发周期，进行下一轮循环。  </p>
+<li>
+<p>选取标记阶段之前标记出来的老年代的垃圾最多的部分区块，结合用户“期望”的GC Pause耗时相关，选取收益最大的部分Region进行回收，整个老年代标记完后可能会分多次Mixed GC执行，直到标记后的垃圾分区占比低于“堆废物占比”，之后再恢复到常规的年轻代垃圾收集，然后当堆的使用满足“触发标记周期阈值”会最终再次启动并发周期，进行下一轮循环。</p>
 </li>
 </ol>
 <p><strong>G1常用参数</strong></p>
 <ul>
-<li><p>-XX:G1HeapRegionSize=n</p>
-<p>  设置的 G1 区域的大小。值是 2 的幂，范围是 1 MB 到 32 MB 之间。目标是根据最小的 Java 堆大小划分出约 2048 个区域。</p>
+<li>
+<p>-XX:G1HeapRegionSize=n</p>
+<p>设置的 G1 区域的大小。值是 2 的幂，范围是 1 MB 到 32 MB 之间。目标是根据最小的 Java 堆大小划分出约 2048 个区域。</p>
 </li>
-<li><p>-XX:MaxGCPauseMillis=200</p>
-<p>  为所需的最长暂停时间设置目标值。默认值是 200 毫秒。指定的值不适用于您的堆大小。</p>
+<li>
+<p>-XX:MaxGCPauseMillis=200</p>
+<p>为所需的最长暂停时间设置目标值。默认值是 200 毫秒。指定的值不适用于您的堆大小。</p>
 </li>
-<li><p>-XX:G1NewSizePercent=5</p>
-<p>  设置要用作年轻代大小最小值的堆百分比。默认值是 Java 堆的 5%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了</p>
+<li>
+<p>-XX:G1NewSizePercent=5</p>
+<p>设置要用作年轻代大小最小值的堆百分比。默认值是 Java 堆的 5%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了</p>
 </li>
-<li><p>-XX:DefaultMinNewGenPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:DefaultMinNewGenPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:G1MaxNewSizePercent=60</p>
-<p>  设置要用作年轻代大小最大值的堆大小百分比。默认值是 Java 堆的 60%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了 -XX:DefaultMaxNewGenPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1MaxNewSizePercent=60</p>
+<p>设置要用作年轻代大小最大值的堆大小百分比。默认值是 Java 堆的 60%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了 -XX:DefaultMaxNewGenPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:ParallelGCThreads=n</p>
-<p>  设置 STW 工作线程数的值。将 n 的值设置为逻辑处理器的数量。n 的值与逻辑处理器的数量相同，最多为 8。</p>
-<p>  如果逻辑处理器不止八个，则将 n 的值设置为逻辑处理器数的 5/8 左右。这适用于大多数情况，除非是较大的 SPARC 系统，其中 n 的值可以是逻辑处理器数的 5/16 左右。</p>
+<li>
+<p>-XX:ParallelGCThreads=n</p>
+<p>设置 STW 工作线程数的值。将 n 的值设置为逻辑处理器的数量。n 的值与逻辑处理器的数量相同，最多为 8。</p>
+<p>如果逻辑处理器不止八个，则将 n 的值设置为逻辑处理器数的 5/8 左右。这适用于大多数情况，除非是较大的 SPARC 系统，其中 n 的值可以是逻辑处理器数的 5/16 左右。</p>
 </li>
-<li><p>-XX:ConcGCThreads=n</p>
-<p>  设置并行标记的线程数。将 n 设置为并行垃圾回收线程数 (ParallelGCThreads) 的 1/4 左右。</p>
+<li>
+<p>-XX:ConcGCThreads=n</p>
+<p>设置并行标记的线程数。将 n 设置为并行垃圾回收线程数 (ParallelGCThreads) 的 1/4 左右。</p>
 </li>
-<li><p>-XX:InitiatingHeapOccupancyPercent=45</p>
-<p>  设置触发标记周期的 Java 堆占用率阈值。默认占用率是整个 Java 堆的 45%。</p>
+<li>
+<p>-XX:InitiatingHeapOccupancyPercent=45</p>
+<p>设置触发标记周期的 Java 堆占用率阈值。默认占用率是整个 Java 堆的 45%。</p>
 </li>
-<li><p>-XX:G1MixedGCLiveThresholdPercent=65</p>
-<p>  为混合垃圾回收周期中要包括的旧区域设置占用率阈值。默认占用率为 65%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了 </p>
+<li>
+<p>-XX:G1MixedGCLiveThresholdPercent=65</p>
+<p>为混合垃圾回收周期中要包括的旧区域设置占用率阈值。默认占用率为 65%。这是一个实验性的标志。有关示例，请参见“如何解锁实验性虚拟机标志”。此设置取代了</p>
 </li>
-<li><p>-XX:G1OldCSetRegionLiveThresholdPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1OldCSetRegionLiveThresholdPercent 设置。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:G1HeapWastePercent=10</p>
-<p>  设置您愿意浪费的堆百分比。如果可回收百分比小于堆废物百分比，Java HotSpot VM 不会启动混合垃圾回收周期。默认值是 10%。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1HeapWastePercent=10</p>
+<p>设置您愿意浪费的堆百分比。如果可回收百分比小于堆废物百分比，Java HotSpot VM 不会启动混合垃圾回收周期。默认值是 10%。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:G1MixedGCCountTarget=8</p>
-<p>  设置标记周期完成后，对存活数据上限为 G1MixedGCLIveThresholdPercent 的旧区域执行混合垃圾回收的目标次数。默认值是 8 次混合垃圾回收。混合回收的目标是要控制在此目标次数以内。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1MixedGCCountTarget=8</p>
+<p>设置标记周期完成后，对存活数据上限为 G1MixedGCLIveThresholdPercent 的旧区域执行混合垃圾回收的目标次数。默认值是 8 次混合垃圾回收。混合回收的目标是要控制在此目标次数以内。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:G1OldCSetRegionThresholdPercent=10</p>
-<p>  设置混合垃圾回收期间要回收的最大旧区域数。默认值是 Java 堆的 10%。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1OldCSetRegionThresholdPercent=10</p>
+<p>设置混合垃圾回收期间要回收的最大旧区域数。默认值是 Java 堆的 10%。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
-<li><p>-XX:G1ReservePercent=10</p>
-<p>  设置作为空闲空间的预留内存百分比，以降低目标空间溢出的风险。默认值是 10%。增加或减少百分比时，请确保对总的 Java 堆调整相同的量。Java HotSpot VM build 23 中没有此设置。</p>
+<li>
+<p>-XX:G1ReservePercent=10</p>
+<p>设置作为空闲空间的预留内存百分比，以降低目标空间溢出的风险。默认值是 10%。增加或减少百分比时，请确保对总的 Java 堆调整相同的量。Java HotSpot VM build 23 中没有此设置。</p>
 </li>
 </ul>
 <hr>
-<p><em>参考：</em><br><a href="http://120.52.51.16/www.cs.virginia.edu/~cs415/reading/bacon-garbage.pdf" target="_blank" rel="noopener">垃圾回收统一理论</a><br><a href="http://www.math.grin.edu/~rebelsky/Courses/CS302/99S/Presentations/GC/" target="_blank" rel="noopener">Introduction to Garbage Collection</a><br><a href="https://hllvm-group.iteye.com/group/topic/38223" target="_blank" rel="noopener">R大：并发垃圾收集器（CMS）为什么没有采用标记-整理算法来实现？</a><br><a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为</a><br><a href="https://www.oracle.com/technetwork/cn/articles/java/g1gc-1984535-zhs.html" target="_blank" rel="noopener">垃圾优先型垃圾回收器调优</a><br><a href="https://www.infoq.com/articles/G1-One-Garbage-Collector-To-Rule-Them-All" target="_blank" rel="noopener">G1: One Garbage Collector To Rule Them All</a><br><a href="http://imushan.com/2018/08/19/java/language/JDK源码阅读-Reference/" target="_blank" rel="noopener">JDK源码阅读-Reference</a><br><a href="https://coldwalker.com/2019/02/gc_object_alloc_process/" target="_blank" rel="noopener">Java垃圾回收浅析(2)-GC方式介绍</a></p>
+<p><em>参考：</em><br>
+<a href="http://120.52.51.16/www.cs.virginia.edu/~cs415/reading/bacon-garbage.pdf" target="_blank" rel="noopener">垃圾回收统一理论</a><br>
+<a href="http://www.math.grin.edu/~rebelsky/Courses/CS302/99S/Presentations/GC/" target="_blank" rel="noopener">Introduction to Garbage Collection</a><br>
+<a href="https://hllvm-group.iteye.com/group/topic/38223" target="_blank" rel="noopener">R大：并发垃圾收集器（CMS）为什么没有采用标记-整理算法来实现？</a><br>
+<a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为</a><br>
+<a href="https://www.oracle.com/technetwork/cn/articles/java/g1gc-1984535-zhs.html" target="_blank" rel="noopener">垃圾优先型垃圾回收器调优</a><br>
+<a href="https://www.infoq.com/articles/G1-One-Garbage-Collector-To-Rule-Them-All" target="_blank" rel="noopener">G1: One Garbage Collector To Rule Them All</a><br>
+<a href="http://imushan.com/2018/08/19/java/language/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Reference/" target="_blank" rel="noopener">JDK源码阅读-Reference</a><br>
+<a href="https://coldwalker.com/2019/02/gc_object_alloc_process/" target="_blank" rel="noopener">Java垃圾回收浅析(2)-GC方式介绍</a></p>
 
         
                 <hr>

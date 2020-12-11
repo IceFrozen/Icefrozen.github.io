@@ -232,12 +232,48 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-concurrence-2/">
+        <h2 class="post-title">
+            JAVA多线程之Atomic和LongAddr类（1）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/33/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                Atomic类详解
+            </h3>
+        <div class="post-content-preview">
+            概述
+Atomic与LongAddr解决什么问题
+解决变量赋值的原子性问题。 底层采用的是CAS的自旋的方式来实现的。CAS会有ABA和性能的问题，Atomic 采用版本号的方式来解决ABA的问题。ABA问题是否会对业务产生影响，还需要业务方自己评估，大部分情况下比如一些非金融业务系统中，ABA不会对业务造成影响。
+至于性能问题，CAS自旋的方式确实会造成一些CPU的空转，因为严格意义上来说...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2020-05-03
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/tcpip-4-SSL-TLS-3/">
         <h2 class="post-title">
             TCP/IP系列(4)-SSL/TSL详解(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/57/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/27/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,12 +281,13 @@
                 TLS1.2的握手步骤
             </h3>
         <div class="post-content-preview">
-            概述TLS 握手协议包含如下几步:
+            概述
+TLS 握手协议包含如下几步:
 
 交换 Hello 消息, 交换随机数和支持的密码套件列表, 以协商出密码套件和对应的算法。检查会话是否可恢复
 交换必要的密码参数以允许 client 和 server 协商预备主密钥 premaster secret
 交换证书和密码信息以允许 client 和 server 进行身份认证
-从预备主密钥 premaster secret 和交换的随机数中生...
+从预备主密钥 premaster secret 和交换的随机数中...
         </div>
     </a>
     
@@ -277,7 +314,7 @@
             TCP/IP系列(4)-SSL/TSL详解(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/35/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/5/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -285,15 +322,16 @@
                 SSL/TSL详解(2)-TLS层次分类
             </h3>
         <div class="post-content-preview">
-            概述前面章节，我们简单介绍了TLS的秘钥交换的算法。接下来我们来讲一下SSL层。
-TLS层SSL层TLS是介于网络层和传输层之间的半层。
+            概述
+前面章节，我们简单介绍了TLS的秘钥交换的算法。接下来我们来讲一下SSL层。
+TLS层SSL层
+TLS是介于网络层和传输层之间的半层。
 
-协议层分类TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分又可以分为 2 层：
+协议层分类
+TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分又可以分为 2 层：
 
 靠近应用层的握手协议 TLS Handshaking Protocols
-靠近 TCP 的记录层协议 TLS Record Protocol
-
-...
+靠近 TCP 的记录层协议 TLS Record Protoco...
         </div>
     </a>
     
@@ -320,7 +358,7 @@ TLS层SSL层TLS是介于网络层和传输层之间的半层。
             TCP/IP系列(4)-SSL/TLS详解(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/62/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -328,8 +366,10 @@ TLS层SSL层TLS是介于网络层和传输层之间的半层。
                 SSL/TLS详解(1)--安全规范
             </h3>
         <div class="post-content-preview">
-            概述SSL/TSL 协议SSL（安全套接字层）是一种标准安全协议，用于在在线通信中建立Web服务器和浏览器之间的加密链接。
-TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级版，TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。现在习惯将这个两个组合在一起称为S...
+            概述
+SSL/TSL 协议
+**SSL（安全套接字层）**是一种标准安全协议，用于在在线通信中建立Web服务器和浏览器之间的加密链接。
+TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级版，TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。现在习惯将这个两个组合...
         </div>
     </a>
     
@@ -356,7 +396,7 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
             Thrift框架详解（四）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/27/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -364,8 +404,10 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
                 协议和编解码(2)-TCompactProtocol
             </h3>
         <div class="post-content-preview">
-            概诉上一届主要讨论了Thrift编解码中的二进制协议格式。这是一种比较大众的协议。本节来讨论二进制协议的另一种加强版本。TCompactProtocol
-编解码对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者结合...
+            概诉
+上一届主要讨论了Thrift编解码中的二进制协议格式。这是一种比较大众的协议。本节来讨论二进制协议的另一种加强版本。TCompactProtocol
+编解码
+对于二进制编码，经常需要对数据进行压缩以节省空间，varint可以压缩较小的正数，但是对于负数varint反而更浪费空间，zigzag编码可以处理负数，使负数也可以使用varint编码压缩，protobuf和thrift都使用二者...
         </div>
     </a>
     
@@ -392,7 +434,7 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
             Thrift框架详解（四）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/47/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -400,15 +442,18 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
                 协议和编解码(1)-TBinaryProtocol
             </h3>
         <div class="post-content-preview">
-            概诉本节来讨论thrift 的编解码器。
-核心组件整体架构
+            概诉
+本节来讨论thrift 的编解码器。
+核心组件
+整体架构
+
 Thrift的核心组件, 主要包含以下几个方面
 
 IDL服务描述组件,负责完成跨平台和跨语言(针对不同语言完成了Server层和Client代码的生成)
 TServer和Client，服务端和客户端组件的实现
 TProtocal 协议和解编码组件
 TTransport 传输组件
-TProcessor 服务调用组件，完成对服务实现的调...
+TProcessor 服务调用组件，完成对服务实...
         </div>
     </a>
     
@@ -435,7 +480,7 @@ TProcessor 服务调用组件，完成对服务实现的调...
             系统架构（一）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/63/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -443,8 +488,12 @@ TProcessor 服务调用组件，完成对服务实现的调...
                 阿姆达尔定律
             </h3>
         <div class="post-content-preview">
-            概诉阿姆达尔定律
-什么是阿姆达尔定律阿姆达尔定律（英语：Amdahl’s law，Amdahl’s argument），一个计算机科学界的经验法则，因吉恩·阿姆达尔(Gene Amdahl)而得名。它代表了处理器平行运算之后效率提升的能力。1967年计算机体系结构专家吉恩.阿姆达尔提出过一个定律阿姆达尔定律，说：在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比。举两个例子说明这...
+            概诉
+阿姆达尔定律
+什么是阿姆达尔定律
+阿姆达尔定律（英语：Amdahl’s law，Amdahl’s argument），一个计算机科学界的经验法则，因吉恩·阿姆达尔(Gene Amdahl)而得名。它代表了处理器平行运算之后效率提升的能力。
+1967年计算机体系结构专家吉恩.阿姆达尔提出过一个定律阿姆达尔定律，说：在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比。
+举两个例...
         </div>
     </a>
     
@@ -469,7 +518,7 @@ TProcessor 服务调用组件，完成对服务实现的调...
             Thrift框架详解（三）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/86/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -477,8 +526,12 @@ TProcessor 服务调用组件，完成对服务实现的调...
                 IDL生成文件详解
             </h3>
         <div class="post-content-preview">
-            概诉上一节，我们已经详解了IDL详细的语法，Thrift 就是根据这个语法，替我们生成目标代码的。下面我们来具体分析一下，生成的代码究竟是什么作用。
-准备目录结构我们来看一下代码结构1234567891011121314151617181920├── java│   └── learn│       └── thrift│           ├── bean│           ├── ...
+            概诉
+上一节，我们已经详解了IDL详细的语法，Thrift 就是根据这个语法，替我们生成目标代码的。下面我们来具体分析一下，生成的代码究竟是什么作用。
+准备
+目录结构
+我们来看一下代码结构
+1234567891011121314151617181920├── java│   └── learn│       └── thrift│           ├── bean│           ...
         </div>
     </a>
     
@@ -505,7 +558,7 @@ TProcessor 服务调用组件，完成对服务实现的调...
             Thrift框架详解（二）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/14/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -513,8 +566,12 @@ TProcessor 服务调用组件，完成对服务实现的调...
                 Thrift IDL 详解
             </h3>
         <div class="post-content-preview">
-            概诉前一章节，我们基本入门，了解了 Thrift 的基本用法，这一节继续来分析 Thrift IDL的内容。Thrift 采用IDL（Interface Definition Language）来定义通用的服务接口，然后通过 Thrift 提供的编译器，可以将服务接口编译成不同语言编写的代码，通过这个方式来实现跨语言的功能。
-IDL定义的规范 IDL 结构规范123Document   ::...
+            概诉
+前一章节，我们基本入门，了解了 Thrift 的基本用法，这一节继续来分析 Thrift IDL的内容。
+Thrift 采用IDL（Interface Definition Language）来定义通用的服务接口，然后通过 Thrift 提供的编译器，可以将服务接口编译成不同语言编写的代码，通过这个方式来实现跨语言的功能。
+IDL定义的规范
+IDL 结构规范
+123Document  ...
         </div>
     </a>
     
@@ -541,7 +598,7 @@ IDL定义的规范 IDL 结构规范123Document   ::...
             Thrift框架详解（一）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/44/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -549,8 +606,10 @@ IDL定义的规范 IDL 结构规范123Document   ::...
                 概诉与入门
             </h3>
         <div class="post-content-preview">
-            Thrift 简介Thrift是一个轻量级、跨语言的远程服务调用框架，最初由Facebook开发，后面进入Apache开源项目。它通过自身的IDL中间语言, 并借助代码生成引擎生成各种主流语言的RPC服务端/客户端模板代码。Thrift支持多种不同的编程语言，包括C++、Java、Python、PHP、Ruby等，本系列主要讲述基于Java语言的Thrift的配置方式和具体使用。
-Thrif...
+            Thrift 简介
+Thrift是一个轻量级、跨语言的远程服务调用框架，最初由Facebook开发，后面进入Apache开源项目。它通过自身的IDL中间语言, 并借助代码生成引擎生成各种主流语言的RPC服务端/客户端模板代码。
+Thrift支持多种不同的编程语言，包括C++、Java、Python、PHP、Ruby等，本系列主要讲述基于Java语言的Thrift的配置方式和具体使用。
+Thr...
         </div>
     </a>
     
@@ -563,44 +622,6 @@ Thrif...
               <a href="/tags/#Thrift" title="Thrift">Thrift</a>
             
               <a href="/tags/#RPC" title="RPC">RPC</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/java-AQS3-read-write-lock/">
-        <h2 class="post-title">
-            JAVA多线程之AQS分析(3)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/13/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                ReentrantReadWriteLock读写锁源码分析
-            </h3>
-        <div class="post-content-preview">
-            基础所谓读写锁，是对访问资源共享锁和排斥锁，一般的重入性语义为 如果对资源加了写锁，其他线程无法再获得写锁与读锁，但是持有写锁的线程，可以对资源加读锁（锁降级）；如果一个线程对资源加了读锁，其他线程可以继续加读锁。
-样例我们来看一段例子1234567891011121314151617181920212223242526272829303132333435363738394041424344...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-11-27
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
-            
-              <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-              <a href="/tags/#多线程" title="多线程">多线程</a>
             
         </div>
     
@@ -712,6 +733,10 @@ Thrif...
     <ul>
       
         <li>
+          <a href="/article/distributed-redis-advanced/">Redis系列之集群搭建</a>
+        </li>
+      
+        <li>
           <a href="/article/openerating-learning-vfs-2/">Linux 操作系统原理-文件系统(2)</a>
         </li>
       
@@ -727,10 +752,6 @@ Thrif...
           <a href="/article/bytecode-analysis/">深入JVM字节码(1)</a>
         </li>
       
-        <li>
-          <a href="/article/java-cms-gc-log/">Java垃圾回收详解(6)</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -739,7 +760,7 @@ Thrif...
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -752,8 +773,6 @@ Thrif...
     <div class="tags">
         
             
-        
-            
             <a href="/tags/#算法" title="算法" rel="5">算法</a>
             
         
@@ -764,17 +783,19 @@ Thrif...
             
         
             
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
-            
-        
-            
             <a href="/tags/#JAVA" title="JAVA" rel="23">JAVA</a>
             
         
             
             <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
@@ -840,9 +861,9 @@ Thrif...
             
         
             
-        
-            
             <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
+        
             
         
             
@@ -858,13 +879,13 @@ Thrif...
             
         
             
-        
-            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
+            
+        
             
         
             

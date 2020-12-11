@@ -219,28 +219,47 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概述">概述</span></h2><p>态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。</p>
+                <h2><span id="概述">概述</span></h2>
+<p>态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。</p>
 <p>动态规划一般可分为</p>
 <ul>
-<li>线性动规</li>
-<li>区域动规</li>
-<li>树形动规</li>
-<li>背包动规四类。</li>
-<li><p>举例：</p>
+<li>
+<p>线性动规</p>
+</li>
+<li>
+<p>区域动规</p>
+</li>
+<li>
+<p>树形动规</p>
+</li>
+<li>
+<p>背包动规四类。</p>
+</li>
+<li>
+<p>举例：</p>
 <blockquote>
 <p><code>线性动规</code>：拦截导弹(最大递减数列)，合唱队形，挖地雷，建学校，剑客决斗等；</p>
+</blockquote>
+<blockquote>
 <p><code>区域动规</code>：石子合并， 加分二叉树，统计单词个数，炮兵布阵等；</p>
+</blockquote>
+<blockquote>
 <p><code>树形动规</code>：贪吃的九头龙，二分查找树，聚会的欢乐，数字三角形等；</p>
+</blockquote>
+<blockquote>
 <p><code>背包问题</code>：01背包问题，完全背包问题，分组背包问题，二维背包，装箱问题，挤牛奶等；</p>
 </blockquote>
 </li>
 </ul>
-<h2><span id="基本概念">基本概念</span></h2><h3><span id="动态规划过程">动态规划过程</span></h3><p><strong>每次决策依赖于当前状态，又随即引起状态的转移。一个决策序列就是在变化的状态中产生出来的，所以，这种多阶段最优化决策解决问题的过程就称为动态规划。</strong></p>
+<h2><span id="基本概念">基本概念</span></h2>
+<h3><span id="动态规划过程">动态规划过程</span></h3>
+<p><strong>每次决策依赖于当前状态，又随即引起状态的转移。一个决策序列就是在变化的状态中产生出来的，所以，这种多阶段最优化决策解决问题的过程就称为动态规划。</strong></p>
 <p>动态规划算法与分治法类似，<code>其基本思想也是将待求解问题分解成若干个子问题，先求解子问题，然后从这些子问题的解得到原问题的解</code>。</p>
 <p>与分治法不同的是，适合于用动态规划求解的问题，经分解得到子问题往往不是互相独立的。若用分治法来解这类问题，则分解得到的子问题数目太多，<code>有些子问题被重复计算了很多次。如果我们能够保存已解决的子问题的答案，而在需要时再找出已求得的答案，这样就可以避免大量的重复计算，节省时间</code>。</p>
 <p>我们可以用一个表来记录所有已解的子问题的答案。不管该子问题以后是否被用到，只要它被计算过，就将其结果填入表中。这就是动态规划法的基本思路。具体的动态规划算法多种多样，但它们具有相同的填表格式。</p>
 <p>态规划经常常使用于解决最优化问题，这些问题多表现为<code>多阶段决策</code>。</p>
-<h3><span id="关于多阶段决策">关于多阶段决策：</span></h3><p>在实际中，人们经常遇到这样一类决策问题，即因为过程的特殊性，能够将决策的全过程根据时间或空间划分若干个联系的阶段。而在各阶段中。人们都须要作出方案的选择。我们称之为<code>决策</code>。</p>
+<h3><span id="关于多阶段决策">关于多阶段决策：</span></h3>
+<p>在实际中，人们经常遇到这样一类决策问题，即因为过程的特殊性，能够将决策的全过程根据时间或空间划分若干个联系的阶段。而在各阶段中。人们都须要作出方案的选择。我们称之为<code>决策</code>。</p>
 <p>而且当一个阶段的决策之后，经常影响到下一个阶段的决策，从而影响整个过程的活动。这样，各个阶段所确定的决策就构成一个决策序列，常称之为<code>策略</code>。</p>
 <p>因为各个阶段可供选择的决策往往不止一个。因而就可能有很多决策以供选择，这些可供选择的策略构成一个集合，我们称之为同意<code>策略集合</code>（简称策略集合）。每一个策略都对应地确定一种活动的效果。我们假定这个效果能够用数量来衡量。</p>
 <p>因为不同的策略经常导致不同的效果，因此，怎样在同意策略集合中选择一个策略，使其在预定的标准下达到最好的效果。经常是人们所关心的问题。我们称这种策略为最优策略，这类问题就称为<strong>多阶段决策问题</strong>。</p>
@@ -250,113 +269,200 @@
 <p>某种机器能够在高低两种不同的负荷下进行生产。在高负荷下生产时。产品的年产量g和投入生产的机器数量x的关系为g=g(x)，这时的年完善率为a，即假设年初完善机器数为x，到年终时完善的机器数为a*x(0&lt;a&lt;1)；在低负荷下生产时，产品的年产量h和投入生产的机器数量y的关系为h=h(y)。对应的完善率为b(0&lt;b&lt;0)。且a&lt;b。</p>
 <p>假定開始生产时完善的机器熟练度为s1。要制定一个五年计划，确定每年投入高、低两种负荷生产的完善机器数量，使5年内产品的总产量达到最大。这是一个多阶段决策问题。</p>
 <p>显然能够将全过程划分为5个阶段（一年一个阶段），每一个阶段開始时要确定投入高、低两种负荷下生产的完善机器数，并且上一个阶段的决策必定影响到下一个阶段的生产状态。决策的目标是使产品的总产量达到最大。这个问题常常使用数学方法建模，结合线性规划等知识来进行解决。</p>
-<h2><span id="动态规划的适用条件">动态规划的适用条件</span></h2><p>任何思想方法都有一定的局限性，超出了特定条件，它就失去了作用。同样，动态规划也并不是万能的。适用动态规划的问题必须满足<code>最优化原理</code>和<code>无后效性</code>。</p>
+<h2><span id="动态规划的适用条件">动态规划的适用条件</span></h2>
+<p>任何思想方法都有一定的局限性，超出了特定条件，它就失去了作用。同样，动态规划也并不是万能的。适用动态规划的问题必须满足<code>最优化原理</code>和<code>无后效性</code>。</p>
 <ol>
-<li><p><strong>最优化原理（最优子结构性质）</strong> ：不论过去状态和决策如何，对前面的决策所形成的状态而言，余下的诸决策必须构成最优策略。简而言之，一个最优化策略的子策略总是最优的。一个问题满足最优化原理又称其具有<code>最优子结构性质</code>。</p>
+<li>
+<p><strong>最优化原理（最优子结构性质）</strong> ：不论过去状态和决策如何，对前面的决策所形成的状态而言，余下的诸决策必须构成最优策略。简而言之，一个最优化策略的子策略总是最优的。一个问题满足最优化原理又称其具有<code>最优子结构性质</code>。</p>
 </li>
-<li><p><strong>无后效性</strong>：无后效性将各阶段按照一定的次序排列好之后，对于某个给定的阶段状态，它以前各阶段的状态无法直接影响它未来的决策，而只能通过当前的这个状态。换句话说，每个状态都是过去历史的一个完整总结。这就是无后向性，又称为<code>无后效性</code>。</p>
+<li>
+<p><strong>无后效性</strong>：无后效性将各阶段按照一定的次序排列好之后，对于某个给定的阶段状态，它以前各阶段的状态无法直接影响它未来的决策，而只能通过当前的这个状态。换句话说，每个状态都是过去历史的一个完整总结。这就是无后向性，又称为<code>无后效性</code>。</p>
 </li>
-<li><p><strong>子问题的重叠性</strong>：动态规划将原来具有指数级时间复杂度的搜索算法改进成了具有多项式时间复杂度的算法。其中的关键在于解决冗余，这是动态规划算法的根本目的。动态规划实质上是一种以空间换时间的技术，它在实现的过程中，不得不存储产生过程中的各种状态，所以它的空间复杂度要大于其它的算法。</p>
+<li>
+<p><strong>子问题的重叠性</strong>：动态规划将原来具有指数级时间复杂度的搜索算法改进成了具有多项式时间复杂度的算法。其中的关键在于解决冗余，这是动态规划算法的根本目的。动态规划实质上是一种以空间换时间的技术，它在实现的过程中，不得不存储产生过程中的各种状态，所以它的空间复杂度要大于其它的算法。</p>
 </li>
 </ol>
-<h2><span id="求解的基本步骤">求解的基本步骤</span></h2><ol>
-<li><p><strong>划分阶段</strong>：按照问题的时间或空间特征，把问题分为若干个阶段。在划分阶段时，注意划分后的阶段一定要是有序的或者是可排序的，否则问题就无法求解。</p>
+<h2><span id="求解的基本步骤">求解的基本步骤</span></h2>
+<p></p>
+<ol>
+<li>
+<p><strong>划分阶段</strong>：按照问题的时间或空间特征，把问题分为若干个阶段。在划分阶段时，注意划分后的阶段一定要是有序的或者是可排序的，否则问题就无法求解。</p>
 </li>
-<li><p><strong>确定状态和状态变量：</strong>将问题发展到各个阶段时所处于的各种客观情况用不同的状态表示出来。当然，状态的选择要满足无后效性。</p>
+<li>
+<p>**确定状态和状态变量：**将问题发展到各个阶段时所处于的各种客观情况用不同的状态表示出来。当然，状态的选择要满足无后效性。</p>
 </li>
-<li><p><strong>确定决策并写出状态转移方程</strong>：因为决策和状态转移有着天然的联系，状态转移就是根据上一阶段的状态和决策来导出本阶段的状态。所以如果确定了决策，状态转移方程也就可写出。但事实上常常是反过来做，根据相邻两个阶段的状态之间的关系来确定决策方法和状态转移方程。</p>
+<li>
+<p><strong>确定决策并写出状态转移方程</strong>：因为决策和状态转移有着天然的联系，状态转移就是根据上一阶段的状态和决策来导出本阶段的状态。所以如果确定了决策，状态转移方程也就可写出。但事实上常常是反过来做，根据相邻两个阶段的状态之间的关系来确定决策方法和状态转移方程。</p>
 </li>
-<li><p><strong>寻找边界条件</strong>：给出的状态转移方程是一个递推式，需要一个递推的终止条件或边界条件。</p>
+<li>
+<p><strong>寻找边界条件</strong>：给出的状态转移方程是一个递推式，需要一个递推的终止条件或边界条件。</p>
 </li>
 </ol>
 <p>实际应用中可以按以下几个简化的步骤进行设计：</p>
 <ul>
 <li><strong>(1) 分析最优解的性质，并刻画其结构特征。</strong></li>
-<li><strong>(2) 递归的定义最优解。</strong></li>
+<li><strong>(2) 递归的定义最优解。</strong></li>
 <li><strong>(3) 以自底向上或自顶向下的记忆化方式（备忘录法）计算出最优值。</strong></li>
 <li><strong>(4) 根据计算优值时得到的信息，构造问题的最优解。</strong></li>
 </ul>
-<h2><span id="实战分析">实战分析</span></h2><h3><span id="1-斐波那契数列">1. 斐波那契数列</span></h3><ul>
-<li>问题描述<blockquote>
-<p>写一个函数，输入n，求斐波那契（Fibonacci）数列的第n项。<br>数列的前两项为 0 和 1  指的是这样一个数列：0、1、1、2、3、5 … 我们要求<br>(每一项为 前两项的和)</p>
+<h2><span id="实战分析">实战分析</span></h2>
+<h3><span id="1-斐波那契数列">1. 斐波那契数列</span></h3>
+<ul>
+<li>
+<p>问题描述</p>
+<blockquote>
+<p>写一个函数，输入n，求斐波那契（Fibonacci）数列的第n项。<br>
+数列的前两项为 0 和 1  指的是这样一个数列：0、1、1、2、3、5 … 我们要求<br>
+(每一项为 前两项的和)</p>
 </blockquote>
 </li>
-<li><p>递归写法（直观的解法）</p>
+<li>
+<p>递归写法（直观的解法）</p>
   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 一般写法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib_recursion</span><span class="params">(n)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> n &lt;= <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> n == <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> fib_recursion(n<span class="number">-1</span>)+fib_recursion(n<span class="number">-2</span>)</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>分析问题<br>  因为通项公式为 <code>f(n) = f(n-1) + f(n-2)</code></p>
-<p>  我们看适用条件</p>
+<li>
+<p>分析问题<br>
+因为通项公式为 <code>f(n) = f(n-1) + f(n-2)</code></p>
+<p>我们看适用条件</p>
 <ul>
 <li><strong>最优子结构性质</strong>：<code>f(n)</code> 问问题<code>f(n-1)</code> 为子问题，所以一个<code>n</code> 的问题可以拆解成两个子问题<code>n-1</code> 和<code>n-2</code> 当子问题得到最优，那么原问题的最优解也得出。</li>
 <li><strong>无后效性</strong>：即子问题的解一旦确定，就不再改变，不受在这之后、包含它的更大的问题的求解决策影响。</li>
-<li><p><strong>子问题的重叠性</strong> 我们根据一张图来看一下重复计算的问题<br> <img src="/article/dynamic-programming/1558927988639dynamic-programming_.png" alt></p>
-<p>这张图详细讲解了利用递归思想的求解<code>fib(5)</code> 的过程,我们需要先知道<code>fib(4)</code> 和 <code>fib(3)</code>；而<code>fib(4)</code> 需要知道<code>fib(3)</code> 和<code>fib(2)</code>；<code>fib(3)</code> 则需要知道<code>fib(2)</code> 和 <code>fib (1)</code>；<code>fib(3)</code> 则需要…….<br>我们可以看到 <code>fib(3)</code> <code>fib(2)</code> 被计算了多次，浪费了很多时间。</p>
-</li>
+<li><strong>子问题的重叠性</strong> 我们根据一张图来看一下重复计算的问题<br>
+<img src="/article/dynamic-programming/1558927988639dynamic-programming_.png" alt></li>
 </ul>
+<p>这张图详细讲解了利用递归思想的求解<code>fib(5)</code> 的过程,我们需要先知道<code>fib(4)</code> 和 <code>fib(3)</code>；而<code>fib(4)</code> 需要知道<code>fib(3)</code> 和<code>fib(2)</code>；<code>fib(3)</code> 则需要知道<code>fib(2)</code> 和 <code>fib (1)</code>；<code>fib(3)</code> 则需要…<br>
+我们可以看到 <code>fib(3)</code> <code>fib(2)</code> 被计算了多次，浪费了很多时间。</p>
 </li>
-<li><p>时间优化<br>  我们一个中间结果，保存已经计算过的结果</p>
+<li>
+<p>时间优化<br>
+我们一个中间结果，保存已经计算过的结果</p>
   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 中间结果的方式</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib_mid_result</span><span class="params">(n)</span>:</span></span><br><span class="line">    mid_ret = [<span class="number">0</span>,<span class="number">1</span>]</span><br><span class="line">    <span class="comment"># 初始化</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,n):</span><br><span class="line">        mid_ret.append(<span class="literal">None</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fib</span><span class="params">(n)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> mid_ret[n] != <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> mid_ret[n]</span><br><span class="line">        <span class="keyword">if</span> n &lt;= <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span> n == <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">        mid_ret[n] = fib_recursion(n<span class="number">-1</span>)+fib_recursion(n<span class="number">-2</span>)</span><br><span class="line">        <span class="keyword">return</span> mid_ret[n]</span><br><span class="line">    <span class="keyword">return</span> fib(n)</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>空间优化</p>
+<li>
+<p>空间优化</p>
 <ul>
-<li><p>中间队列优化</p>
-<p>  我们来看中间队列，由于我们的每一项是根据前两项得到的，换句话说，我们<code>n</code> 只依赖于前两项，这样依赖，我们的中间结果就不在需要那么多的空间来存贮。所以我们只需要两个数来，分别是 <code>n-1</code> 和<code>n -2</code> 就能得出结论。</p>
+<li>
+<p>中间队列优化</p>
+<p>我们来看中间队列，由于我们的每一项是根据前两项得到的，换句话说，我们<code>n</code> 只依赖于前两项，这样依赖，我们的中间结果就不在需要那么多的空间来存贮。所以我们只需要两个数来，分别是 <code>n-1</code> 和<code>n -2</code> 就能得出结论。</p>
 </li>
-<li><p>字底向上： </p>
-<p>  我们上面的实现方式都是自顶向下的实现方式，如果考虑自定向上的方式，我们就可以避免是用递归。<br>  例如，我们可以先算 <code>f(0)</code>和 <code>f(1)</code> 然后<code>f(2)</code> 就可以用 <code>f(0) + f(1)</code> 来得到结果 在根据 <code>f(1) + f(2)</code>得到f(3) </p>
-<p>  来看代码。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib_bottom_up</span><span class="params">(n)</span>:</span></span><br><span class="line">    pre = <span class="number">0</span></span><br><span class="line">    next = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> n&gt;<span class="number">0</span>:</span><br><span class="line">        pre , next = next, pre + next</span><br><span class="line">        n-=<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> pre</span><br></pre></td></tr></table></figure>
+<li>
+<p>字底向上：</p>
+<p>我们上面的实现方式都是自顶向下的实现方式，如果考虑自定向上的方式，我们就可以避免是用递归。<br>
+例如，我们可以先算 <code>f(0)</code>和 <code>f(1)</code> 然后<code>f(2)</code> 就可以用 <code>f(0) + f(1)</code> 来得到结果 在根据 <code>f(1) + f(2)</code>得到f(3)</p>
+<p>来看代码。</p>
 </li>
 </ul>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib_bottom_up</span><span class="params">(n)</span>:</span></span><br><span class="line">    pre = <span class="number">0</span></span><br><span class="line">    next = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> n&gt;<span class="number">0</span>:</span><br><span class="line">        pre , next = next, pre + next</span><br><span class="line">        n-=<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> pre</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h3><span id="2-剪绳子">2. 剪绳子</span></h3><ul>
-<li>问题描述<blockquote>
+<h3><span id="2-剪绳子">2. 剪绳子</span></h3>
+<ul>
+<li>
+<p>问题描述</p>
+<blockquote>
 <p>把一根长度为 n 的绳子剪成 m 段，并且使得每段的长度的乘积最大（n, m 均为整数）</p>
 </blockquote>
 </li>
-<li><p>分析问题 </p>
-<p>  假设我们剪一刀，使得一根长度为<code>i</code>，一个长度为 <code>n-1</code>,他们的乘积 <code>i * n-1</code>如果这个时候，乘积结果是最大的，则直接返回。</p>
-<p>  当时实际上往往 将<code>i</code>这段绳子还能拆分，拆分的结果乘积 i 这个数本身还要大<br>  所以我们的要解决的问题就变成了<br>  求<code>F(n) = max(F(i) * F(n - 1))</code>，要使得  <code>f(n)</code> 最大 那必须要让 <code>f(i)</code> 和 <code>f(n-i)</code>得到最大值</p>
-<p>  我们用列举:<br>  | n   | 分段序列    | 最大乘积 |            |<br>  | —- | —————- | ———— | ————- |<br>  | 1   | 1           | 1        | 不需要拆分 |<br>  | 2   | 1,1         | 2        | 不需要拆分 |<br>  | 3   | 1,2         | 3        | 不需要拆分 |<br>  | 4   | [1,3] [2,2] | 4        |           |<br>  | 5   | [1,4] [2,3] | 6        |           |</p>
+<li>
+<p>分析问题</p>
+<p>假设我们剪一刀，使得一根长度为<code>i</code>，一个长度为 <code>n-1</code>,他们的乘积 <code>i * n-1</code>如果这个时候，乘积结果是最大的，则直接返回。</p>
+<p>当时实际上往往 将<code>i</code>这段绳子还能拆分，拆分的结果乘积 i 这个数本身还要大<br>
+所以我们的要解决的问题就变成了<br>
+求<code>F(n) = max(F(i) * F(n - 1))</code>，要使得  <code>f(n)</code> 最大 那必须要让 <code>f(i)</code> 和 <code>f(n-i)</code>得到最大值</p>
+<p>我们用列举:</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>分段序列</th>
+<th>最大乘积</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>不需要拆分</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1,1</td>
+<td>2</td>
+<td>不需要拆分</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1,2</td>
+<td>3</td>
+<td>不需要拆分</td>
+</tr>
+<tr>
+<td>4</td>
+<td>[1,3] [2,2]</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>[1,4] [2,3]</td>
+<td>6</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </li>
 </ul>
-<p>按着这个思路 当<code>n &lt;= 3</code> 的时候 不用切,当<code>n &gt; 4</code>的时候 才需要切割  </p>
+<p>按着这个思路 当<code>n &lt;= 3</code> 的时候 不用切,当<code>n &gt; 4</code>的时候 才需要切割</p>
 <ul>
-<li><p><strong>一般写法(递归写法)</strong></p>
+<li><strong>一般写法(递归写法)</strong></li>
+</ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ecursive</span><span class="params">(n)</span>:</span></span><br><span class="line">    <span class="comment">### 不用切割，返回的是自身长度</span></span><br><span class="line">    <span class="keyword">if</span> n &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> n</span><br><span class="line">    <span class="comment"># 切割几次</span></span><br><span class="line">    split_number = n//<span class="number">2</span></span><br><span class="line">    max_ret = n;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,split_number+<span class="number">1</span>,<span class="number">1</span>):</span><br><span class="line">        max_ret = max(ecursive(i)*ecursive(n-i),max_ret)</span><br><span class="line">    <span class="keyword">return</span> max_ret</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>优化分析<br> 这个优化分如同第一题的分析一样，只不过第一题的加法改成了乘法，本质上是一样的。<br> 接下来我们来看加了中间结果的优化方法</p>
 <ul>
-<li><p><strong>动态优化写法：时间优化，保留计算结果</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 优化后的 递归算法 保留已经计算过的结果</span></span><br><span class="line">result = &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ecursive2</span><span class="params">(l)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> result.get(l) != <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> result[l]</span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> l</span><br><span class="line">    split_number = l//<span class="number">2</span></span><br><span class="line">    max_ret = l;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,split_number+<span class="number">1</span>,<span class="number">1</span>):</span><br><span class="line">        max_ret = max(ecursive2(i)*ecursive2(l-i),max_ret)</span><br><span class="line">    result[l] = max_ret</span><br><span class="line">    <span class="keyword">return</span> max_ret</span><br></pre></td></tr></table></figure>
+<li>
+<p>优化分析<br>
+这个优化分如同第一题的分析一样，只不过第一题的加法改成了乘法，本质上是一样的。<br>
+接下来我们来看加了中间结果的优化方法</p>
+<ul>
+<li><strong>动态优化写法：时间优化，保留计算结果</strong></li>
+</ul>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 优化后的 递归算法 保留已经计算过的结果</span></span><br><span class="line">result = &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ecursive2</span><span class="params">(l)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> result.get(l) != <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> result[l]</span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> l</span><br><span class="line">    split_number = l//<span class="number">2</span></span><br><span class="line">    max_ret = l;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,split_number+<span class="number">1</span>,<span class="number">1</span>):</span><br><span class="line">        max_ret = max(ecursive2(i)*ecursive2(l-i),max_ret)</span><br><span class="line">    result[l] = max_ret</span><br><span class="line">    <span class="keyword">return</span> max_ret</span><br></pre></td></tr></table></figure>
 <ul>
 <li><strong>字底向上写法</strong></li>
 </ul>
-<p><img src="/article/dynamic-programming/1559027638643dynamic-programming_.png" alt><br>假如入我们要计算<br><code>e(6)</code>那么我们首先要计算 <code>e(1)</code> 和  <code>e(5)</code></p>
+<p><img src="/article/dynamic-programming/1559027638643dynamic-programming_.png" alt><br>
+假如入我们要计算<br>
+<code>e(6)</code>那么我们首先要计算 <code>e(1)</code> 和  <code>e(5)</code></p>
 <ol>
 <li>因为 1，2，3 比较特殊 是不需要剪的 所以我们从 第4个开始</li>
-<li>首先我们得到一个初始化数组 里面的元素为 [0,1,2,3] </li>
-<li>计算 e(4)  拆分得到  <code>e(4) = e(1) * e(3)  ... e(2) * e(2)</code>，找出最大的赋值给第四个元素 这个时候 数组就变成了 [0,1,2,3,4]  这个数组的概念为 [e(1),e(2),e(3),e(4)]</li>
+<li>首先我们得到一个初始化数组 里面的元素为 [0,1,2,3]</li>
+<li>计算 e(4)  拆分得到  <code>e(4) = e(1) * e(3) ... e(2) * e(2)</code>，找出最大的赋值给第四个元素 这个时候 数组就变成了 [0,1,2,3,4]  这个数组的概念为 [e(1),e(2),e(3),e(4)]</li>
 <li>这个时候 计算<code>e(5)</code> 重复上述过程</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ecursive3</span><span class="params">(l)</span>:</span></span><br><span class="line">    ret_mid = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> ret_mid[l]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>,l + <span class="number">1</span>):</span><br><span class="line">        max_mid_ret = i</span><br><span class="line">        ret_mid.append(max_mid_ret)</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">1</span>,i//<span class="number">2</span> + <span class="number">1</span>):</span><br><span class="line">            max_mid_ret = max(ret_mid[n] * ret_mid[i - n],max_mid_ret)</span><br><span class="line">        ret_mid[i] = max_mid_ret</span><br><span class="line">    <span class="keyword">return</span> ret_mid[l]</span><br></pre></td></tr></table></figure>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ecursive3</span><span class="params">(l)</span>:</span></span><br><span class="line">    ret_mid = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> ret_mid[l]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>,l + <span class="number">1</span>):</span><br><span class="line">        max_mid_ret = i</span><br><span class="line">        ret_mid.append(max_mid_ret)</span><br><span class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">1</span>,i//<span class="number">2</span> + <span class="number">1</span>):</span><br><span class="line">            max_mid_ret = max(ret_mid[n] * ret_mid[i - n],max_mid_ret)</span><br><span class="line">        ret_mid[i] = max_mid_ret</span><br><span class="line">    <span class="keyword">return</span> ret_mid[l]</span><br></pre></td></tr></table></figure>
 <ul>
-<li><strong>贪婪算法写法</strong><br>当<code>n</code>大于等于5时，我们尽可能多的剪长度为<code>3</code>的绳子；当剩下的绳子长度为4时，把绳子剪成两段长度为2的绳子。 为什么选<code>2，3</code>为最小的子问题？因为2，3包含于各个问题中，如果再往下剪得话，乘积就会变小。 为什么选长度为<code>3</code>？因为当<code>n≥5</code>时，3(n−3)≥2(n−2)</li>
+<li><strong>贪婪算法写法</strong><br>
+当<code>n</code>大于等于5时，我们尽可能多的剪长度为<code>3</code>的绳子；当剩下的绳子长度为4时，把绳子剪成两段长度为2的绳子。 为什么选<code>2，3</code>为最小的子问题？因为2，3包含于各个问题中，如果再往下剪得话，乘积就会变小。 为什么选长度为<code>3</code>？因为当<code>n≥5</code>时，3(n−3)≥2(n−2)</li>
 </ul>
-<p>其实为什么要选2和3,来看证明<br><strong>证明</strong>： <code>n&lt;4</code>的情况不必说，我们假设<code>n&gt;=5</code>。这里的思想是把剪绳子划归为若干个子问题，每一剪就划分为两个子问题。当<code>n&gt;=</code>5时，若剪为长度为<code>a</code>与<code>n-a</code>的两段更优，即<code>a(n-a)&gt;n</code>，其中<code>1&lt;=a&lt;n</code></p>
-<p>推导如下： </p>
+<p>其实为什么要选2和3,来看证明<br>
+<strong>证明</strong>： <code>n&lt;4</code>的情况不必说，我们假设<code>n&gt;=5</code>。这里的思想是把剪绳子划归为若干个子问题，每一剪就划分为两个子问题。当<code>n&gt;=</code>5时，若剪为长度为<code>a</code>与<code>n-a</code>的两段更优，即<code>a(n-a)&gt;n</code>，其中<code>1&lt;=a&lt;n</code></p>
+<p>推导如下：</p>
 <p><img src="/article/dynamic-programming/1559028801966dynamic-programming_.png" alt></p>
-<p>令<code>f(n)=(a-1)n-a^2</code>  由于<code>a-1&gt;=0</code>，<code>f(n)</code>单调递增。当<code>n=5</code>时，<code>f(n)</code>取得最小值为<code>f(5)=(a-1)*5-a^2</code>。要使最小值大于0，接下来求<code>a</code>的取值范围，令方程<code>(a-1)*5-a^2=0</code>，可用求根公式解得<code>a</code>为<code>2,3</code>（取整）。<br>换句话说 当解中出现2，3 的时候 总能让函数递增，也就是是剪出来的数 大于本身长度。</p>
+<p>令<code>f(n)=(a-1)n-a^2</code>  由于<code>a-1&gt;=0</code>，<code>f(n)</code>单调递增。当<code>n=5</code>时，<code>f(n)</code>取得最小值为<code>f(5)=(a-1)*5-a^2</code>。要使最小值大于0，接下来求<code>a</code>的取值范围，令方程<code>(a-1)*5-a^2=0</code>，可用求根公式解得<code>a</code>为<code>2,3</code>（取整）。<br>
+换句话说 当解中出现2，3 的时候 总能让函数递增，也就是是剪出来的数 大于本身长度。</p>
 <p><img src="/article/dynamic-programming/1559029025348dynamic-programming_.png" alt></p>
-<p><strong>来看实现</strong> </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">greedy</span> <span class="params">(l)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> n</span><br><span class="line">    <span class="comment"># 3出现的次数</span></span><br><span class="line">    time_3  = l // <span class="number">3</span> </span><br><span class="line">    <span class="keyword">if</span> l % <span class="number">3</span> == <span class="number">1</span>:      <span class="comment">#如果剩下4 则4分为 2 2</span></span><br><span class="line">        time_3 -= <span class="number">1</span></span><br><span class="line">    time_2 = (l - time_3 * <span class="number">3</span>) // <span class="number">2</span></span><br><span class="line">    print(time_2,time_3)</span><br><span class="line">    ret = math.pow(<span class="number">3</span>,time_3)</span><br><span class="line">    <span class="keyword">if</span> time_2 != <span class="number">0</span>:</span><br><span class="line">        ret + math.pow(<span class="number">2</span>, time_2)</span><br><span class="line"><span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+<p><strong>来看实现</strong></p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">greedy</span> <span class="params">(l)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> l &lt;= <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> n</span><br><span class="line">    <span class="comment"># 3出现的次数</span></span><br><span class="line">    time_3  = l // <span class="number">3</span> </span><br><span class="line">    <span class="keyword">if</span> l % <span class="number">3</span> == <span class="number">1</span>:      <span class="comment">#如果剩下4 则4分为 2 2</span></span><br><span class="line">        time_3 -= <span class="number">1</span></span><br><span class="line">    time_2 = (l - time_3 * <span class="number">3</span>) // <span class="number">2</span></span><br><span class="line">    print(time_2,time_3)</span><br><span class="line">    ret = math.pow(<span class="number">3</span>,time_3)</span><br><span class="line">    <span class="keyword">if</span> time_2 != <span class="number">0</span>:</span><br><span class="line">        ret + math.pow(<span class="number">2</span>, time_2)</span><br><span class="line"><span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-</li>
-</ul>
-<h3><span id="3-背包问题">3. 背包问题</span></h3><pre><code>由于篇幅问题
-</code></pre><h3><span id="4-抢劫问题">4. 抢劫问题</span></h3><h3><span id="5-小兵向前冲">5. 小兵向前冲</span></h3><h3><span id="6-最大递减数列">6. 最大递减数列</span></h3>
+<h3><span id="3-背包问题">3. 背包问题</span></h3>
+<pre><code>由于篇幅问题
+</code></pre>
+<h3><span id="4-抢劫问题">4. 抢劫问题</span></h3>
+<h3><span id="5-小兵向前冲">5. 小兵向前冲</span></h3>
+<h3><span id="6-最大递减数列">6. 最大递减数列</span></h3>
+
         
                 <hr>
                 <!-- Pager -->
