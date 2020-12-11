@@ -217,33 +217,28 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="hexo">Hexo</span></h2>
-<hr>
-<p>Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭建、构建，发布过程，让很多人望之却步.转而使用了传统的WordPress等博客程序，抛开维护成本不说，本着折腾一切的心态<br>
-最终研究出了一套完善的自动部署方案。</p>
-<h2><span id="如何实现优雅的发布">如何实现优雅的发布</span></h2>
-<hr>
+                <h2><span id="hexo">Hexo</span></h2><hr>
+<p>   Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭建、构建，发布过程，让很多人望之却步.转而使用了传统的WordPress等博客程序，抛开维护成本不说，本着折腾一切的心态<br>最终研究出了一套完善的自动部署方案。 </p>
+<h2><span id="如何实现优雅的发布">如何实现优雅的发布</span></h2><hr>
 <p>就目前而言，Hexo发布的方式有以下几种：</p>
 <ul>
 <li>原始方式，即在本地搭建相关环境，编写md文件后，手动hexo g生成静态文件，然后通过hexo deploy发布到Github Pages；</li>
 <li>利用Github + Webhook来实现自动发布</li>
-<li>使用第三方的Hexo-Client、Hexo-Admin等程序<br>
-使用Travis CI持续部署Hexo。</li>
+<li>使用第三方的Hexo-Client、Hexo-Admin等程序<br>使用Travis CI持续部署Hexo。</li>
 <li>使用Netlify进行优雅地持续部署。详见：<a href="https://www.netlify.com" target="_blank" rel="noopener">https://www.netlify.com</a></li>
 </ul>
-<h2><span id="我的部署方案">我的部署方案</span></h2>
-<hr>
+<h2><span id="我的部署方案">我的部署方案</span></h2><hr>
 <p>我的部署方案主要是基于第三种的。</p>
 <ul>
-<li>
-<p>简要流程</p>
+<li><p>简要流程</p>
 <ol>
 <li>使用Github登陆Netlify。</li>
 <li>使用StaticGen一键初始化Hexo仓库。</li>
 <li>将Hexo源码仓库Clone到本地，调整网站配置，编写文章。</li>
-<li>本地无需Nodejs、NPM、Hexo环境，修改完成后Push到Github，Netlify检测到仓库变更后实现自动部署。</li>
-</ol>
+<li><p>本地无需Nodejs、NPM、Hexo环境，修改完成后Push到Github，Netlify检测到仓库变更后实现自动部署。</p>
 <p>在Netlify整个部署过程中, 你只需要提交代码, 其余的master部署预览(包括MR的预览), HTTPS证书, 静态资源的优化与CDN加速, 部署消息通知。</p>
+</li>
+</ol>
 </li>
 </ul>
 

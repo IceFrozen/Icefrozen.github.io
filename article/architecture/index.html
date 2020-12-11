@@ -217,44 +217,28 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概诉">概诉</span></h2>
-<p>阿姆达尔定律</p>
-<h2><span id="什么是阿姆达尔定律">什么是阿姆达尔定律</span></h2>
-<p>阿姆达尔定律（英语：Amdahl’s law，Amdahl’s argument），一个计算机科学界的经验法则，因吉恩·阿姆达尔(Gene Amdahl)而得名。它代表了处理器平行运算之后效率提升的能力。<br>
-1967年计算机体系结构专家吉恩.阿姆达尔提出过一个定律阿姆达尔定律，说：<strong>在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比</strong>。<br>
-举两个例子说明这个问题：</p>
+                <h2><span id="概诉">概诉</span></h2><p>阿姆达尔定律</p>
+<h2><span id="什么是阿姆达尔定律">什么是阿姆达尔定律</span></h2><p>阿姆达尔定律（英语：Amdahl’s law，Amdahl’s argument），一个计算机科学界的经验法则，因吉恩·阿姆达尔(Gene Amdahl)而得名。它代表了处理器平行运算之后效率提升的能力。<br>1967年计算机体系结构专家吉恩.阿姆达尔提出过一个定律阿姆达尔定律，说：<strong>在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比</strong>。<br>举两个例子说明这个问题：</p>
 <ol>
-<li>
-<p><strong>譬如说，你的程序50%是串行的，其他一半可以并行，那么，最大的加速比就是2。不管你用多少处理器并行，这个加速比不可能提高。在这种情况下，改进串行算法可能比多核处理器并行更有效。</strong></p>
+<li><p><strong>譬如说，你的程序50%是串行的，其他一半可以并行，那么，最大的加速比就是2。不管你用多少处理器并行，这个加速比不可能提高。在这种情况下，改进串行算法可能比多核处理器并行更有效。</strong></p>
 </li>
-<li>
-<p><strong>假设某一功能的处理时间为整体系统运行时间的60%，若使该功能的处理速度提高至原来的5倍，则根据阿姆达尔定律，整个系统的处理速度可提高至原来的多少倍</strong>？</p>
+<li><p><strong>假设某一功能的处理时间为整体系统运行时间的60%，若使该功能的处理速度提高至原来的5倍，则根据阿姆达尔定律，整个系统的处理速度可提高至原来的多少倍</strong>？</p>
 </li>
 </ol>
-<h2><span id="阿姆达尔定律规则">阿姆达尔定律规则</span></h2>
-<h3><span id="加速比">加速比</span></h3>
-<p>优化前系统总耗时To(old)，优化后系统总耗时Tn(new)，为加速比</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S =To/Tn</span><br></pre></td></tr></table></figure>
-<h3><span id="原系统中能够改进的部分占总部分的比例c">原系统中能够改进的部分占总部分的比例:C</span></h3>
-<p>原系统中能够改进的部分占总部分的比例，也可以说能够改进部分运行时间占总系统运行时间的比例，比如上文所说的，加入的你程序100%是并行的，如果将50% 改成并行（或者其他能提高速度的方式），那么 <code>C = 50%</code></p>
-<h3><span id="系统的提升比例st">系统的提升比例St</span></h3>
-<p>比如 系统比原系统提升了5倍 这是个比例(St=5)</p>
-<h3><span id="公式如下">公式如下</span></h3>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = To/Tn = <span class="number">1</span> / ((<span class="number">1</span>-C) + C/St)</span><br></pre></td></tr></table></figure>
-<h3><span id="计算">计算</span></h3>
-<p>那么我们来回答第一个问题</p>
+<h2><span id="阿姆达尔定律规则">阿姆达尔定律规则</span></h2><h3><span id="加速比">加速比</span></h3><p>优化前系统总耗时To(old)，优化后系统总耗时Tn(new)，为加速比<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S =To/Tn</span><br></pre></td></tr></table></figure></p>
+<h3><span id="原系统中能够改进的部分占总部分的比例c">原系统中能够改进的部分占总部分的比例:C</span></h3><p>原系统中能够改进的部分占总部分的比例，也可以说能够改进部分运行时间占总系统运行时间的比例，比如上文所说的，加入的你程序100%是并行的，如果将50% 改成并行（或者其他能提高速度的方式），那么 <code>C = 50%</code></p>
+<h3><span id="系统的提升比例st">系统的提升比例St</span></h3><p>比如 系统比原系统提升了5倍 这是个比例(St=5)</p>
+<h3><span id="公式如下">公式如下</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S = To/Tn = <span class="number">1</span> / ((<span class="number">1</span>-C) + C/St)</span><br></pre></td></tr></table></figure>
+<h3><span id="计算">计算</span></h3><p>那么我们来回答第一个问题 </p>
 <blockquote>
-<p>你的程序50%是串行的，其他一半可以并行，那么，最大的加速比就是2。不管你用多少处理器并行，这个加速比不可能提高。<br>
-根据公式得到</p>
+<p>你的程序50%是串行的，其他一半可以并行，那么，最大的加速比就是2。不管你用多少处理器并行，这个加速比不可能提高。<br>根据公式得到</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">当St 变的很大的时候 0.5/St 将会趋于 0，得到 </span><br><span class="line"></span><br><span class="line">```S = 1/(1 - 0.5 + 0) = 1 / 0.5 = 2</span><br></pre></td></tr></table></figure>
 <p>也就是说你把另一半程序优化的比原来提升多少倍,那么加速比，也就是说 你能提升的性能最大可能是原来的 2倍。</p>
 <blockquote>
-<p><strong>假设某一功能的处理时间为整体系统运行时间的60%，若使该功能的处理速度提高至原来的5倍，则根据阿姆达尔定律，整个系统的处理速度可提高至原来的多少倍</strong>？</p>
+<p><strong>假设某一功能的处理时间为整体系统运行时间的60%，若使该功能的处理速度提高至原来的5倍，则根据阿姆达尔定律，整个系统的处理速度可提高至原来的多少倍</strong>？<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">S   = <span class="number">1</span>/((<span class="number">1</span> - <span class="number">0.6</span> ）+ <span class="number">0.6</span> / <span class="number">5</span>) </span><br><span class="line">    = <span class="number">1</span> / (<span class="number">0.4</span> + <span class="number">0.12</span>)</span><br><span class="line">    = <span class="number">1</span> / <span class="number">0.52</span></span><br><span class="line">    ≈ <span class="number">1.923</span></span><br></pre></td></tr></table></figure></p>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">S   = <span class="number">1</span>/((<span class="number">1</span> - <span class="number">0.6</span> ）+ <span class="number">0.6</span> / <span class="number">5</span>) </span><br><span class="line">    = <span class="number">1</span> / (<span class="number">0.4</span> + <span class="number">0.12</span>)</span><br><span class="line">    = <span class="number">1</span> / <span class="number">0.52</span></span><br><span class="line">    ≈ <span class="number">1.923</span></span><br></pre></td></tr></table></figure>
-<h2><span id="阿姆达尔定律原理">阿姆达尔定律原理</span></h2>
-<p>为了更好地理解阿姆达尔定律，我会尝试演示这个定定律是如何诞生的。</p>
+<h2><span id="阿姆达尔定律原理">阿姆达尔定律原理</span></h2><p>为了更好地理解阿姆达尔定律，我会尝试演示这个定定律是如何诞生的。</p>
 <p><strong>首先，一个程序可以被分割为两部分，一部分为不可并行部分B，一部分为可并行部分1 – B。如下图：</strong></p>
 <p><img src="/article/architecture/architecture-110031.png" alt></p>
 <p><strong>在顶部被带有分割线的那条直线代表总时间 T(1)。</strong></p>
@@ -262,16 +246,11 @@
 <p><img src="/article/architecture/architecture-110049.png" alt></p>
 <p><strong>并行因子为3的情况：</strong></p>
 <p><img src="/article/architecture/architecture-110106.png" alt></p>
-<p>我们假设不考虑其他因素，并行因子越大， 那么1 - B 所占用的时间越短，也就是图中略色的部分也就越短。<br>
-当我们 并行因子（也就是我们 将 1 - B 运行的速度提升 n 倍 n → ∞）提升无穷大。那么绿色的面积会越来越小，最后约等于0<br>
-那么我们程序的总时间将约等于 B 的时间。<br>
-因此我们得出结论：<strong>在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比</strong>。</p>
-<h2><span id="总结">总结</span></h2>
-<p>虽然阿姆达尔定律允许你并行化一个算法的理论加速比，但是不要过度依赖这样的计算。在实际场景中，当你优化或并行化一个算法时，可以有很多的因子可以被考虑进来。</p>
+<p>我们假设不考虑其他因素，并行因子越大， 那么1 - B 所占用的时间越短，也就是图中略色的部分也就越短。<br>当我们 并行因子（也就是我们 将 1 - B 运行的速度提升 n 倍 n → ∞）提升无穷大。那么绿色的面积会越来越小，最后约等于0<br>那么我们程序的总时间将约等于 B 的时间。<br>因此我们得出结论：<strong>在并行计算中用多处理器的应用加速受限于程序所需的串行时间百分比</strong>。</p>
+<h2><span id="总结">总结</span></h2><p>虽然阿姆达尔定律允许你并行化一个算法的理论加速比，但是不要过度依赖这样的计算。在实际场景中，当你优化或并行化一个算法时，可以有很多的因子可以被考虑进来。</p>
 <p>内存的速度，CPU缓存，磁盘，网卡等可能都是一个限制因子。如果一个算法的最新版本是并行化的，但是导致了大量的CPU缓存浪费，你可能不会再使用x N个CPU来获得x N的期望加速。如果你的内存总线（memory bus），磁盘，网卡或者网络连接都处于高负载状态，也是一样的情况。</p>
 <p>我们的建议是，使用阿姆达尔定律定律来指导我们优化程序，而不是用来测量优化带来的实际加速比。记住，有时候一个高度串行化的算法胜过一个并行化的算法，因为串行化版本不需要进行协调管理（上下文切换），而且一个单个的CPU在底层硬件工作（CPU管道、CPU缓存等）上的一致性可能更好。</p>
-<h2><span id="参考">参考</span></h2>
-<ul>
+<h2><span id="参考">参考</span></h2><ul>
 <li><a href="http://ifeve.com/amdahls-law/" target="_blank" rel="noopener">阿姆达尔定律</a></li>
 <li><a href="https://www.geek-share.com/detail/2783250020.html" target="_blank" rel="noopener">阿姆达尔Law对系统性能提升的定义</a></li>
 </ul>

@@ -237,7 +237,7 @@
             数据库原理篇（3）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/85/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/32/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,14 +245,10 @@
                 InnoDB中的锁
             </h3>
         <div class="post-content-preview">
-            InnoDB 介绍
-InnoDB 中的锁
-你可能听过各种各样的 InnoDB 的数据库锁，Gap 锁，共享锁，排它锁，读锁，写锁等等。但是 InnoDB 的标准实现的锁只有 2 类，一种是行级锁，一种是意向锁。
+            InnoDB 介绍InnoDB 中的锁你可能听过各种各样的 InnoDB 的数据库锁，Gap 锁，共享锁，排它锁，读锁，写锁等等。但是 InnoDB 的标准实现的锁只有 2 类，一种是行级锁，一种是意向锁。
 InnoDB的行级锁：
-
 共享锁(读锁 S Lock)，允许事务读一行数据。
-排它锁(写锁 X Lock)，允许事务删除一行数据或者更新一行数据。
-行级锁中，除了 S 和 S 兼容，...
+排它锁(写锁 X Lock)，允许事务删除一行数据或者更新一行数据。行级锁中，除了 S 和 S 兼容，其他都不...
         </div>
     </a>
     
@@ -275,7 +271,7 @@ InnoDB的行级锁：
             分布式事务详解（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/12/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -283,16 +279,11 @@ InnoDB的行级锁：
                 事务概述
             </h3>
         <div class="post-content-preview">
-            分布式事务概述
-什么是事务
-事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。
+            分布式事务概述什么是事务事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。
 事务的四大特性ACID
-
-
 原子性（Atomicity）: 事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。
 
-
-一致性（Consistenc...
+一致性（Consistency） : ...
         </div>
     </a>
     
@@ -321,7 +312,7 @@ InnoDB的行级锁：
             数据库原理篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/12/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -329,13 +320,9 @@ InnoDB的行级锁：
                 InnoDB 的数据存储方式
             </h3>
         <div class="post-content-preview">
-            InnoBD 的数据结构
-InnoBD 中的数据结构概览
-先来看一下 InnoDB 中的整体存贮逻辑
-
+            InnoBD 的数据结构InnoBD 中的数据结构概览先来看一下 InnoDB 中的整体存贮逻辑
 MySQL 使用 InnoDB 存储表时，会将表的定义和数据索引等信息分开存储，其中前者存储在 .frm 文件中，后者存储在 .ibd 文件中，这一节就会对这两种不同的文件分别进行介绍。
-.frm 文件
-无论在 MySQL 中选择了哪个存储引擎，所有的 MySQL 表都会在硬盘上创建一个 ...
+.frm 文件无论在 MySQL 中选择了哪个存储引擎，所有的 MySQL 表都会在硬盘上创建一个 .frm...
         </div>
     </a>
     
@@ -364,7 +351,7 @@ MySQL 使用 InnoDB 存储表时，会将表的定义和数据索引等信息分
             kafka系列
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/3/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/74/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -372,18 +359,14 @@ MySQL 使用 InnoDB 存储表时，会将表的定义和数据索引等信息分
                 Kafka 原理分析
             </h3>
         <div class="post-content-preview">
-            Kafka概述
-Kafka 定义
-Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queue)，主要应用于 大数据实时处理领域。
-消息队列好处
-可以参考我的另一篇博文MQ可以解决哪些实际问题
+            Kafka概述Kafka 定义Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queue)，主要应用于 大数据实时处理领域。
+消息队列好处可以参考我的另一篇博文MQ可以解决哪些实际问题
 优缺点
-
-
 优点：
 
 可扩展。Kafka集群可以透明的扩展，增加新的服务器进集群。
-高性能。Kafka性能远超过传统的ActiveMQ、RabbitMQ等，Kafka支持Batc...
+高性能。Kafka性能远超过传统的ActiveMQ、RabbitMQ等，Kafka支持Batch操作。
+...
         </div>
     </a>
     
@@ -410,7 +393,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             数据库原理篇(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/95/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -419,13 +402,9 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             </h3>
         <div class="post-content-preview">
             索引概诉
-
-索引详解
-常见的索引算法
-
-平衡二叉树索引
-二叉树的查找的时间复杂度是O(log2N)，其查找效率与深度有关，而普通的二叉树可能由于内部节点排列问题退化成链表，这样查找效率就会很低。因此平衡二叉树是更好的选择，因为它保持平衡，即通过旋转调整结构保持最小的深度。其查找的时间复杂度也是O(log2N)。
-但实际上，数据库中索引的结构也并非AVL树或更优秀的红黑树，尽管它的查询的时间复...
+索引详解常见的索引算法
+平衡二叉树索引二叉树的查找的时间复杂度是O(log2N)，其查找效率与深度有关，而普通的二叉树可能由于内部节点排列问题退化成链表，这样查找效率就会很低。因此平衡二叉树是更好的选择，因为它保持平衡，即通过旋转调整结构保持最小的深度。其查找的时间复杂度也是O(log2N)。
+但实际上，数据库中索引的结构也并非AVL树或更优秀的红黑树，尽管它的查询的时间复杂度很低...
         </div>
     </a>
     
@@ -454,7 +433,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             TCP/IP系列(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/80/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -462,11 +441,8 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
                 TCP连接的状态详解
             </h3>
         <div class="post-content-preview">
-            TCP 状态
-一个TCP连接在它的生命周期内会有不同的状态。
-
+            TCP 状态一个TCP连接在它的生命周期内会有不同的状态。
 TCP状态图
-
 
     
         
@@ -480,7 +456,8 @@ TCP状态图
             等待来自远程TCP应用程序的请求
         
         
-            SYN_SE...
+            SYN_SENT
+...
         </div>
     </a>
     
@@ -505,7 +482,7 @@ TCP状态图
             JAVA多线程之深入分析synchronized原理和锁膨胀过程
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/84/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -513,19 +490,14 @@ TCP状态图
                 
             </h3>
         <div class="post-content-preview">
-            synchronized概述
-synchronized 是锁同步的一个关键字，这里主要讲解这个关键的概念性的东西，不做扫盲。
+            synchronized概述synchronized 是锁同步的一个关键字，这里主要讲解这个关键的概念性的东西，不做扫盲。
 特性
-
 可见性
 有序性
 可见性
 原子性
 
-synchronized 优化历史
-锁膨胀详解
-前言
-上一篇文章介绍了多线程的概念及synchronized的使用方法《synchronized的使用（一）》，但是仅仅会用还是不够的，只有了解其底层实现才能在开发过程中运筹帷幄...
+synchronized 优化历史锁膨胀详解前言上一篇文章介绍了多线程的概念及synchronized的使用方法《synchronized的使用（一）》，但是仅仅会用还是不够的，只有了解其底层实现才能在开发过程中运筹帷幄，所以本篇...
         </div>
     </a>
     
@@ -535,11 +507,11 @@ synchronized 优化历史
         </p>
         <div class="tags">
             
-              <a href="/tags/#多线程" title="多线程">多线程</a>
-            
               <a href="/tags/#JAVA" title="JAVA">JAVA</a>
             
               <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
             
         </div>
     
@@ -554,7 +526,7 @@ synchronized 优化历史
             JAVA多线程之AQS分析(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/38/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -562,9 +534,7 @@ synchronized 优化历史
                 CountDownLatch的分析来解读AQS的共享功能。
             </h3>
         <div class="post-content-preview">
-            AQS 共享功能的实现
-CountDownLatch 的用法
-CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具类，常被用在多线程环境下，它在初始时需要指定一个计数器的大小，然后可被多个线程并发的实现减 1 操作，并在计数器为 0 后调用 await 方法的线程被唤醒，从而实现多线程间的协作。它在多线程环境下的基本使用方式...
+            AQS 共享功能的实现CountDownLatch 的用法CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具类，常被用在多线程环境下，它在初始时需要指定一个计数器的大小，然后可被多个线程并发的实现减 1 操作，并在计数器为 0 后调用 await 方法的线程被唤醒，从而实现多线程间的协作。它在多线程环境下的基本使用方式为：...
         </div>
     </a>
     
@@ -574,11 +544,11 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         </p>
         <div class="tags">
             
-              <a href="/tags/#多线程" title="多线程">多线程</a>
-            
               <a href="/tags/#JAVA" title="JAVA">JAVA</a>
             
               <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
             
         </div>
     
@@ -593,7 +563,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             JAVA多线程篇之锁的介绍
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/14/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/93/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -601,8 +571,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
                 
             </h3>
         <div class="post-content-preview">
-            概述
-这篇文章介绍各种锁的分类。介绍的内容如下：
+            概述这篇文章介绍各种锁的分类。介绍的内容如下：
 
 公平锁 / 非公平锁
 可重入锁 / 不可重入锁
@@ -614,11 +583,8 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
 自旋锁
 
 上面是很多锁的名词，这些分类并不是全是指锁的状态，有的指锁的特性，有的指锁的设计，下面总结的内容是对每个锁的名词进行一定的解释。
-锁的种类详解
-公平锁 / 非公平锁
-
-公平锁
-公平...
+锁的种类详解公平锁 / 非公平锁
+公平锁  公平锁是...
         </div>
     </a>
     
@@ -628,11 +594,11 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         </p>
         <div class="tags">
             
-              <a href="/tags/#多线程" title="多线程">多线程</a>
-            
               <a href="/tags/#JAVA" title="JAVA">JAVA</a>
             
               <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
             
         </div>
     
@@ -647,7 +613,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             操作系统之 高性能IO浅析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/35/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/32/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -656,10 +622,9 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             </h3>
         <div class="post-content-preview">
             IO模型分类
-
 （1）同步阻塞IO（Blocking IO）：即传统的IO模型。
 （2）同步非阻塞IO（Non-blocking IO）：默认创建的socket都是阻塞的，非阻塞IO要求socket被设置为NONBLOCK。注意这里所说的NIO并非Java的NIO（New IO）库。
-（3）IO多路复用（IO Multiplexing）：即经典的Reactor设计模式，有时也称为异步阻塞IO...
+（3）IO多路复用（IO Multiplexing）：即经典的Reactor设计模式，有时也称为异步阻塞IO，...
         </div>
     </a>
     
@@ -833,7 +798,17 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             
         
             
+        
+            
             <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
+            <a href="/tags/#JAVA" title="JAVA" rel="23">JAVA</a>
+            
+        
+            
+            <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
             
         
             
@@ -846,14 +821,6 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         
             
             <a href="/tags/#多线程" title="多线程" rel="7">多线程</a>
-            
-        
-            
-            <a href="/tags/#JAVA" title="JAVA" rel="23">JAVA</a>
-            
-        
-            
-            <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
             
         
             
@@ -925,13 +892,13 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             
         
             
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
-            
-        
             
         
             
