@@ -152,14 +152,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -461,34 +461,133 @@ N 个从库同步完成达成一致。<br>
 当Sentinel将一个主服务器判断为主观下线之后，为了确认这个主服务器是否真的下线了，它会向同样监视这一主服务器的其他Sentinel进行询问，看它们是否也认为主服务器已经进入了下线状态（可以是主观下线或者客观下线）。当Sentinel从其他Sentinel那里接收到足够数量的已下线判断之后，Sentinel就会将从服务器判定为客观下线，并对主服务器执行故障转移操作。</p>
 </li>
 <li>
-<p>确定下线状态<br>
-Sentinel使用：</p>
+<p>确定下线状态</p>
 </li>
 </ol>
-<figure class="highlight plain"><figcaption><span>is-master-down-by-addr <ip> <port> <current_epoch> <runid>```</runid></current_epoch></port></ip></span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">命令询问其他Sentinel是否同意主服务器已下线</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607311285144.png)</span><br><span class="line"></span><br><span class="line">当一个Sentinel（目标Sentinel）接收到另一个Sentinel（源Sentinel）发来的SENTINEL is-master-down-by命令时，目标Sentinel会分析并取出命令请求中包含的各个参数，并根据其中的主服务器IP和端口号，检查主服务器是否已下线，然后向源Sentinel返回一条包含三个参数的Multi Bulk回复作为SENTINEL is-master-down-by命令的回复：</span><br></pre></td></tr></table></figure>
+<p>Sentinel使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SENTINEL is-master-down-by-addr &lt;ip&gt; &lt;port&gt; &lt;current_epoch&gt; &lt;runid&gt;</span><br></pre></td></tr></table></figure>
+<p>命令询问其他Sentinel是否同意主服务器已下线</p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607311285144.png" alt></p>
+<p>当一个Sentinel（目标Sentinel）接收到另一个Sentinel（源Sentinel）发来的SENTINEL is-master-down-by命令时，目标Sentinel会分析并取出命令请求中包含的各个参数，并根据其中的主服务器IP和端口号，检查主服务器是否已下线，然后向源Sentinel返回一条包含三个参数的Multi Bulk回复作为SENTINEL is-master-down-by命令的回复：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1) &lt;down_state&gt;</span><br><span class="line">2) &lt;leader_runid&gt;</span><br><span class="line">3) &lt;leader_epoch&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607311309721.png" alt></p>
+<ol start="5">
+<li>其他Sentinel 确认下线状态</li>
+</ol>
+<p>根据其他Sentinel发回的SENTINEL is-master-down-by-addr命令回复，Sentinel将统计其他Sentinel同意主服务器已下线的数量，当这一数量达到配置指定的判断客观下线所需的数量时， 那么该Sentinel就会认为主服务器已经进入客观下线状态。</p>
+<ol start="6">
+<li>选主流程（Raft算法）</li>
+</ol>
+<p>当一个主服务器被判断为客观下线时，监视这个下线主服务器的各个Sentinel会进行协商，选举出一个领头Sentinel，并由领头Sentinel对下线主服务器执行故障转移操作。</p>
+<ul>
+<li>所有Sentinel 选举地位平等</li>
+<li>头Sentinel选举之后，不论选举是否成功，所有Sentinel的配置纪元（configuration epoch）的值都会自增一次</li>
+<li>在一个配置纪元里面，所有Sentinel都有一次将某个Sentinel设置为局部领头Sentinel的机会，并且局部领头一旦设置，在这个配置纪元里面就不能再更改</li>
+<li>每个发现主服务器进入客观下线的Sentinel都会要求其他Sentinel将自己设置为局部领头Sentinel</li>
+<li>Sentinel设置局部领头Sentinel的规则是先到先得：最先向目标Sentinel发送设置要求的源Sentinel将成为目标Sentinel的局部领头Sentinel，而之后接收到的所有设置要求都会被目标Sentinel拒绝</li>
+<li>如果有某个Sentinel被半数以上的Sentinel设置成了局部领头Sentinel，那么这个Sentinel成为领头Sentinel</li>
+<li>如果在给定时限内，没有一个Sentinel被选举为领头Sentinel，那么各个Sentinel将在一段时间之后再次进行选举，直到选出领头Sentinel为止</li>
+</ul>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607311786666.png" alt></p>
+<ol start="7">
+<li>故障迁移</li>
+</ol>
+<p>在选举产生出领头Sentinel之后，领头Sentinel将对已下线的主服务器执行故障转移操作，该操作包含以下三个步骤：</p>
+<ul>
+<li>1）在已下线主服务器属下的所有从服务器里面，挑选出一个从服务器，并将其转换为主服务器。</li>
+<li>2）让已下线主服务器属下的所有从服务器改为复制新的主服务器。</li>
+<li>3）将已下线主服务器设置为新的主服务器的从服务器，当这个旧的主服务器重新上线时，它就会成为新的主服务器的从服务器。</li>
+</ul>
+<ol start="8">
+<li>选出新的主服务器</li>
+</ol>
+<p>故障转移操作第一步要做的就是在已下线主服务器属下的所有从服务器中，挑选出一个状态良好、数据完整的从服务器，然后向这个从服务器发送SLAVEOF no one命令，将这个从服务器转换为主服务器。<br>
+领头Sentinel会将已下线主服务器的所有从服务器保存到一个列表里面，然后按照以下规则，一项一项地对列表进行过滤：</p>
+<ul>
+<li>1）删除列表中所有处于下线或者断线状态的从服务器，这可以保证列表中剩余的从服务器都是正常在线的。</li>
+<li>2）删除列表中所有最近五秒内没有回复过领头Sentinel的INFO命令的从服务器，这可以保证列表中剩余的从服务器都是最近成功进行过通信的。</li>
+<li>3）删除所有与已下线主服务器连接断开超过down-after-milliseconds<em>10毫秒的从服务器：down-after-milliseconds选项指定了判断主服务器下线所需的时间，而删除断开时长超过down-after-milliseconds</em>10毫秒的从服务器，则可以保证列表中剩余的从服务器都没有过早地与主服务器断开连接，换句话说，列表中剩余的从服务器保存的数据都是比较新的。</li>
+<li>之后，领头Sentinel将根据从服务器的优先级，对列表中剩余的从服务器进行排序，并选出其中优先级最高的从服务器。</li>
+<li>如果有多个具有相同最高优先级的从服务器，那么领头Sentinel将按照从服务器的复制偏移量，对具有相同最高优先级的所有从服务器进行排序，并选出其中偏移量最大的从服务器（复制偏移量最大的从服务器就是保存着最新数据的从服务器）。</li>
+<li>最后，如果有多个优先级最高、复制偏移量最大的从服务器，那么领头Sentinel将按照运行ID对这些从服务器进行排序，并选出其中运行ID最小的从服务器。</li>
+</ul>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312133265.png" alt></p>
+<p>在发送SLAVEOF no one命令之后，领头Sentinel会以每秒一次的频率（平时是每十秒一次），向被升级的从服务器发送INFO命令，并观察命令回复中的角色（role）信息，当被升级服务器的role从原来的slave变为master时，领头Sentinel就知道被选中的从服务器已经顺利升级为主服务器了。</p>
+<p>例如，在图16-22展示的例子中，领头Sentinel会一直向server2发送INFO命令，当server2返回的命令回复从：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># Replication</span><br><span class="line">role:slave</span><br><span class="line">...</span><br><span class="line"># Other sections</span><br><span class="line">...</span><br><span class="line">变为：</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># Replication</span><br><span class="line">role:master</span><br><span class="line">...</span><br><span class="line"># Other sections</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>的时候，领头Sentinel就知道server2已经成功升级为主服务器了。</p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312162448.png" alt></p>
+<ol start="9">
+<li>修改从服务器的复制目标</li>
+</ol>
+<p>当新的主服务器出现之后，领头Sentinel下一步要做的就是，让已下线主服务器属下的所有从服务器去复制新的主服务器，这一动作可以通过向从服务器发送SLAVEOF命令来实现。</p>
+<p>下图展示了在故障转移操作中，领头Sentinel向已下线主服务器server1的两个从服务器server3和server4发送SLAVEOF命令，让它们复制新的主服务器server2的例子。</p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312437938.png" alt></p>
+<p>server3和server4成为server2的从服务器之后，各个服务器以及领头Sentinel的样子</p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312469029.png" alt></p>
+<ol start="10">
+<li>将旧的主服务器变为从服务器</li>
+</ol>
+<p>当server1重新上线时，Sentinel就会向它发送SLAVEOF命令，让它成为server2的从服务器。</p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312499922.png" alt></p>
+<p><img src="/article/distributed-redis-advanced/distributed-redis-advanced-1607312505178.png" alt></p>
+<h3><span id="sentinel-的搭建过程">Sentinel 的搭建过程</span></h3>
 <ol>
-<li>&lt;down_state&gt;</li>
-<li>&lt;leader_runid&gt;</li>
-<li>&lt;leader_epoch&gt;</li>
+<li>Sentinel 配置说明<br>
+redis-sentinel.conf配置项说明如下：</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607311309721.png)</span><br><span class="line"></span><br><span class="line">5. 其他Sentinel 确认下线状态</span><br><span class="line">根据其他Sentinel发回的SENTINEL is-master-down-by-addr命令回复，Sentinel将统计其他Sentinel同意主服务器已下线的数量，当这一数量达到配置指定的判断客观下线所需的数量时， 那么该Sentinel就会认为主服务器已经进入客观下线状态。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">6. 选主流程（Raft算法）</span><br><span class="line"></span><br><span class="line">当一个主服务器被判断为客观下线时，监视这个下线主服务器的各个Sentinel会进行协商，选举出一个领头Sentinel，并由领头Sentinel对下线主服务器执行故障转移操作。</span><br><span class="line"></span><br><span class="line">+ 所有Sentinel 选举地位平等</span><br><span class="line">+ 头Sentinel选举之后，不论选举是否成功，所有Sentinel的配置纪元（configuration epoch）的值都会自增一次</span><br><span class="line">+ 在一个配置纪元里面，所有Sentinel都有一次将某个Sentinel设置为局部领头Sentinel的机会，并且局部领头一旦设置，在这个配置纪元里面就不能再更改</span><br><span class="line">+ 每个发现主服务器进入客观下线的Sentinel都会要求其他Sentinel将自己设置为局部领头Sentinel</span><br><span class="line">+ Sentinel设置局部领头Sentinel的规则是先到先得：最先向目标Sentinel发送设置要求的源Sentinel将成为目标Sentinel的局部领头Sentinel，而之后接收到的所有设置要求都会被目标Sentinel拒绝</span><br><span class="line">+ 如果有某个Sentinel被半数以上的Sentinel设置成了局部领头Sentinel，那么这个Sentinel成为领头Sentinel</span><br><span class="line">+ 如果在给定时限内，没有一个Sentinel被选举为领头Sentinel，那么各个Sentinel将在一段时间之后再次进行选举，直到选出领头Sentinel为止</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607311786666.png)</span><br><span class="line"></span><br><span class="line">7. 故障迁移</span><br><span class="line"></span><br><span class="line">在选举产生出领头Sentinel之后，领头Sentinel将对已下线的主服务器执行故障转移操作，该操作包含以下三个步骤：</span><br><span class="line"></span><br><span class="line">+ 1）在已下线主服务器属下的所有从服务器里面，挑选出一个从服务器，并将其转换为主服务器。</span><br><span class="line">+ 2）让已下线主服务器属下的所有从服务器改为复制新的主服务器。</span><br><span class="line">+ 3）将已下线主服务器设置为新的主服务器的从服务器，当这个旧的主服务器重新上线时，它就会成为新的主服务器的从服务器。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">8. 选出新的主服务器</span><br><span class="line"></span><br><span class="line">故障转移操作第一步要做的就是在已下线主服务器属下的所有从服务器中，挑选出一个状态良好、数据完整的从服务器，然后向这个从服务器发送SLAVEOF no one命令，将这个从服务器转换为主服务器。</span><br><span class="line">领头Sentinel会将已下线主服务器的所有从服务器保存到一个列表里面，然后按照以下规则，一项一项地对列表进行过滤：</span><br><span class="line">+ 1）删除列表中所有处于下线或者断线状态的从服务器，这可以保证列表中剩余的从服务器都是正常在线的。</span><br><span class="line">+ 2）删除列表中所有最近五秒内没有回复过领头Sentinel的INFO命令的从服务器，这可以保证列表中剩余的从服务器都是最近成功进行过通信的。</span><br><span class="line">+ 3）删除所有与已下线主服务器连接断开超过down-after-milliseconds*10毫秒的从服务器：down-after-milliseconds选项指定了判断主服务器下线所需的时间，而删除断开时长超过down-after-milliseconds*10毫秒的从服务器，则可以保证列表中剩余的从服务器都没有过早地与主服务器断开连接，换句话说，列表中剩余的从服务器保存的数据都是比较新的。</span><br><span class="line">+ 之后，领头Sentinel将根据从服务器的优先级，对列表中剩余的从服务器进行排序，并选出其中优先级最高的从服务器。</span><br><span class="line">+ 如果有多个具有相同最高优先级的从服务器，那么领头Sentinel将按照从服务器的复制偏移量，对具有相同最高优先级的所有从服务器进行排序，并选出其中偏移量最大的从服务器（复制偏移量最大的从服务器就是保存着最新数据的从服务器）。</span><br><span class="line">+ 最后，如果有多个优先级最高、复制偏移量最大的从服务器，那么领头Sentinel将按照运行ID对这些从服务器进行排序，并选出其中运行ID最小的从服务器。</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312133265.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">在发送SLAVEOF no one命令之后，领头Sentinel会以每秒一次的频率（平时是每十秒一次），向被升级的从服务器发送INFO命令，并观察命令回复中的角色（role）信息，当被升级服务器的role从原来的slave变为master时，领头Sentinel就知道被选中的从服务器已经顺利升级为主服务器了。</span><br><span class="line"></span><br><span class="line">例如，在图16-22展示的例子中，领头Sentinel会一直向server2发送INFO命令，当server2返回的命令回复从：</span><br></pre></td></tr></table></figure>
-<h1><span id="replication">Replication</span></h1>
-<p>role:slave<br>
-…</p>
-<h1><span id="other-sections">Other sections</span></h1>
-<p>…<br>
-变为：</p>
-<h1><span id="replication">Replication</span></h1>
-<p>role:master<br>
-…</p>
-<h1><span id="other-sections">Other sections</span></h1>
-<p>…</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">的时候，领头Sentinel就知道server2已经成功升级为主服务器了。</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312162448.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">9. 修改从服务器的复制目标</span><br><span class="line"></span><br><span class="line">当新的主服务器出现之后，领头Sentinel下一步要做的就是，让已下线主服务器属下的所有从服务器去复制新的主服务器，这一动作可以通过向从服务器发送SLAVEOF命令来实现。</span><br><span class="line"></span><br><span class="line">下图展示了在故障转移操作中，领头Sentinel向已下线主服务器server1的两个从服务器server3和server4发送SLAVEOF命令，让它们复制新的主服务器server2的例子。</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312437938.png)</span><br><span class="line"></span><br><span class="line">server3和server4成为server2的从服务器之后，各个服务器以及领头Sentinel的样子</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312469029.png)</span><br><span class="line"></span><br><span class="line">10. 将旧的主服务器变为从服务器</span><br><span class="line"></span><br><span class="line">当server1重新上线时，Sentinel就会向它发送SLAVEOF命令，让它成为server2的从服务器。</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312499922.png)</span><br><span class="line"></span><br><span class="line">![](distributed-redis-advanced/distributed-redis-advanced-1607312505178.png)</span><br><span class="line"></span><br><span class="line">### Sentinel 的搭建过程</span><br><span class="line"></span><br><span class="line">1. Sentinel 配置说明</span><br><span class="line">redis-sentinel.conf配置项说明如下：</span><br><span class="line"></span><br><span class="line">| 配置项目 | 配置说明 | 示例 | </span><br><span class="line">---|---|--- | ---</span><br><span class="line">port | sentinel监听端口，默认是26379，可以修改。| </span><br><span class="line">sentinel monitor &lt;master-name&gt; &lt;ip&gt; &lt;redis-port&gt; &lt;quorum&gt; | 告诉sentinel去监听地址为ip:port的一个master，这里的master-name可以自定义，quorum是一个数字，指明当有多少个sentinel认为一个master失效时，master才算真正失效。master-name只能包含英文字母，数字，和“.-_”这三个字符需要注意的是master-ip 要写真实的ip地址而不要用回环地址（127.0.0.1）。| sentinel monitor mymaster 192.168.0.5 6379 2</span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt; |设置连接master和slave时的密码，注意的是sentinel不能分别为master和slave设置不同的密码，因此master和slave的密码应该设置相同。|sentinel auth-pass mymaster 0123passw0rd</span><br><span class="line">sentinel down-after-milliseconds &lt;master-name&gt; &lt;milliseconds&gt;  |这个配置项指定了需要多少失效时间，一个master才会被这个sentinel主观地认为是不可用的。 单位是毫秒，默认为30秒|sentinel down-after-milliseconds mymaster 30000</span><br><span class="line">sentinel parallel-syncs &lt;master-name&gt; &lt;numslaves&gt; |这个配置项指定了在发生failover主备切换时最多可以有多少个slave同时对新的master进行 同步，这个数字越小，完成failover所需的时间就越长，但是如果这个数字越大，就意味着越 多的slave因为replication而不可用。可以通过将这个值设为 1 来保证每次只有一个slave 处于不能处理命令请求的状态。|sentinel parallel-syncs mymaster 1</span><br><span class="line">sentinel failover-timeout &lt;master-name&gt; &lt;milliseconds&gt; |&lt;div&gt;failover-timeout 可以用在以下这些方面： &lt;br&gt;1. 同一个sentinel对同一个master两次failover之间的间隔时间。&lt;br&gt;2. 当一个slave从一个错误的master那里同步数据开始计算时间。直到slave被纠正为向正确的master那里同步数据时。&lt;br&gt;3. 当想要取消一个正在进行的failover所需要的时间。  &lt;br&gt;4. 当进行failover时，配置所有slaves指向新的master所需的最大时间。不过，即使过了这个超时，slaves依然会被正确配置为指向master，但是就不按parallel-syncs所配置的规则来了。 &lt;/dev&gt; |sentinel failover-timeout mymaster1 20000</span><br><span class="line">sentinel notification-script &lt;master-name&gt; &lt;script-path&gt; | sentinel的notification-script和reconfig-script是用来配置当某一事件发生时所需要执行的脚本，可以通过脚本来通知管理员，例如当系统运行不正常时发邮件通知相关人员。对于脚本的运行结果有以下规则：&lt;br&gt;若脚本执行后返回1，那么该脚本稍后将会被再次执行，重复次数目前默认为10&lt;br&gt;若脚本执行后返回2，或者比2更高的一个返回值，脚本将不会重复执行。&lt;br&gt;如果脚本在执行过程中由于收到系统中断信号被终止了，则同返回值为1时的行为相同。&lt;br&gt;一个脚本的最大执行时间为60s，如果超过这个时间，脚本将会被一个SIGKILL信号终止，之后重新执行。&lt;br&gt;通知型脚本:当sentinel有任何警告级别的事件发生时（比如说redis实例的主观失效和客观失效等等），将会去调用这个脚本，这时这个脚本应该通过邮件，SMS等方式去通知系统管理员关于系统不正常运行的信息。调用该脚本时，将传给脚本两个参数，一个是事件的类型，一个是事件的描述。如果sentinel.conf配置文件中配置了这个脚本路径，那么必须保证这个脚本存在于这个路径，并且是可执行的，否则sentinel无法正常启动成功。| sentinel notification-script mymaster /var/redis/notify.sh</span><br><span class="line">sentinel client-reconfig-script &lt;master-name&gt; &lt;script-path&gt; |当一个master由于failover而发生改变时，这个脚本将会被调用，通知相关的客户端关于master地址已经发生改变的信息。以下参数将会在调用脚本时传给脚本:&lt;master-name&gt; &lt;role&gt; &lt;state&gt; &lt;from-ip&gt; &lt;from-port&gt; &lt;to-ip&gt; &lt;to-port&gt;目前&lt;state&gt;总是“failover”, &lt;role&gt;是“leader”或者“observer”中的一个。 参数 from-ip, from-port, to-ip, to-port是用来和旧的master和新的master(即旧的slave)通信的。这个脚本应该是通用的，能被多次调用，不是针对性的。|sentinel client-reconfig-script mymaster /var/redis/reconfig.sh</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>搭建集群</li>
-</ol>
-<p>文件位置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── 16379</span><br><span class="line">│   ├── redis_sentinel_16379.pid</span><br><span class="line">│   ├── redis_sentinel_log.log</span><br><span class="line">│   └── sentinel.conf</span><br><span class="line">├── 16380</span><br><span class="line">│   ├── redis_sentinel_16380.pid</span><br><span class="line">│   ├── redis_sentinel_log.log</span><br><span class="line">│   └── sentinel.conf</span><br><span class="line">└── 16381</span><br><span class="line">    ├── redis_sentinel_16381.pid</span><br><span class="line">    ├── redis_sentinel_log.log</span><br><span class="line">    └── sentinel.conf</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>配置项目</th>
+<th>配置说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port</td>
+<td>sentinel监听端口，默认是26379，可以修改。</td>
+<td></td>
+</tr>
+<tr>
+<td>sentinel monitor <master-name> <ip> <redis-port> <quorum></quorum></redis-port></ip></master-name></td>
+<td>告诉sentinel去监听地址为ip:port的一个master，这里的master-name可以自定义，quorum是一个数字，指明当有多少个sentinel认为一个master失效时，master才算真正失效。master-name只能包含英文字母，数字，和“.-_”这三个字符需要注意的是master-ip 要写真实的ip地址而不要用回环地址（127.0.0.1）。</td>
+<td>sentinel monitor mymaster 192.168.0.5 6379 2</td>
+</tr>
+<tr>
+<td>sentinel auth-pass <master-name> <password></password></master-name></td>
+<td>设置连接master和slave时的密码，注意的是sentinel不能分别为master和slave设置不同的密码，因此master和slave的密码应该设置相同。</td>
+<td>sentinel auth-pass mymaster 0123passw0rd</td>
+</tr>
+<tr>
+<td>sentinel down-after-milliseconds <master-name> <milliseconds></milliseconds></master-name></td>
+<td>这个配置项指定了需要多少失效时间，一个master才会被这个sentinel主观地认为是不可用的。 单位是毫秒，默认为30秒</td>
+<td>sentinel down-after-milliseconds mymaster 30000</td>
+</tr>
+<tr>
+<td>sentinel parallel-syncs <master-name> <numslaves></numslaves></master-name></td>
+<td>这个配置项指定了在发生failover主备切换时最多可以有多少个slave同时对新的master进行 同步，这个数字越小，完成failover所需的时间就越长，但是如果这个数字越大，就意味着越 多的slave因为replication而不可用。可以通过将这个值设为 1 来保证每次只有一个slave 处于不能处理命令请求的状态。</td>
+<td>sentinel parallel-syncs mymaster 1</td>
+</tr>
+<tr>
+<td>sentinel failover-timeout <master-name> <milliseconds></milliseconds></master-name></td>
+<td><div>failover-timeout 可以用在以下这些方面： <br>1. 同一个sentinel对同一个master两次failover之间的间隔时间。<br>2. 当一个slave从一个错误的master那里同步数据开始计算时间。直到slave被纠正为向正确的master那里同步数据时。<br>3. 当想要取消一个正在进行的failover所需要的时间。  <br>4. 当进行failover时，配置所有slaves指向新的master所需的最大时间。不过，即使过了这个超时，slaves依然会被正确配置为指向master，但是就不按parallel-syncs所配置的规则来了。 </div></td>
+<td>sentinel failover-timeout mymaster1 20000</td>
+</tr>
+<tr>
+<td>sentinel notification-script <master-name> <script-path></script-path></master-name></td>
+<td>sentinel的notification-script和reconfig-script是用来配置当某一事件发生时所需要执行的脚本，可以通过脚本来通知管理员，例如当系统运行不正常时发邮件通知相关人员。对于脚本的运行结果有以下规则：<br>若脚本执行后返回1，那么该脚本稍后将会被再次执行，重复次数目前默认为10<br>若脚本执行后返回2，或者比2更高的一个返回值，脚本将不会重复执行。<br>如果脚本在执行过程中由于收到系统中断信号被终止了，则同返回值为1时的行为相同。<br>一个脚本的最大执行时间为60s，如果超过这个时间，脚本将会被一个SIGKILL信号终止，之后重新执行。<br>通知型脚本:当sentinel有任何警告级别的事件发生时（比如说redis实例的主观失效和客观失效等等），将会去调用这个脚本，这时这个脚本应该通过邮件，SMS等方式去通知系统管理员关于系统不正常运行的信息。调用该脚本时，将传给脚本两个参数，一个是事件的类型，一个是事件的描述。如果sentinel.conf配置文件中配置了这个脚本路径，那么必须保证这个脚本存在于这个路径，并且是可执行的，否则sentinel无法正常启动成功。</td>
+<td>sentinel notification-script mymaster /var/redis/notify.sh</td>
+</tr>
+<tr>
+<td>sentinel client-reconfig-script <master-name> <script-path></script-path></master-name></td>
+<td>当一个master由于failover而发生改变时，这个脚本将会被调用，通知相关的客户端关于master地址已经发生改变的信息。以下参数将会在调用脚本时传给脚本:<master-name> <role> <state> <from-ip> <from-port> <to-ip> <to-port>目前<state>总是“failover”, <role>是“leader”或者“observer”中的一个。 参数 from-ip, from-port, to-ip, to-port是用来和旧的master和新的master(即旧的slave)通信的。这个脚本应该是通用的，能被多次调用，不是针对性的。</role></state></to-port></to-ip></from-port></from-ip></state></role></master-name></td>
+<td>sentinel client-reconfig-script mymaster /var/redis/reconfig.sh</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">2. 搭建集群</span><br><span class="line"></span><br><span class="line">文件位置</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">.</span><br><span class="line">├── 16379</span><br><span class="line">│   ├── redis_sentinel_16379.pid</span><br><span class="line">│   ├── redis_sentinel_log.log</span><br><span class="line">│   └── sentinel.conf</span><br><span class="line">├── 16380</span><br><span class="line">│   ├── redis_sentinel_16380.pid</span><br><span class="line">│   ├── redis_sentinel_log.log</span><br><span class="line">│   └── sentinel.conf</span><br><span class="line">└── 16381</span><br><span class="line">    ├── redis_sentinel_16381.pid</span><br><span class="line">    ├── redis_sentinel_log.log</span><br><span class="line">    └── sentinel.conf</span><br></pre></td></tr></table></figure>
 <p>配置文件模板 ：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bind 0.0.0.0</span><br><span class="line">port 16379</span><br><span class="line">daemonize yes</span><br><span class="line">pidfile /root/redis/confs/sentinel/16379/redis_sentinel_16379.pid</span><br><span class="line">logfile &quot;/root/redis/confs/sentinel/16379/redis_sentinel_log.log&quot;</span><br><span class="line">dir ./</span><br><span class="line">sentinel monitor mymaster 192.168.100.10 6379 2</span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
 <p>分别启动</p>
@@ -709,7 +808,7 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片（shar
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Redis集群模式</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Redis 主从集群</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Redis 主从集群原理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Redis 主从集群搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">redis 哨兵集群</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Sentinel 的作用</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">Sentinel 的故障迁移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">Sentinel 实现原理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.4.</span> <span class="toc-nav-text">Sentinel 故障迁移和选主流程</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Replication</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Other sections</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Replication</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Other sections</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">redis 集群模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">槽位</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">在集群中执行命令</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">重新分片</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">复制与故障转移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">故障转移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">总结</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.7.</span> <span class="toc-nav-text">集群搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Redis集群模式</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Redis 主从集群</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Redis 主从集群原理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Redis 主从集群搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">redis 哨兵集群</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">Sentinel 的作用</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">Sentinel 的故障迁移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">Sentinel 实现原理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.4.</span> <span class="toc-nav-text">Sentinel 故障迁移和选主流程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.5.</span> <span class="toc-nav-text">Sentinel 的搭建过程</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">redis 集群模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">槽位</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">在集群中执行命令</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">重新分片</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">复制与故障转移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">故障转移</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.6.</span> <span class="toc-nav-text">总结</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.7.</span> <span class="toc-nav-text">集群搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">参考</span></a></li></ol>
         
         </div>
       </aside>
