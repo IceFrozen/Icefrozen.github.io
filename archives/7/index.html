@@ -146,14 +146,14 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -232,12 +232,63 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-hash-map/">
+        <h2 class="post-title">
+            源码分析系列（1）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/34/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                hashMap 源码分析
+            </h3>
+        <div class="post-content-preview">
+            MAP 类继承图
+
+HashMap：
+
+KV结构，高效
+无序
+key为null，但是只允许有一个key为null，再次说明，
+HashMap不是线程安全的。
+
+LinkedHashMap：
+LinkedHashMap是HashMap的子类，它将保持记录的插入顺序。
+TreeMap：
+TreeMap实现了SortedMap接口，很明显，他将对插入的记录排序，
+HashMap 内部结构
+首先来看...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2018-05-07
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
+            
+              <a href="/tags/#源码解析" title="源码解析">源码解析</a>
+            
+              <a href="/tags/#Map" title="Map">Map</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/java-mem-objecat/">
         <h2 class="post-title">
             Java内存模型(2)-- Java对象内存布局
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/3/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/30/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -374,6 +425,10 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
     <ul>
       
         <li>
+          <a href="/article/lvs-1/">负载均衡（1）</a>
+        </li>
+      
+        <li>
           <a href="/article/distributed-redis-advanced/">Redis系列之集群搭建</a>
         </li>
       
@@ -389,10 +444,6 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
           <a href="/article/bytecode-analysis-2-instance/">深入JVM字节码(2)</a>
         </li>
       
-        <li>
-          <a href="/article/bytecode-analysis/">深入JVM字节码(1)</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -401,7 +452,7 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -432,19 +483,19 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
             
         
             
-            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
-            
-        
-            
-            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
-            
-        
-            
             <a href="/tags/#JAVA" title="JAVA" rel="23">JAVA</a>
             
         
             
             <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
+            
+        
+            
+            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
+            
+        
+            
+            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
             
         
             
@@ -502,9 +553,9 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
             
         
             
-            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
-            
         
+            
+            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
             
         
             
@@ -517,8 +568,6 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
         
             
             <a href="/tags/#RPC" title="RPC" rel="5">RPC</a>
-            
-        
             
         
             
@@ -536,9 +585,11 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
             
         
             
+            <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+            
         
             
-            <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+        
             
         
     </div>
@@ -602,7 +653,7 @@ Mark Word：包含一系列的标记位，比如轻量级锁的标记位，偏�
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Jason Lee 2020 
+                    Copyright &copy; Jason Lee 2021 
                     <br>
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>
