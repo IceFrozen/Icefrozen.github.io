@@ -146,14 +146,14 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -232,12 +232,55 @@
 
 <div class="post-preview">
 
+    <a href="/article/distributed-redis-data-structure-sds-link/">
+        <h2 class="post-title">
+            Redis系列之数据结构篇(1)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/41/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                SDS和链表
+            </h3>
+        <div class="post-content-preview">
+            概诉
+
+本文转自 redis 的设计与实现
+
+SDS
+SDS 简介
+Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。
+举个例子， 如果客户端执行命令：
+12redis&gt; SET m...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-04-26
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/forbid-foreach-add-or-move/">
         <h2 class="post-title">
             源码分析系列(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/17/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -279,7 +322,7 @@ foreach循环
             JAVA多线程之AQS分析(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/31/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -317,7 +360,7 @@ foreach循环
             稳定性保证
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/62/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -359,7 +402,7 @@ foreach循环
             MQ可以解决哪些实际问题?
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/10/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/45/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -394,7 +437,7 @@ foreach循环
             深入理解java泛型
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/86/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/84/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -432,7 +475,7 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
             JVM 替换PermGem 为 Meta Space
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/66/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -476,7 +519,7 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
             新的开始
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/5/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/60/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -517,7 +560,7 @@ Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭�
             Java垃圾回收详解(7)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/36/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -557,7 +600,7 @@ G1的设计原则是&quot;首先收集尽可能多的垃圾(Garbage First)&quot;
             Java垃圾回收详解(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/88/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -585,44 +628,6 @@ GC ROOTs包含了那些对象
         <p class="post-meta" style="margin: 10px 0;">
             Posted by Jason Lee on
             2018-08-11
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
-            
-              <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-              <a href="/tags/#垃圾回收篇" title="垃圾回收篇">垃圾回收篇</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/Java-garbage-collection-analysis-2/">
-        <h2 class="post-title">
-            Java垃圾回收详解(2)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                GC方式介绍
-            </h3>
-        <div class="post-content-preview">
-            为什么需要GC？
-当程序创建对象、数组等引用类型实体时，系统都会在堆内存中为之分配一块内存区，对象就保存在这块内存区中，当这块内存不再被任何引用变量引用时，这块内存就变成垃圾，等待垃圾回收机制进行回收。在C和C++中，垃圾的回收是由程序员来手动执行，虽然实时性比较好，但由于内存分配和回收代码繁琐，较容易出错，内存泄露问题比较常见。于是一些语言如Java、python、Go等，通过程序实现了自...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2018-07-04
         </p>
         <div class="tags">
             
@@ -742,6 +747,10 @@ GC ROOTs包含了那些对象
     <ul>
       
         <li>
+          <a href="/article/lvs-2/">负载均衡（2）</a>
+        </li>
+      
+        <li>
           <a href="/article/lvs-1/">负载均衡（1）</a>
         </li>
       
@@ -757,10 +766,6 @@ GC ROOTs包含了那些对象
           <a href="/article/openerating-learning-vfs-2/">Linux 操作系统原理-文件系统(2)</a>
         </li>
       
-        <li>
-          <a href="/article/openerating-learning-vfs-1/">Linux 操作系统原理-文件系统(1)</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -769,7 +774,7 @@ GC ROOTs包含了那些对象
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -786,23 +791,11 @@ GC ROOTs包含了那些对象
             
         
             
-            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            <a href="/tags/#数据结构" title="数据结构" rel="2">数据结构</a>
             
         
             
-        
-            
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
-            
-        
-            
-            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
-            
-        
-            
-            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
+            <a href="/tags/#树" title="树" rel="2">树</a>
             
         
             
@@ -818,41 +811,17 @@ GC ROOTs包含了那些对象
             
         
             
-            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
-            
-        
-            
-            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#数据结构" title="数据结构" rel="2">数据结构</a>
-            
-        
-            
-            <a href="/tags/#树" title="树" rel="2">树</a>
-            
-        
-            
             <a href="/tags/#垃圾回收篇" title="垃圾回收篇" rel="8">垃圾回收篇</a>
             
         
+            
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
+            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
             
         
             
@@ -870,7 +839,17 @@ GC ROOTs包含了那些对象
             
         
             
+            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
+            
+        
+            
             <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
+        
+            
+            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
+            
+        
             
         
             
@@ -888,6 +867,14 @@ GC ROOTs包含了那些对象
             
         
             
+        
+            
+        
+            
+            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
@@ -898,15 +885,33 @@ GC ROOTs包含了那些对象
             
         
             
+            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
+            
+        
+            
         
             
         
             
         
+            
+        
+            
+            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
             
         
             
             <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
             
         
     </div>
