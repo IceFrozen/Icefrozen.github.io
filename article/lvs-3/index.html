@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          负载均衡（3） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/lvs-3/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>负载均衡（3）</h1>
+                        <h2 class="subheading">LVS服务的搭建机及其高级应用</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2021-01-24
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">西木凌萧</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="概诉">概诉</span></h2>
+<p>根据<a href="https://icefrozen.github.io/article/lvs-2/" target="_blank" rel="noopener">LVS四层负载均衡器</a>所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。</p>
+<h2><span id="lvs服务的搭建">LVS服务的搭建</span></h2>
+<h1><span id="ipvsadm">ipvsadm</span></h1>
+<p>安装：</p>
+<blockquote>
+<p>sudo yum  ipvsadm  -y<br>
+ipvsadm 是LVS 管理集群服务的命令行工具，用法如下</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] [-M netmask] [-b sched-flags]</span><br><span class="line">ipvsadm -D -t|u|f service-address</span><br><span class="line">ipvsadm -C</span><br><span class="line">ipvsadm -R</span><br><span class="line">ipvsadm -S [-n]</span><br><span class="line">ipvsadm -a|e -t|u|f service-address -r server-address [-g|i|m] [-w weight] [-x upper] [-y lower]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line">ipvsadm -L|l [options]</span><br><span class="line">ipvsadm -Z [-t|u|f service-address]</span><br><span class="line">ipvsadm --set tcp tcpfin udp</span><br><span class="line">ipvsadm -h</span><br></pre></td></tr></table></figure>
+<ul>
+<li>管理集群服务：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm  -A|E  -t|u|f  service-address  [-s scheduler]</span><br><span class="line">ipvsadm  -D  -t|u|f service-address</span><br><span class="line"></span><br><span class="line">-A：添加</span><br><span class="line">-E：修改</span><br><span class="line">-D：删除</span><br><span class="line"></span><br><span class="line">service-address：</span><br><span class="line">	-t, tcp, vip:port </span><br><span class="line">	-u, udp, vip:port</span><br><span class="line">	-f, fwm, MARK</span><br><span class="line">    -s scheduler：默认为wlc；</span><br></pre></td></tr></table></figure>
+<ul>
+<li>管理集群服务上的RS:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -a|e  -t|u|f service-address -r server-address [-g|i|-r] [-w weight]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line"></span><br><span class="line">-a：添加一个RS</span><br><span class="line">-e：修改一个RS</span><br><span class="line">-d：删除一个RS</span><br><span class="line"></span><br><span class="line">server-address： rip[:port]</span><br><span class="line">    -g：GATEWAY （默认）</span><br><span class="line">    -i: IPIP</span><br><span class="line">    -m: MASQUERADE</span><br><span class="line"></span><br><span class="line">```					</span><br><span class="line">+ 查看			</span><br><span class="line">```bash</span><br><span class="line">ipvsadm -L|l [options]</span><br><span class="line">    -n：numeric，数字格式显示地址和端口；</span><br><span class="line">    -c：connection，显示ipvs连接；</span><br><span class="line">    --stats：统计数据；</span><br><span class="line">    --rate：速率</span><br><span class="line">    --exact：精确值</span><br></pre></td></tr></table></figure>
+<ul>
+<li>清空和保存：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm  -C</span><br><span class="line">```				</span><br><span class="line">+ 保存和重载：</span><br></pre></td></tr></table></figure>
+<p>保存：<br>
+ipvsadm -S  &gt; /PATH/TO/SOME_RULE_FILE<br>
+ipvsadm-save  &gt; /PATH/TO/SOME_RULE_FILE<br>
+重载：<br>
+ipvsadm  -R &lt; /PATH/FROM/SOME_RULE_FILE<br>
+ipvsadm-restore &lt; /PATH/FROM/SOME_RULE_FILE</p>
+<p>计数器清零：<br>
+ipvsadm  -Z  [-t|u|f service-address]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 环境准备</span><br><span class="line"></span><br><span class="line">## 环境概述</span><br><span class="line"></span><br><span class="line">+ lvs-node-1: RS(CentOS7)  sshd  nginx</span><br><span class="line">+ lvs-node-2: RS(CentOS7) sshd nginx</span><br><span class="line">+ lvs-node-0: LVS(CentOS7) bind(name server) sshd ipvsadm</span><br><span class="line">+ vmware funsion vmnet4 host-only 虚拟网路 </span><br><span class="line">+ nginx web server</span><br><span class="line">+ DNS server </span><br><span class="line"></span><br><span class="line">+ 网络拓扑如下：</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499387628.png)</span><br><span class="line"></span><br><span class="line">## 搭建vmnet4 虚拟网络 </span><br><span class="line"></span><br><span class="line">打开偏好设置</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499472947.png)</span><br><span class="line"></span><br><span class="line">新建 vmnet4虚拟交换机</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499522637.png)</span><br><span class="line"></span><br><span class="line">新建 vmnet4 子网为 172.16.100.0</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499180529.png)</span><br><span class="line"></span><br><span class="line">## LVS设置hostname 和 网卡信息</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-0 双网卡 </span><br><span class="line">虚拟机添加网卡，使得该网卡链接在虚拟vmnet4 设备之上</span><br><span class="line">网卡信息如下：</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611500354576.png)</span><br><span class="line"></span><br><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens33</span><br><span class="line">编辑如下： **注意172.16.100.10 不要配置网关**</span><br></pre></td></tr></table></figure>
+<p>TYPE=Ethernet<br>
+PROXY_METHOD=none<br>
+BROWSER_ONLY=no<br>
+BOOTPROTO=static<br>
+DEFROUTE=yes<br>
+IPV4_FAILURE_FATAL=no<br>
+IPV6INIT=yes<br>
+IPV6_AUTOCONF=yes<br>
+IPV6_DEFROUTE=yes<br>
+IPV6_FAILURE_FATAL=no<br>
+IPV6_ADDR_GEN_MODE=stable-privacy<br>
+NAME=ens33<br>
+DEVICE=ens33<br>
+ONBOOT=yes<br>
+IPADDR=172.16.100.10<br>
+NETMASK=255.255.255.0<br>
+DNS1=119.29.29.29<br>
+DNS2=182.254.116.116</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens37 </span><br><span class="line">编辑如下：</span><br></pre></td></tr></table></figure>
+<p>TYPE=Ethernet<br>
+PROXY_METHOD=none<br>
+BROWSER_ONLY=no<br>
+BOOTPROTO=static<br>
+DEFROUTE=yes<br>
+IPV4_FAILURE_FATAL=no<br>
+IPV6INIT=yes<br>
+IPV6_AUTOCONF=yes<br>
+IPV6_DEFROUTE=yes<br>
+IPV6_FAILURE_FATAL=no<br>
+IPV6_ADDR_GEN_MODE=stable-privacy<br>
+NAME=ens37<br>
+DEVICE=ens37<br>
+ONBOOT=yes<br>
+IPADDR=192.168.100.6<br>
+NETMASK=255.255.255.0<br>
+DNS1=119.29.29.29<br>
+GATEWAY=192.168.100.2<br>
+DNS2=182.254.116.116</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ 设置hostname   </span><br><span class="line">&gt; hostnamectl set-hostname lvs-node-0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">+ 关闭防火墙</span><br><span class="line">&gt; systemctl stop firewalld </span><br><span class="line">&gt; systemctl disable firwalld </span><br><span class="line"></span><br><span class="line">+ 安装dns服务(这里不做介绍，也可以做可以不做)</span><br></pre></td></tr></table></figure>
+<p>并设置 <a href="http://lvs-node-1.exmaple.com" target="_blank" rel="noopener">lvs-node-1.exmaple.com</a> 为 172.16.100.11<br>
+并设置 <a href="http://lvs-node-2.exmaple.com" target="_blank" rel="noopener">lvs-node-2.exmaple.com</a> 为 172.16.100.12</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">+ 设置完成重启网卡后网卡信息如下：</span><br><span class="line"></span><br><span class="line">&gt; systemctl restart network</span><br></pre></td></tr></table></figure>
+<p>root@lvs-node-0 ~]# ifconfig<br>
+ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500<br>
+inet 172.16.100.10  netmask 255.255.255.0  broadcast 172.16.100.255<br>
+inet6 fe80::fe47:7422:c78:9b51  prefixlen 64  scopeid 0x20<link><br>
+ether 00:0c:29:15:e4:48  txqueuelen 1000  (Ethernet)<br>
+RX packets 4946  bytes 985195 (962.1 KiB)<br>
+RX errors 0  dropped 0  overruns 0  frame 0<br>
+TX packets 7786  bytes 860433 (840.2 KiB)<br>
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</p>
+<p>ens37: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500<br>
+inet 192.168.100.6  netmask 255.255.255.0  broadcast 192.168.100.255<br>
+inet6 fe80::4909:a397:124:1798  prefixlen 64  scopeid 0x20<link><br>
+ether 00:0c:29:15:e4:52  txqueuelen 1000  (Ethernet)<br>
+RX packets 30945  bytes 15583220 (14.8 MiB)<br>
+RX errors 0  dropped 0  overruns 0  frame 0<br>
+TX packets 13008  bytes 2620954 (2.4 MiB)<br>
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</p>
+<p>lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536<br>
+inet 127.0.0.1  netmask 255.0.0.0<br>
+inet6 ::1  prefixlen 128  scopeid 0x10<host><br>
+loop  txqueuelen 1000  (Local Loopback)<br>
+RX packets 140  bytes 15978 (15.6 KiB)<br>
+RX errors 0  dropped 0  overruns 0  frame 0<br>
+TX packets 140  bytes 15978 (15.6 KiB)<br>
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</host></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">## RS设置hostname 和 网卡信息</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-1 和 lvs-node-2 hostname </span><br><span class="line">&gt; hostnamectl set-hostname &#123;hostname&#125;</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-1 和 lvs-node-2 网卡信息</span><br><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens33</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">编辑如下：**DNS1设置刚才配置的**</span><br></pre></td></tr></table></figure>
+<p>TYPE=Ethernet<br>
+PROXY_METHOD=none<br>
+BROWSER_ONLY=no<br>
+BOOTPROTO=static<br>
+DEFROUTE=yes<br>
+IPV4_FAILURE_FATAL=no<br>
+IPV6INIT=yes<br>
+IPV6_AUTOCONF=yes<br>
+IPV6_DEFROUTE=yes<br>
+IPV6_FAILURE_FATAL=no<br>
+IPV6_ADDR_GEN_MODE=stable-privacy<br>
+NAME=ens33<br>
+DEVICE=ens33<br>
+ONBOOT=yes</p>
+<p>IPADDR=172.16.100.11<br>
+NETMASK=255.255.255.0<br>
+DNS1=172.16.100.10<br>
+GATEWAY=172.16.100.10<br>
+DNS2=182.254.116.116</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 安装nginx:</span><br><span class="line"></span><br><span class="line">在 lvs-node-1 和lvs-node-2 上安装nginx</span><br><span class="line"></span><br><span class="line">1. 添加源:默认情况Centos7中无Nginx的源，最近发现Nginx官网提供了Centos的源地址。因此可以如下执行命令添加源：</span><br><span class="line">    &gt; sudo rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line"> </span><br><span class="line">2. 安装Nginx</span><br><span class="line">    &gt; sudo yum install -y nginx</span><br><span class="line">    </span><br><span class="line">3. ***设置keepd-alive 为0（这一点很重要，关掉之后，我们才可以在浏览器看到负载的效果)***</span><br><span class="line">    &gt;  vim /etc/nginx/nginx.conf  </span><br><span class="line">    </span><br><span class="line">    ```js</span><br><span class="line">        http &#123;</span><br><span class="line">            // ...</span><br><span class="line">            keepalive_timeout  0;  // 修改 keepalive_timeout 为0 关闭keepalive</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>
+<p>启动Nginx并设置开机自动运行</p>
+<blockquote>
+<p>sudo systemctl start nginx.service<br>
+sudo systemctl enable nginx.service</p>
+</blockquote>
+</li>
+<li>
+<p>关闭防火墙</p>
+<blockquote>
+<p>sudo systemctl stop firewalld<br>
+sudo systemctl disable firewalld</p>
+</blockquote>
+</li>
+<li>
+<p>设置nginx index 页面(在lvs-node-1 lvs-node-2上分别设置一下index.html)</p>
+<blockquote>
+<p>vim  /usr/share/nginx/html/index.html<br>
+替换hostname 和本地ip 到下面的{}设置<br>
+如下：<br>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome to nginx in &#123;hostname&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</li>
+<li>
+<p>在lvs-node-0上验证服务</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@lvs-node-0 ~]# curl http://172.16.100.11</span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome to nginx in lvs-node-1<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line">[root@lvs-node-0 ~]# curl http://172.16.100.12</span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Welcome to nginx in lvs-node-2<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line">[root@lvs-node-0 ~]#</span><br></pre></td></tr></table></figure>
+<ol start="8">
+<li>lvs-node-0  ip_forward 设置为转发</li>
+</ol>
+<p>出于安全考虑，Linux系统默认是禁止数据包转发的。所谓转发即当主机拥有多于一块的网卡时，其中一块收到数据包，根据数据包的目的ip地址将包发往本机另一网卡，该网卡根据路由表继续发送数据包。这通常就是路由器所要实现的功能。</p>
+<p>配置Linux系统的ip转发功能，首先保证硬件连通，然后打开系统的转发功能<br>
+/proc/sys/net/ipv4/ip_forward，该文件内容为0，表示禁止数据包转发，1表示允许，将其修改为1。可使用</p>
+<p><strong>注意 proc 下的文件是内核运行后映射的内存参数， 不可使用vim 进行修改，要使用重定向才能修改生效</strong></p>
+<blockquote>
+<p>sudo echo “1” &gt; /proc/sys/net/ipv4/ip_forward</p>
+</blockquote>
+<p>修改内核参数文件</p>
+<blockquote>
+<p>sudo echo “net.ipv4.ip_forward = 1”  &gt;&gt; /etc/sysctl.conf</p>
+</blockquote>
+<p>配置生效</p>
+<blockquote>
+<p>sudo sysctl -p</p>
+</blockquote>
+</li>
+</ol>
+<h1><span id="lvs-四种模式的搭建">LVS 四种模式的搭建</span></h1>
+<h1><span id="nat模式">NAT模式</span></h1>
+<ul>
+<li>NAT的特点<a href="https://icefrozen.github.io/article/lvs-2/#lvs-nat" target="_blank" rel="noopener">LVS NAT模式</a></li>
+</ul>
+<p>注意，当我们配置的NAT模式的时候，我们的网关要经过lvs服务器，所以上述的网关要执行lvs节点。</p>
+<ul>
+<li>添加lvs-node-0 上执行命令</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -A -t 192.168.100.6:80 -s rr</span></span><br><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -t 192.168.100.6:80 -r 172.16.100.12 -m</span></span><br><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -t 192.168.100.6:80 -r 172.16.100.11 -m</span></span><br><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -L -n</span></span><br><span class="line">IP Virtual Server version 1.2.1 (size=4096)</span><br><span class="line">Prot LocalAddress:Port Scheduler Flags</span><br><span class="line">  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn</span><br><span class="line">TCP  192.168.100.6:80 rr</span><br><span class="line">  -&gt; 172.16.100.11:80             Masq    1      0          0</span><br><span class="line">  -&gt; 172.16.100.12:80             Masq    1      0          0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用curl 实验负载均衡</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ curl http://192.168.100.6:80</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Welcome to nginx in lvs-node-2&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line">➜  ~ curl http://192.168.100.6:80</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Welcome to nginx in lvs-node-1&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>总结：我们宿主机的数据包通过请求vip 到达了 lvs-node-0节点，阶段的lvs自动生效，通过将目的地址的ip转换，在通过ens33 接口转发转发出去，到达我们read server，当数据包回来的时候，real server 通过网关LVS机器在转发给我们的客户端。</p>
+<h1><span id="dr模式">DR模式</span></h1>
+<ul>
+<li>DR的特点<a href="https://icefrozen.github.io/article/lvs-2/#lvs-dr" target="_blank" rel="noopener">LVS DR模式</a></li>
+</ul>
+<h2><span id="环境准备">环境准备</span></h2>
+<p>环境准备参考如上配置，首先我们应该清空我们的规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@lvs-node-0 ~]# ipvsadm -C</span><br><span class="line">[root@lvs-node-0 ~]# ipvsadm -L -n</span><br><span class="line">IP Virtual Server version 1.2.1 (size=4096)</span><br><span class="line">Prot LocalAddress:Port Scheduler Flags</span><br><span class="line">  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn</span><br></pre></td></tr></table></figure>
+<p>本次要解决的网络拓扑为不同子网之间的沟通问题，通过我们对DR模式的了解，我们知道，DR模式是通过修改mac地址达到负载的，这就要求我们需要将lvs的各个节点链接到同一个交换机上。</p>
+<p>此时，我们的可选方案有：</p>
+<p>1、 所有机器桥接链接Vmnet8 桥接在我们的物理网卡上，如下图：</p>
+<p><img src="/article/lvs-3/lvs-3-1611976888687.png" alt></p>
+<ul>
+<li>
+<p>一般网卡显示vmnet0，桥接模式就是将主机网卡与虚拟机虚拟的网卡利用虚拟网桥进行通信。在桥接的作用下，类似于把物理主机虚拟为一个交换机，所有桥接设置的虚拟机连接到这个交换机的一个接口上，物理主机也同样插在这个交换机当中，所以所有桥接下的网卡与网卡都是交换模式的，相互可以访问而不干扰。在桥接模式下，虚拟机ip地址需要与主机在同一个网段，如果需要联网，则网关与DNS需要与主机网卡一致。</p>
+</li>
+<li>
+<p>虚拟网桥会转发主机网卡接收到的广播和组播信息，以及目标为虚拟交换机，网段的单播。所以，与虚拟交换机机连接，的虚拟网卡(如: eth0、 eth1等)接收到<br>
+了路由器发出的DHCP信息及路由更新。</p>
+</li>
+<li>
+<p>桥接模式是通过虚拟网桥将主机上的网卡与虚拟交换机Vmnet0连接在一起， 虚拟机上的<br>
+虚拟网卡(并不是VMware Network Adapter VMnet1和VMware Network Adapter VMnet8)都连接在虚拟交换机Vmnet0上，所以桥接模式的虚拟机IP必须与主机在同一网段且子网掩码、网关与DNS也要与主机网卡-致。</p>
+</li>
+</ul>
+<p>我们这次以下面这种为搭建对象。</p>
+<p>2、 所有机器链接Vmnet4， Vment4通过NAT连接外网。如下图：</p>
+<p><img src="/article/lvs-3/lvs-3-1611977861193.png" alt></p>
+<ul>
+<li>
+<p>当我们选用vmet4 可以连通外网的时候，vmnet虚拟交换机会虚拟出一个网关，这个网关链接在我们对外的网卡上，一般情况下，ip地址为vmnetip +1</p>
+</li>
+<li>
+<p>可以将原来的删除vmnet8的桥接网络。<br>
+例如 vment4的子网为 172.16.100.0则 vment4虚拟适配器地址为 172.16.100.1</p>
+</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611845694265.png" alt></p>
+<ul>
+<li>则会在一下地址出现 nat.conf 文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /Library/Preferences/VMware Fusion/vmnet4</span><br><span class="line">➜  vmnet4 ls</span><br><span class="line">nat.conf nat.mac</span><br><span class="line">➜  vmnet4</span><br></pre></td></tr></table></figure>
+<p>里面有个配置为：gateway</p>
+<p><img src="/article/lvs-3/lvs-3-1611846170403.png" alt></p>
+<ul>
+<li>并配置lvs-node-1 和 lvs-node-2 的网关为 172.16.100.2 然后重启我们的网卡。</li>
+</ul>
+<blockquote>
+<p>重启虚拟网络设备</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo  /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop</span><br><span class="line">sudo  /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start</span><br><span class="line">sudo  /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --status</span><br></pre></td></tr></table></figure>
+<h2><span id="配置-lvs-node-0-1-2-的网关-并配置相应的ip地址和dns服务器">配置 lvs-node-0 1 2 的网关 并配置相应的ip地址和DNS服务器</span></h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  /etc/sysconfig/network-scripts/ifcfg-ens33</span></span><br><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=ens33</span><br><span class="line">DEVICE=ens33</span><br><span class="line">ONBOOT=yes</span><br><span class="line">IPADDR=172.16.100.100 （注意根据 lvs-node-0,1,2来配置）</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">GATEWAY=172.16.100.2</span><br><span class="line">DNS1=119.29.29.29</span><br><span class="line">DNS2=182.254.116.116</span><br></pre></td></tr></table></figure>
+<p>#重启网络服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart network</span><br></pre></td></tr></table></figure>
+<h2><span id="配置lvs-node-1-和-lvs-node-2-内核参数">配置lvs-node-1 和 lvs-node-2 内核参数</span></h2>
+<p>注意此服务要优先于 vip 的配置</p>
+<h3><span id="arp_ignore和arp_announce介绍">arp_ignore和arp_announce介绍</span></h3>
+<p>arp_ignore和arp_announce参数都和ARP协议相关，主要用于控制系统返回arp响应和发送arp请求时的动作。</p>
+<ul>
+<li>
+<p>arp_ignore 参数的作用是控制系统在收到外部的arp请求时，是否要返回arp响应。</p>
+<ul>
+<li>0：响应任意网卡上接收到的对本机IP地址的arp请求（包括环回网卡上的地址），而不管该目的IP是否在接收网卡上。</li>
+<li>1：只响应目的IP地址为接收网卡上的本地地址的arp请求。</li>
+<li>2：只响应目的IP地址为接收网卡上的本地地址的arp请求，并且arp请求的源IP必须和接收网卡同网段。</li>
+<li>3：如果ARP请求数据包所请求的IP地址对应的本地地址其作用域（scope）为主机（host），则不回应ARP响应数据包，如果作用域为全局（global）或链路（link），则回应ARP响应数据包。</li>
+<li>4~7：保留未使用</li>
+<li>8：不回应所有的arp请求<br>
+　　sysctl.conf中包含all和eth/lo（具体网卡）的arp_ignore参数，取其中较大的值生效。</li>
+</ul>
+</li>
+<li>
+<p>（1）当arp_ignore参数配置为0时，eth1网卡上收到目的IP为环回网卡IP的arp请求，但是eth1也会返回arp响应，把自己的mac地址告诉对端。 如下图</p>
+</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611843674941.png" alt></p>
+<ul>
+<li>（2）当arp_ignore参数配置为1时，eth1网卡上收到目的IP为环回网卡IP的arp请求，发现请求的IP不是自己网卡上的IP，不会回arp响应。</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611843707788.png" alt></p>
+<ul>
+<li>arp_announce</li>
+</ul>
+<p>作用是控制系统在对外发送arp请求时，如何选择arp请求数据包的源IP地址。</p>
+<p>（比如系统准备通过网卡发送一个数据包a，这时数据包a的源IP和目的IP一般都是知道的，而根据目的IP查询路由表，发送网卡也是确定的，故源MAC地址也是知道的，这时就差确定目的MAC地址了。而想要获取目的IP对应的目的MAC地址，就需要发送arp请求。arp请求的目的IP自然就是想要获取其MAC地址的IP，而arp请求的源IP是什么呢？ 可能第一反应会以为肯定是数据包a的源IP地址，但是这个也不是一定的，arp请求的源IP是可以选择的，控制这个地址如何选择就是arp_announce的作用）<br>
+　　arp_announce参数常用的取值有0，1，2。</p>
+<ul>
+<li>0：允许使用任意网卡上的IP地址作为arp请求的源IP，通常就是使用数据包a的源IP。</li>
+<li>1：尽量避免使用不属于该发送网卡子网的本地地址作为发送arp请求的源IP地址。</li>
+<li>2：忽略IP数据包的源IP地址，选择该发送网卡上最合适的本地地址作为arp请求的源IP地址。</li>
+</ul>
+<p>sysctl.conf中包含all和eth/lo（具体网卡）的arp_ignore参数，取其中较大的值生效。</p>
+<ul>
+<li>(1) 当arp_announce参数配置为0时，系统要发送的IP包源地址为eth1的地址，IP包目的地址根据路由表查询判断需要从eth2网卡发出，这时会先从eth2网卡发起一个arp请求，用于获取目的IP地址的MAC地址。该arp请求的源MAC自然是eth2网卡的MAC地址，但是源IP地址会选择eth1网卡的地址。</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611843735708.png" alt></p>
+<ul>
+<li>（2）当arp_announce参数配置为2时，eth2网卡发起arp请求时，源IP地址会选择eth2网卡自身的IP地址。</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611843785536.png" alt></p>
+<h3><span id="配置方法有以下三种">配置方法有以下三种</span></h3>
+<ol>
+<li>修改/etc/sysctl.conf文件，然后sysctl -p刷新到内存。</li>
+</ol>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">net.ipv4.conf.all.arp_ignore=1</span><br><span class="line">net.ipv4.conf.lo.arp_ignore=1</span><br><span class="line">net.ipv4.conf.all.arp_announce=2</span><br><span class="line">net.ipv4.conf.lo.arp_announce=2</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>使用sysctl -w直接写入内存：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sysctl -w net.ipv4.conf.all.arp_ignore=1</span><br><span class="line">sysctl -w net.ipv4.conf.lo.arp_ignore=1</span><br><span class="line">sysctl -w net.ipv4.conf.all.arp_announce=2</span><br><span class="line">sysctl -w net.ipv4.conf.lo.arp_announce=2</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>修改/proc文件系统：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1&quot;&gt;/proc/sys/net/ipv4/conf/all/arp_ignore</span><br><span class="line">echo &quot;1&quot;&gt;/proc/sys/net/ipv4/conf/lo/arp_ignore</span><br><span class="line">echo &quot;2&quot;&gt;/proc/sys/net/ipv4/conf/all/arp_announce</span><br><span class="line">echo &quot;2&quot;&gt;/proc/sys/net/ipv4/conf/lo/arp_announce</span><br></pre></td></tr></table></figure>
+<h2><span id="配置-lvs-node-0-1-2-的-vip">配置 lvs-node-0 1 2 的 vip</span></h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@lvs-node-0 ~]# ifconfig lo:0 172.16.100.200/32 broadcast 172.16.100.200 up</span><br><span class="line">[root@lvs-node-0 ~]# ifconfig</span><br><span class="line">ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.16.100.100  netmask 255.255.255.0  broadcast 172.16.100.255</span><br><span class="line">        inet6 fe80::20c:29ff:fe15:e448  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 00:0c:29:15:e4:48  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 1493  bytes 157841 (154.1 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 753  bytes 86686 (84.6 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;</span><br><span class="line">        loop  txqueuelen 1000  (Local Loopback)</span><br><span class="line">        RX packets 8  bytes 488 (488.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 8  bytes 488 (488.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo:0: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 172.16.100.200  netmask 0.0.0.0</span><br><span class="line">        loop  txqueuelen 1000  (Local Loopback)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>增加路由条目，让host 为 192.168.100.6 的数据通过 lo:0 网卡出去</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add -host 172.16.100.200 dev lo:0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看arp 条目是否符合预期</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611980191531.png" alt></p>
+<ul>
+<li>添加LVS 配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A -t 172.16.100.200:80 -s rr</span><br><span class="line">ipvsadm -a -t 172.16.100.200:80 -r 172.16.100.101:80 -g</span><br><span class="line">ipvsadm -a -t 172.16.100.200:80 -r 172.16.100.102:80 -g</span><br></pre></td></tr></table></figure>
+<ul>
+<li>实验效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ curl http://172.16.100.200</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Welcome to nginx in lvs-node-1&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line">➜  ~ curl http://172.16.100.200</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Welcome to nginx in lvs-node-2&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line">➜  ~ curl http://172.16.100.200</span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;h1&gt;Welcome to nginx in lvs-node-1&lt;/h1&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<h1><span id="fwm应用">FWM应用</span></h1>
+<h2><span id="fwm的应用场景-session-保持的问题">FWM的应用场景 Session 保持的问题。</span></h2>
+<p>在电商行业，我们有一些东西是，需要保存到Seesion 当中的，当我们进行LVS调度的时候，需要进行Session的同步。业内对于Session 有很多已经很成熟的做法，<br>
+比如</p>
+<ul>
+<li>Session 复制</li>
+<li>Seesion 服务器</li>
+<li>其中还有一种是连接定向。</li>
+</ul>
+<h2><span id="链接定向">链接定向</span></h2>
+<p><strong>所谓的链接定向</strong>就是以某个特定的算法将一个请求定向到同一个RealServer上。这就是我们在负载均衡算法那个章节说的<a href="https://icefrozen.github.io/article/lvs-2/#-2" target="_blank" rel="noopener">SH算法</a>。</p>
+<p>但是试想一下这样的情景, http是明文的，https是在http基础上增加了ssl的过程，但是https毕竟在性能损耗上多了个一个，因此，有些服务会存在http和https共存的现象，有些是可以通过http访问的，比如说一些静态资源，有一些服务必须要通过https进行，比如说登录注册。</p>
+<p>比如，我们在浏览网站商品的时候使用http，但是登录的时候就会跳转成为https，这种意味着网站必须同时提供了80和443两种服务</p>
+<p><img src="/article/lvs-3/lvs-3-1612019649648.png" alt></p>
+<ul>
+<li>
+<p>链接定向的负载问题：</p>
+<p>A客户端访问HTTP集群时，LVS会通过SH算法给A客户端分配一个real_server_1，以后A客户端再次访问V80端口时就一直是real_server_1给客户端A服务；</p>
+<p>而B客户端访问的是443端口，通过SH算法依然可能将B客户端分配给real_server_1，因为SH算法是静态算法并不考虑服务器的负载，仅仅通过算法本身进行转发，这就可能导致在real_server_1的负载过重，而real_server_2可能会一直闲着，如何进行平衡一下呢？</p>
+</li>
+<li>
+<p>Session 问题</p>
+<p>除了平衡问题之外，还有一个问题，A客户端浏览商品和向购物车当中加商品时通过80端口集群被分发到real_server_1上。</p>
+<p>但当A用户想登付款时，这时用户会通过HTTPS访问，结果由于是两个集群各自通过算法分发，把A用户又给分发到real_server_2上去了，real_server_1上并没有A用户的缓存记录，结果用户登录上之后发现购物车里面的商品全都不见了！！</p>
+<p>可能你会说，不是通过SH算法吗？源地址哈希怎么还能把同一个用户不同请求调度到不同的real server上呢？</p>
+<p>当A客户端访问的是80端口时保持连接没有问题，但是当A客户端用443端口访问时，这对于LVS的443端口集群来说这是一个新的用户请求，A用户之前通过80端口访问的连接记录在80集群的缓存上保存着呢？443端口集群没有呀！所以就会出现上述情况。</p>
+</li>
+</ul>
+<p>解决办法其实也好简单，我们只要把两个集群合并成为一个集群，然后统一进行调度不就行了吗？可是一个集群是80，另一个集群是443，如何合并呢？这个时候我们就要用到iptables当中mangle功能了。</p>
+<h2><span id="fwm">FWM</span></h2>
+<p><strong>FWM:FireWall Mark MARK target</strong> 可用于给特定的报文打标记 --set-mark value 其中：value 可为0xffff格式，表示十六进制数字 借助于防火墙标记来分类报文，而后基于标记定义集群服务；可将多个不同的应用使用同一个集群服务 进行调度,</p>
+<ul>
+<li>FWM 工作原理</li>
+</ul>
+<p>lvs的ipvs函数位于net-filter架构当中的input函数上，我们在input函数的前面，也就是prerouting上将访问VIP的80端口和443端口的都打上一样的标记，就类似于交换机上的tag；</p>
+<p>然后我们再通知ipvs函数，不让它根据报文当中的IP+端口的方式强行改道了，而是根据标记强行改道，只要报文上有这个标记的，统统改道到postrouting上，这样同一个用户无论访问的是80端口和还是443端口，都会统一通过一个SH算法调度到同一台R-SERVER上，并提高了缓存命中率，有效的解决了用户在将商品加入完购物车之后付款时商品丢失问题，而且因为是一个集群，所以也不会出现两个集群通过不同算法调度导致R-SERVER负载不平衡的问题。</p>
+<ul>
+<li>FWM命令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t mangle -A PREROUTING -d $&#123;vip&#125; -p $&#123;protocol&#125; --dport $&#123;port&#125; -j MARK --set-mark 10</span><br></pre></td></tr></table></figure>
+<h2><span id="ipvs-持久链接">IPVS 持久链接</span></h2>
+<h3><span id="什么是持久链接">什么是持久链接</span></h3>
+<p>在LVS中，持久连接是为了用来保证当来自同一个client的请求时，director能够将这些请求调度定位到第一次选定的Real Server。</p>
+<h3><span id="持久链接类型">持久链接类型</span></h3>
+<ul>
+<li>PPC（persistent port connections）</li>
+</ul>
+<p>持久的端口连接，将来自于同一个客户端对同一个服务(端口)的请求，始终定向至此前选定的RS。</p>
+<blockquote>
+<p>例如：来自同一个IP的用户第一次访问集群的80端口分配到Real Server1，433号端口分配到Real Server2。当之后这个用户继续访问80端口仍然分配到Real Server1，433号端口仍然分配到Real Server2。</p>
+</blockquote>
+<blockquote>
+<p>PCC（persistent client connections）</p>
+</blockquote>
+<p>将来自于同一个客户端的所有请求统统定向至此前选定的RS；也就是只要IP相同，分配的服务器始终相同。</p>
+<blockquote>
+<p>例如，来自同一个IP的用户访问集群的80端口分配到Real Server1，然后用户访问433号端口仍然分配到Real Server1。但如需要SSH：22连接管理Director时，也被分配到Real Server就不好了，下面的PNMPP可以解决这个问题。</p>
+</blockquote>
+<ul>
+<li>PNMPP（Persistent Netfilter Marked Packet Persistence）</li>
+</ul>
+<p>基于防火墙标记的持久性连接，这种防火墙标记仅在数据包在分发器上时有影响，数据包一旦离开Director，就不再被标记。</p>
+<p>需要用到iptables的mangle表为数据包设置Mark标记，mangle表主要用于修改数据包的TOS（Type Of Service，服务类型）、TTL（Time To Live，生存周期）指以及为数据包设置Mark标记。</p>
+<p>它可以将两个毫不相干的端口定义为一个集群服务，例如：合并http的80端口和https的443端口定义为同一个集群服务，而不会出现上面PCC据说的问题。</p>
+<h2><span id="搭建持久链接及其防火墙表示">搭建持久链接及其防火墙表示</span></h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置防火墙标记</span></span><br><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># iptables -t mangle -A PREROUTING -d 172.16.100.200 -p tcp --dport 80 -j MARK --set-mark 10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 清空规则</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -C</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义mark 为 99的服务，定义持久化链接（-p 选项 后面可以跟持久链接的时长，默认360s）</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -A -f 10 -s rr -p</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -f 10 -r 172.16.100.101 -g</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -f 10 -r 172.16.100.102 -g</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看</span></span><br><span class="line"></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -ln</span></span><br><span class="line">IP Virtual Server version 1.2.1 (size=4096)</span><br><span class="line">Prot LocalAddress:Port Scheduler Flags</span><br><span class="line">  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn</span><br><span class="line">FWM  10 rr persistent 360</span><br><span class="line">  -&gt; 172.16.100.101:0             Route   1      0          0</span><br><span class="line">  -&gt; 172.16.100.102:0             Route   1      0          0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PPC 和PCC 持久连接方法</li>
+</ul>
+<p>#0表示所有端口，无论什么端口都会进行分发操作，我们只要请求的是这个地址，都会统统转发至realserver中 如果加上端口号 则表示PCC</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># 清空规则</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -C</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># pvsadm -A -t 172.16.100.200:0 -s rr -p</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -t 172.16.100.200:0 -r 172.16.100.101 -g</span></span><br><span class="line">[root@lvs-node-0 ~]<span class="comment"># ipvsadm -a -t 172.16.100.200:0 -r 172.16.100.102 -g</span></span><br></pre></td></tr></table></figure>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://blog.csdn.net/u010948569/article/details/80766597" target="_blank" rel="noopener">https://blog.csdn.net/u010948569/article/details/80766597</a></li>
+<li><a href="https://blog.csdn.net/eraining/article/details/109148957" target="_blank" rel="noopener">mac版VMWare的vmnet8默认网关和ip配置</a></li>
+<li><a href="https://www.cnblogs.com/yizhangheka/p/12367765.html" target="_blank" rel="noopener">FireWall Mark + LVS</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/lvs-2/" data-toggle="tooltip" data-placement="top" title="负载均衡（2）">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">LVS服务的搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">ipvsadm</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">LVS 四种模式的搭建</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">NAT模式</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">DR模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">环境准备</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的网关 并配置相应的ip地址和DNS服务器</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">配置lvs-node-1 和 lvs-node-2 内核参数</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">arp_ignore和arp_announce介绍</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">配置方法有以下三种</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的 vip</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">FWM应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">FWM的应用场景 Session 保持的问题。</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">链接定向</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">FWM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">IPVS 持久链接</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是持久链接</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">持久链接类型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">搭建持久链接及其防火墙表示</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2021 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>
