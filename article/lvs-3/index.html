@@ -220,121 +220,142 @@
 <h2><span id="lvs服务的搭建">LVS服务的搭建</span></h2>
 <h1><span id="ipvsadm">ipvsadm</span></h1>
 <p>安装：</p>
-<blockquote>
-<p>sudo yum  ipvsadm  -y<br>
-ipvsadm 是LVS 管理集群服务的命令行工具，用法如下</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] [-M netmask] [-b sched-flags]</span><br><span class="line">ipvsadm -D -t|u|f service-address</span><br><span class="line">ipvsadm -C</span><br><span class="line">ipvsadm -R</span><br><span class="line">ipvsadm -S [-n]</span><br><span class="line">ipvsadm -a|e -t|u|f service-address -r server-address [-g|i|m] [-w weight] [-x upper] [-y lower]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line">ipvsadm -L|l [options]</span><br><span class="line">ipvsadm -Z [-t|u|f service-address]</span><br><span class="line">ipvsadm --set tcp tcpfin udp</span><br><span class="line">ipvsadm -h</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum  ipvsadm  -y</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ipvsadm 是LVS 管理集群服务的命令行工具，用法如下</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [timeout]] [-M netmask] [-b <span class="built_in">sched</span>-flags]</span><br><span class="line">ipvsadm -D -t|u|f service-address</span><br><span class="line">ipvsadm -C</span><br><span class="line">ipvsadm -R</span><br><span class="line">ipvsadm -S [-n]</span><br><span class="line">ipvsadm -a|e -t|u|f service-address -r server-address [-g|i|m] [-w weight] [-x upper] [-y lower]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line">ipvsadm -L|l [options]</span><br><span class="line">ipvsadm -Z [-t|u|f service-address]</span><br><span class="line">ipvsadm --<span class="built_in">set</span> tcp tcpfin udp</span><br><span class="line">ipvsadm -h</span><br></pre></td></tr></table></figure>
 <ul>
 <li>管理集群服务：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm  -A|E  -t|u|f  service-address  [-s scheduler]</span><br><span class="line">ipvsadm  -D  -t|u|f service-address</span><br><span class="line"></span><br><span class="line">-A：添加</span><br><span class="line">-E：修改</span><br><span class="line">-D：删除</span><br><span class="line"></span><br><span class="line">service-address：</span><br><span class="line">	-t, tcp, vip:port </span><br><span class="line">	-u, udp, vip:port</span><br><span class="line">	-f, fwm, MARK</span><br><span class="line">    -s scheduler：默认为wlc；</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm  -A|E  -t|u|f  service-address  [-s scheduler]</span><br><span class="line">ipvsadm  -D  -t|u|f service-address</span><br><span class="line">-A：添加</span><br><span class="line">-E：修改</span><br><span class="line">-D：删除</span><br><span class="line">service-address：</span><br><span class="line">	-t, tcp, vip:port </span><br><span class="line">	-u, udp, vip:port</span><br><span class="line">	-f, fwm, MARK</span><br><span class="line">    -s scheduler：默认为wlc；</span><br></pre></td></tr></table></figure>
 <ul>
 <li>管理集群服务上的RS:</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -a|e  -t|u|f service-address -r server-address [-g|i|-r] [-w weight]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line"></span><br><span class="line">-a：添加一个RS</span><br><span class="line">-e：修改一个RS</span><br><span class="line">-d：删除一个RS</span><br><span class="line"></span><br><span class="line">server-address： rip[:port]</span><br><span class="line">    -g：GATEWAY （默认）</span><br><span class="line">    -i: IPIP</span><br><span class="line">    -m: MASQUERADE</span><br><span class="line"></span><br><span class="line">```					</span><br><span class="line">+ 查看			</span><br><span class="line">```bash</span><br><span class="line">ipvsadm -L|l [options]</span><br><span class="line">    -n：numeric，数字格式显示地址和端口；</span><br><span class="line">    -c：connection，显示ipvs连接；</span><br><span class="line">    --stats：统计数据；</span><br><span class="line">    --rate：速率</span><br><span class="line">    --exact：精确值</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -a|e  -t|u|f service-address -r server-address [-g|i|-r] [-w weight]</span><br><span class="line">ipvsadm -d -t|u|f service-address -r server-address</span><br><span class="line"></span><br><span class="line">-a：添加一个RS</span><br><span class="line">-e：修改一个RS</span><br><span class="line">-d：删除一个RS</span><br><span class="line"></span><br><span class="line">server-address： rip[:port]</span><br><span class="line">    -g：GATEWAY （默认）</span><br><span class="line">    -i: IPIP</span><br><span class="line">    -m: MASQUERADE</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -L|l [options]</span><br><span class="line">    -n：numeric，数字格式显示地址和端口；</span><br><span class="line">    -c：connection，显示ipvs连接；</span><br><span class="line">    --stats：统计数据；</span><br><span class="line">    --rate：速率</span><br><span class="line">    --exact：精确值</span><br></pre></td></tr></table></figure>
 <ul>
 <li>清空和保存：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm  -C</span><br><span class="line">```				</span><br><span class="line">+ 保存和重载：</span><br></pre></td></tr></table></figure>
-<p>保存：<br>
-ipvsadm -S  &gt; /PATH/TO/SOME_RULE_FILE<br>
-ipvsadm-save  &gt; /PATH/TO/SOME_RULE_FILE<br>
-重载：<br>
-ipvsadm  -R &lt; /PATH/FROM/SOME_RULE_FILE<br>
-ipvsadm-restore &lt; /PATH/FROM/SOME_RULE_FILE</p>
-<p>计数器清零：<br>
-ipvsadm  -Z  [-t|u|f service-address]</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 环境准备</span><br><span class="line"></span><br><span class="line">## 环境概述</span><br><span class="line"></span><br><span class="line">+ lvs-node-1: RS(CentOS7)  sshd  nginx</span><br><span class="line">+ lvs-node-2: RS(CentOS7) sshd nginx</span><br><span class="line">+ lvs-node-0: LVS(CentOS7) bind(name server) sshd ipvsadm</span><br><span class="line">+ vmware funsion vmnet4 host-only 虚拟网路 </span><br><span class="line">+ nginx web server</span><br><span class="line">+ DNS server </span><br><span class="line"></span><br><span class="line">+ 网络拓扑如下：</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499387628.png)</span><br><span class="line"></span><br><span class="line">## 搭建vmnet4 虚拟网络 </span><br><span class="line"></span><br><span class="line">打开偏好设置</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499472947.png)</span><br><span class="line"></span><br><span class="line">新建 vmnet4虚拟交换机</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499522637.png)</span><br><span class="line"></span><br><span class="line">新建 vmnet4 子网为 172.16.100.0</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611499180529.png)</span><br><span class="line"></span><br><span class="line">## LVS设置hostname 和 网卡信息</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-0 双网卡 </span><br><span class="line">虚拟机添加网卡，使得该网卡链接在虚拟vmnet4 设备之上</span><br><span class="line">网卡信息如下：</span><br><span class="line"></span><br><span class="line">![](lvs-3/lvs-3-1611500354576.png)</span><br><span class="line"></span><br><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens33</span><br><span class="line">编辑如下： **注意172.16.100.10 不要配置网关**</span><br></pre></td></tr></table></figure>
-<p>TYPE=Ethernet<br>
-PROXY_METHOD=none<br>
-BROWSER_ONLY=no<br>
-BOOTPROTO=static<br>
-DEFROUTE=yes<br>
-IPV4_FAILURE_FATAL=no<br>
-IPV6INIT=yes<br>
-IPV6_AUTOCONF=yes<br>
-IPV6_DEFROUTE=yes<br>
-IPV6_FAILURE_FATAL=no<br>
-IPV6_ADDR_GEN_MODE=stable-privacy<br>
-NAME=ens33<br>
-DEVICE=ens33<br>
-ONBOOT=yes<br>
-IPADDR=172.16.100.10<br>
-NETMASK=255.255.255.0<br>
-DNS1=119.29.29.29<br>
-DNS2=182.254.116.116</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens37 </span><br><span class="line">编辑如下：</span><br></pre></td></tr></table></figure>
-<p>TYPE=Ethernet<br>
-PROXY_METHOD=none<br>
-BROWSER_ONLY=no<br>
-BOOTPROTO=static<br>
-DEFROUTE=yes<br>
-IPV4_FAILURE_FATAL=no<br>
-IPV6INIT=yes<br>
-IPV6_AUTOCONF=yes<br>
-IPV6_DEFROUTE=yes<br>
-IPV6_FAILURE_FATAL=no<br>
-IPV6_ADDR_GEN_MODE=stable-privacy<br>
-NAME=ens37<br>
-DEVICE=ens37<br>
-ONBOOT=yes<br>
-IPADDR=192.168.100.6<br>
-NETMASK=255.255.255.0<br>
-DNS1=119.29.29.29<br>
-GATEWAY=192.168.100.2<br>
-DNS2=182.254.116.116</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ 设置hostname   </span><br><span class="line">&gt; hostnamectl set-hostname lvs-node-0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">+ 关闭防火墙</span><br><span class="line">&gt; systemctl stop firewalld </span><br><span class="line">&gt; systemctl disable firwalld </span><br><span class="line"></span><br><span class="line">+ 安装dns服务(这里不做介绍，也可以做可以不做)</span><br></pre></td></tr></table></figure>
-<p>并设置 <a href="http://lvs-node-1.exmaple.com" target="_blank" rel="noopener">lvs-node-1.exmaple.com</a> 为 172.16.100.11<br>
-并设置 <a href="http://lvs-node-2.exmaple.com" target="_blank" rel="noopener">lvs-node-2.exmaple.com</a> 为 172.16.100.12</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">+ 设置完成重启网卡后网卡信息如下：</span><br><span class="line"></span><br><span class="line">&gt; systemctl restart network</span><br></pre></td></tr></table></figure>
-<p>root@lvs-node-0 ~]# ifconfig<br>
-ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500<br>
-inet 172.16.100.10  netmask 255.255.255.0  broadcast 172.16.100.255<br>
-inet6 fe80::fe47:7422:c78:9b51  prefixlen 64  scopeid 0x20<link><br>
-ether 00:0c:29:15:e4:48  txqueuelen 1000  (Ethernet)<br>
-RX packets 4946  bytes 985195 (962.1 KiB)<br>
-RX errors 0  dropped 0  overruns 0  frame 0<br>
-TX packets 7786  bytes 860433 (840.2 KiB)<br>
-TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</p>
-<p>ens37: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500<br>
-inet 192.168.100.6  netmask 255.255.255.0  broadcast 192.168.100.255<br>
-inet6 fe80::4909:a397:124:1798  prefixlen 64  scopeid 0x20<link><br>
-ether 00:0c:29:15:e4:52  txqueuelen 1000  (Ethernet)<br>
-RX packets 30945  bytes 15583220 (14.8 MiB)<br>
-RX errors 0  dropped 0  overruns 0  frame 0<br>
-TX packets 13008  bytes 2620954 (2.4 MiB)<br>
-TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</p>
-<p>lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536<br>
-inet 127.0.0.1  netmask 255.0.0.0<br>
-inet6 ::1  prefixlen 128  scopeid 0x10<host><br>
-loop  txqueuelen 1000  (Local Loopback)<br>
-RX packets 140  bytes 15978 (15.6 KiB)<br>
-RX errors 0  dropped 0  overruns 0  frame 0<br>
-TX packets 140  bytes 15978 (15.6 KiB)<br>
-TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</host></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">## RS设置hostname 和 网卡信息</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-1 和 lvs-node-2 hostname </span><br><span class="line">&gt; hostnamectl set-hostname &#123;hostname&#125;</span><br><span class="line"></span><br><span class="line">+ 设置lvs-node-1 和 lvs-node-2 网卡信息</span><br><span class="line">&gt; vim /etc/sysconfig/network-scripts/ifcfg-ens33</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">编辑如下：**DNS1设置刚才配置的**</span><br></pre></td></tr></table></figure>
-<p>TYPE=Ethernet<br>
-PROXY_METHOD=none<br>
-BROWSER_ONLY=no<br>
-BOOTPROTO=static<br>
-DEFROUTE=yes<br>
-IPV4_FAILURE_FATAL=no<br>
-IPV6INIT=yes<br>
-IPV6_AUTOCONF=yes<br>
-IPV6_DEFROUTE=yes<br>
-IPV6_FAILURE_FATAL=no<br>
-IPV6_ADDR_GEN_MODE=stable-privacy<br>
-NAME=ens33<br>
-DEVICE=ens33<br>
-ONBOOT=yes</p>
-<p>IPADDR=172.16.100.11<br>
-NETMASK=255.255.255.0<br>
-DNS1=172.16.100.10<br>
-GATEWAY=172.16.100.10<br>
-DNS2=182.254.116.116</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 安装nginx:</span><br><span class="line"></span><br><span class="line">在 lvs-node-1 和lvs-node-2 上安装nginx</span><br><span class="line"></span><br><span class="line">1. 添加源:默认情况Centos7中无Nginx的源，最近发现Nginx官网提供了Centos的源地址。因此可以如下执行命令添加源：</span><br><span class="line">    &gt; sudo rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line"> </span><br><span class="line">2. 安装Nginx</span><br><span class="line">    &gt; sudo yum install -y nginx</span><br><span class="line">    </span><br><span class="line">3. ***设置keepd-alive 为0（这一点很重要，关掉之后，我们才可以在浏览器看到负载的效果)***</span><br><span class="line">    &gt;  vim /etc/nginx/nginx.conf  </span><br><span class="line">    </span><br><span class="line">    ```js</span><br><span class="line">        http &#123;</span><br><span class="line">            // ...</span><br><span class="line">            keepalive_timeout  0;  // 修改 keepalive_timeout 为0 关闭keepalive</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<ol start="4">
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -C</span><br></pre></td></tr></table></figure>
+<ul>
+<li>保存和重载：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">保存：</span><br><span class="line">    ipvsadm -S  &gt; /PATH/TO/SOME_RULE_FILE</span><br><span class="line">    ipvsadm-save  &gt; /PATH/TO/SOME_RULE_FILE</span><br><span class="line">重载：</span><br><span class="line">    ipvsadm  -R &lt; /PATH/FROM/SOME_RULE_FILE</span><br><span class="line">    ipvsadm-restore &lt; /PATH/FROM/SOME_RULE_FILE</span><br><span class="line">    </span><br><span class="line">计数器清零：</span><br><span class="line">ipvsadm  -Z  [-t|u|f service-address]</span><br></pre></td></tr></table></figure>
+<h1><span id="环境准备">环境准备</span></h1>
+<h2><span id="环境概述">环境概述</span></h2>
+<ul>
+<li>
+<p>lvs-node-1: RS(CentOS7)  sshd  nginx</p>
+</li>
+<li>
+<p>lvs-node-2: RS(CentOS7) sshd nginx</p>
+</li>
+<li>
+<p>lvs-node-0: LVS(CentOS7) bind(name server) sshd ipvsadm</p>
+</li>
+<li>
+<p>vmware funsion vmnet4 host-only 虚拟网路</p>
+</li>
+<li>
+<p>nginx web server</p>
+</li>
+<li>
+<p>DNS server</p>
+</li>
+<li>
+<p>网络拓扑如下：</p>
+</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611499387628.png" alt></p>
+<h2><span id="搭建vmnet4-虚拟网络">搭建vmnet4 虚拟网络</span></h2>
+<p>打开偏好设置</p>
+<p><img src="/article/lvs-3/lvs-3-1611499472947.png" alt></p>
+<p>新建 vmnet4虚拟交换机</p>
+<p><img src="/article/lvs-3/lvs-3-1611499522637.png" alt></p>
+<p>新建 vmnet4 子网为 172.16.100.0</p>
+<p><img src="/article/lvs-3/lvs-3-1611499180529.png" alt></p>
+<h2><span id="lvs设置hostname-和-网卡信息">LVS设置hostname 和 网卡信息</span></h2>
+<ul>
+<li>设置lvs-node-0 双网卡<br>
+虚拟机添加网卡，使得该网卡链接在虚拟vmnet4 设备之上<br>
+网卡信息如下：</li>
+</ul>
+<p><img src="/article/lvs-3/lvs-3-1611500354576.png" alt></p>
+<blockquote>
+<p>vim /etc/sysconfig/network-scripts/ifcfg-ens33<br>
+编辑如下： <strong>注意172.16.100.10 不要配置网关</strong></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=ens33</span><br><span class="line">DEVICE=ens33</span><br><span class="line">ONBOOT=yes</span><br><span class="line">IPADDR=172.16.100.10</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">DNS1=119.29.29.29</span><br><span class="line">DNS2=182.254.116.116</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>vim /etc/sysconfig/network-scripts/ifcfg-ens37<br>
+编辑如下：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=ens37</span><br><span class="line">DEVICE=ens37</span><br><span class="line">ONBOOT=yes</span><br><span class="line">IPADDR=192.168.100.6</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">DNS1=119.29.29.29</span><br><span class="line">GATEWAY=192.168.100.2</span><br><span class="line">DNS2=182.254.116.116</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置hostname</li>
+</ul>
+<blockquote>
+<p>hostnamectl set-hostname lvs-node-0</p>
+</blockquote>
+<ul>
+<li>关闭防火墙</li>
+</ul>
+<blockquote>
+<p>systemctl stop firewalld<br>
+systemctl disable firwalld</p>
+</blockquote>
+<ul>
+<li>安装dns服务(这里不做介绍，也可以做可以不做)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">并设置 lvs-node-1.exmaple.com 为 172.16.100.11</span><br><span class="line">并设置 lvs-node-2.exmaple.com 为 172.16.100.12</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置完成重启网卡后网卡信息如下：</li>
+</ul>
+<blockquote>
+<p>systemctl restart network</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">root@lvs-node-0 ~]# ifconfig</span><br><span class="line">ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.16.100.10  netmask 255.255.255.0  broadcast 172.16.100.255</span><br><span class="line">        inet6 fe80::fe47:7422:c78:9b51  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 00:0c:29:15:e4:48  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 4946  bytes 985195 (962.1 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 7786  bytes 860433 (840.2 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">ens37: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 192.168.100.6  netmask 255.255.255.0  broadcast 192.168.100.255</span><br><span class="line">        inet6 fe80::4909:a397:124:1798  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 00:0c:29:15:e4:52  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 30945  bytes 15583220 (14.8 MiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 13008  bytes 2620954 (2.4 MiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;</span><br><span class="line">        loop  txqueuelen 1000  (Local Loopback)</span><br><span class="line">        RX packets 140  bytes 15978 (15.6 KiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 140  bytes 15978 (15.6 KiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure>
+<h2><span id="rs设置hostname-和-网卡信息">RS设置hostname 和 网卡信息</span></h2>
+<ul>
+<li>设置lvs-node-1 和 lvs-node-2 hostname</li>
+</ul>
+<blockquote>
+<p>hostnamectl set-hostname {hostname}</p>
+</blockquote>
+<ul>
+<li>设置lvs-node-1 和 lvs-node-2 网卡信息</li>
+</ul>
+<blockquote>
+<p>vim /etc/sysconfig/network-scripts/ifcfg-ens33</p>
+</blockquote>
+<p>编辑如下：<strong>DNS1设置刚才配置的</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=ens33</span><br><span class="line">DEVICE=ens33</span><br><span class="line">ONBOOT=yes</span><br><span class="line"></span><br><span class="line">IPADDR=172.16.100.11</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">DNS1=172.16.100.10      </span><br><span class="line">GATEWAY=172.16.100.10</span><br><span class="line">DNS2=182.254.116.116</span><br></pre></td></tr></table></figure>
+<h2><span id="安装nginx">安装nginx:</span></h2>
+<p>在 lvs-node-1 和lvs-node-2 上安装nginx</p>
+<ol>
+<li>
+<p>添加源:默认情况Centos7中无Nginx的源，最近发现Nginx官网提供了Centos的源地址。因此可以如下执行命令添加源：</p>
+<blockquote>
+<p>sudo rpm -Uvh <a href="http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm" target="_blank" rel="noopener">http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</a></p>
+</blockquote>
+</li>
+<li>
+<p>安装Nginx</p>
+<blockquote>
+<p>sudo yum install -y nginx</p>
+</blockquote>
+</li>
+<li>
+<p><strong><em>设置keepd-alive 为0（这一点很重要，关掉之后，我们才可以在浏览器看到负载的效果)</em></strong></p>
+<blockquote>
+<p>vim /etc/nginx/nginx.conf</p>
+</blockquote>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    keepalive_timeout  <span class="number">0</span>;  <span class="comment">// 修改 keepalive_timeout 为0 关闭keepalive</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 <li>
 <p>启动Nginx并设置开机自动运行</p>
 <blockquote>
@@ -676,7 +697,7 @@ sudo systemctl disable firewalld</p>
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">LVS服务的搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">ipvsadm</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">LVS 四种模式的搭建</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">NAT模式</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">DR模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">环境准备</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的网关 并配置相应的ip地址和DNS服务器</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">配置lvs-node-1 和 lvs-node-2 内核参数</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">arp_ignore和arp_announce介绍</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">配置方法有以下三种</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的 vip</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">FWM应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">FWM的应用场景 Session 保持的问题。</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">链接定向</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">FWM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">IPVS 持久链接</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是持久链接</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">持久链接类型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">搭建持久链接及其防火墙表示</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">LVS服务的搭建</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">ipvsadm</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">环境准备</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">环境概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">搭建vmnet4 虚拟网络</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">LVS设置hostname 和 网卡信息</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">RS设置hostname 和 网卡信息</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">安装nginx:</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">LVS 四种模式的搭建</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">NAT模式</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">DR模式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">环境准备</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的网关 并配置相应的ip地址和DNS服务器</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">配置lvs-node-1 和 lvs-node-2 内核参数</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">arp_ignore和arp_announce介绍</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">配置方法有以下三种</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">配置 lvs-node-0 1 2 的 vip</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">FWM应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">FWM的应用场景 Session 保持的问题。</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">链接定向</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">FWM</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">IPVS 持久链接</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是持久链接</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">持久链接类型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">搭建持久链接及其防火墙表示</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
         
         </div>
       </aside>
