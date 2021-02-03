@@ -232,12 +232,53 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-cms-gc-log/">
+        <h2 class="post-title">
+            Java垃圾回收详解(6)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/30/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                CMS 垃圾回收器详解之一 CMS GC常见问题分析
+            </h3>
+        <div class="post-content-preview">
+            定位GC日志中STW时间较长的行为
+打印所有STW停顿
+1-XX:+PrintGCApplicationStoppedTime和-XX:+PrintGCApplicationConcurrentTime
+找出所有暂停时间超过阈值的地方，如下：
+1awk &apos;&#123;match($0,/.*stopped:(.*)seconds,/,a);if(a[1]&gt;0.5) print...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2020-08-10
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
+            
+              <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#垃圾回收篇" title="垃圾回收篇">垃圾回收篇</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/java-cms-gc/">
         <h2 class="post-title">
             Java垃圾回收详解(4)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/92/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/51/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -286,7 +327,7 @@ cms 是一种预处理垃圾回收器，它不能等到ol...
             Java垃圾回收详解(5)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/53/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -333,7 +374,7 @@ Ful...
             Spring-Retry 源码分析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/26/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/86/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -373,7 +414,7 @@ QuickStart
             JAVA多线程之Atomic和LongAddr类（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/75/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -412,7 +453,7 @@ LongAdder 中会维护一个或多个变量，这些变量共同组成一个long
             JAVA多线程之Atomic和LongAddr类（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/31/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -448,7 +489,7 @@ Atomic与LongAddr解决什么问题
             TCP/IP系列(4)-SSL/TSL详解(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/67/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/23/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -489,7 +530,7 @@ TLS 握手协议包含如下几步:
             TCP/IP系列(4)-SSL/TSL详解(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/63/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/42/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -533,7 +574,7 @@ TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分
             TCP/IP系列(4)-SSL/TLS详解(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/74/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -571,7 +612,7 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
             Thrift框架详解（四）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/89/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -589,52 +630,6 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
         <p class="post-meta" style="margin: 10px 0;">
             Posted by Jason Lee on
             2020-03-21
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Thrift" title="Thrift">Thrift</a>
-            
-              <a href="/tags/#RPC" title="RPC">RPC</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/java-thrift-4/">
-        <h2 class="post-title">
-            Thrift框架详解（四）
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                协议和编解码(1)-TBinaryProtocol
-            </h3>
-        <div class="post-content-preview">
-            概诉
-本节来讨论thrift 的编解码器。
-核心组件
-整体架构
-
-Thrift的核心组件, 主要包含以下几个方面
-
-IDL服务描述组件,负责完成跨平台和跨语言(针对不同语言完成了Server层和Client代码的生成)
-TServer和Client，服务端和客户端组件的实现
-TProtocal 协议和解编码组件
-TTransport 传输组件
-TProcessor 服务调用组件，完成对服务实...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2020-03-12
         </p>
         <div class="tags">
             
@@ -756,6 +751,10 @@ TProcessor 服务调用组件，完成对服务实...
         </li>
       
         <li>
+          <a href="/article/Net-wrok-DNS-2/">DNS服务(2)</a>
+        </li>
+      
+        <li>
           <a href="/article/lvs-2/">负载均衡（2）</a>
         </li>
       
@@ -767,10 +766,6 @@ TProcessor 服务调用组件，完成对服务实...
           <a href="/article/distributed-redis-advanced/">Redis系列之集群搭建</a>
         </li>
       
-        <li>
-          <a href="/article/Net-wrok-DNS-1/">DNS服务</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -779,7 +774,7 @@ TProcessor 服务调用组件，完成对服务实...
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -804,17 +799,15 @@ TProcessor 服务调用组件，完成对服务实...
             
         
             
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
             <a href="/tags/#JAVA" title="JAVA" rel="23">JAVA</a>
             
         
             
             <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
@@ -864,6 +857,10 @@ TProcessor 服务调用组件，完成对服务实...
             
         
             
+            <a href="/tags/#网络" title="网络" rel="2">网络</a>
+            
+        
+            
         
             
             <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
@@ -878,9 +875,9 @@ TProcessor 服务调用组件，完成对服务实...
             
         
             
-            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
-            
         
+            
+            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
             
         
             
@@ -896,13 +893,13 @@ TProcessor 服务调用组件，完成对服务实...
             
         
             
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
-            
-        
             
         
             
