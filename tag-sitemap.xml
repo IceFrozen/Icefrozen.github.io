@@ -213,20 +213,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
-        <lastmod>2020-08-26T03:46:38.912Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/tags/JAVA/</loc>
-        <lastmod>2020-08-28T05:17:49.873Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://yoursite.com/tags/JVM/</loc>
         <lastmod>2020-08-28T05:17:49.873Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -243,6 +229,20 @@
     <url>
         <loc>http://yoursite.com/tags/%E7%BD%91%E7%BB%9C/</loc>
         <lastmod>2021-02-03T02:54:12.595Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/tags/JAVA/</loc>
+        <lastmod>2021-03-22T08:14:11.767Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+        <lastmod>2021-03-22T08:14:11.767Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
