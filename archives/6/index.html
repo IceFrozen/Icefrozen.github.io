@@ -232,12 +232,52 @@
 
 <div class="post-preview">
 
+    <a href="/article/distributed-redis-data-structure-object/">
+        <h2 class="post-title">
+            Redis系列之数据结构篇(4)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/84/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                对象简介
+            </h3>
+        <div class="post-content-preview">
+            
+本文转自 redis 的设计与实现
+
+简介
+我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。
+Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-19
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/reduce-cache-contention/">
         <h2 class="post-title">
             Java8使用@sun.misc.Contended避免伪共享
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/8/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/10/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -275,7 +315,7 @@
             Java类加载机制
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/86/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -315,7 +355,7 @@
             Redis系列之数据结构篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/50/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/73/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -362,7 +402,7 @@ Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：
             Redis系列之数据结构篇(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/41/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/82/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -405,7 +445,7 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             源码分析系列(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/80/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/89/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -447,7 +487,7 @@ foreach循环
             JAVA多线程之AQS分析(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -485,7 +525,7 @@ foreach循环
             稳定性保证
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/47/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/19/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -527,7 +567,7 @@ foreach循环
             MQ可以解决哪些实际问题?
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/6/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/72/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -562,7 +602,7 @@ foreach循环
             深入理解java泛型
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/70/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/77/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -586,50 +626,6 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
               <a href="/tags/#JAVA" title="JAVA">JAVA</a>
             
               <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/java-meta-space-instand-of-perm-space/">
-        <h2 class="post-title">
-            JVM 替换PermGem 为 Meta Space
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                
-            </h3>
-        <div class="post-content-preview">
-            背景
-
-永久代（PermGen）在哪里？
-根据，hotspot jvm结构如下(虚拟机栈和本地方法栈合一起了)：
-
-上图引自网络，但有个问题：方法区和heap堆都是线程共享的内存区域。
-关于方法区和永久代：
-在HotSpot JVM中，这次讨论的**永久代**，就是上图的方法区（JVM规范中称为方法区）。《Java虚拟机规范》只是规定了有方法区这么个概念和它的作用，并没有规定如何去实现它。在...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-03-22
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
-            
-              <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-              <a href="/tags/#垃圾回收篇" title="垃圾回收篇">垃圾回收篇</a>
             
         </div>
     
@@ -741,6 +737,10 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
     <ul>
       
         <li>
+          <a href="/article/spring-framework-0/">Spring Framework 源码分析（1）</a>
+        </li>
+      
+        <li>
           <a href="/article/lvs-3/">负载均衡（3）</a>
         </li>
       
@@ -756,10 +756,6 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
           <a href="/article/lvs-1/">负载均衡（1）</a>
         </li>
       
-        <li>
-          <a href="/article/distributed-redis-advanced/">Redis系列之集群搭建</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -768,7 +764,7 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -791,17 +787,17 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
             
         
             
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
             <a href="/tags/#JAVA" title="JAVA" rel="24">JAVA</a>
             
         
             
             <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
@@ -896,6 +892,10 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
             
         
+            
+        
+            
+            <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
             
         
             
