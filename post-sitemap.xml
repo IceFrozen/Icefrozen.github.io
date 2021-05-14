@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/keepalived-1/</loc>
+        <lastmod>2021-05-14T09:32:46.142Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/spring-framework-0/</loc>
         <lastmod>2021-04-16T08:50:48.562Z</lastmod>
         <changefreq>weekly</changefreq>
