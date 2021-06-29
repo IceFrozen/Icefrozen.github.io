@@ -9,7 +9,7 @@
 
     <url>
         <loc>http://yoursite.com/article/why-memory-barriers-1/</loc>
-        <lastmod>2021-06-29T02:44:10.142Z</lastmod>
+        <lastmod>2021-06-29T02:58:46.264Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -456,7 +456,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -464,7 +464,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
