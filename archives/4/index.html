@@ -237,7 +237,7 @@
             分布式事务详解（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/10/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -283,7 +283,7 @@
             数据库原理篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/38/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/76/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -326,7 +326,7 @@ MySQL 使用 InnoDB 存储表时，会将表的定义和数据索引等信息分
             kafka系列
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/78/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -372,7 +372,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             数据库原理篇(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -416,7 +416,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             TCP/IP系列(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/74/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -467,7 +467,7 @@ TCP状态图
             JAVA多线程之深入分析synchronized原理和锁膨胀过程
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -511,12 +511,56 @@ synchronized 优化历史
 
 <div class="post-preview">
 
+    <a href="/article/why-memory-barriers-1/">
+        <h2 class="post-title">
+            CPU缓存一致性协议
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/27/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                深入理解内存屏障
+            </h3>
+        <div class="post-content-preview">
+            CPU 结构
+现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。
+CPU缓存有多级缓存，比如L1, L2, L3等：
+L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。
+L2容量比L1大，速度比L1慢，每个核都有L2缓存。
+...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-07-30
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#CPU" title="CPU">CPU</a>
+            
+              <a href="/tags/#缓存一致性" title="缓存一致性">缓存一致性</a>
+            
+              <a href="/tags/#并发系统" title="并发系统">并发系统</a>
+            
+              <a href="/tags/#内存屏障" title="内存屏障">内存屏障</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/Java-AQS2/">
         <h2 class="post-title">
             JAVA多线程之AQS分析(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/95/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -555,7 +599,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             JAVA多线程篇之锁的介绍
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/70/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -609,7 +653,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             操作系统之 高性能IO浅析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/67/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/51/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -622,47 +666,6 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
 （1）同步阻塞IO（Blocking IO）：即传统的IO模型。
 （2）同步非阻塞IO（Non-blocking IO）：默认创建的socket都是阻塞的，非阻塞IO要求socket被设置为NONBLOCK。注意这里所说的NIO并非Java的NIO（New IO）库。
 （3）IO多路复用（IO Multiplexing）：即经典的Reactor设计模式，有时也称为异步阻塞IO...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-07-10
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#操作系统" title="操作系统">操作系统</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/operating-system-epoll/">
-        <h2 class="post-title">
-            操作系统之Epoll原理
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                
-            </h3>
-        <div class="post-content-preview">
-            Epoll 很重要，但是 Epoll 与 Select 的区别是什么呢?Epoll 高效的原因是什么?
-从网卡接收数据说起
-网卡接收数据的过程
-下边是一个典型的计算机结构图，计算机由 CPU、存储器(内存)与网络接口等部件组成，了解 Epoll 本质的第一步，要从硬件的角度看计算机怎样接收网络数据。
-
-下图展示了网卡接收数据的过程：
-
-在 1 阶段，网卡收到网线传来的数据。
-经过 2 阶段的...
         </div>
     </a>
     
@@ -811,7 +814,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -928,15 +931,11 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             
         
             
-        
-            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
-            
-        
             
         
             
@@ -950,7 +949,19 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
             
         
             
+        
+            
+        
+            
             <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+            
+        
+            
+        
+            
+        
+            
+        
             
         
     </div>
