@@ -296,9 +296,11 @@
 </tr>
 </tbody>
 </table>
-<p>rip 寄存器涉及寻址，我们这里不做讨论，只要知道<br>
-1、首先，rip 里存放的是b的地址，b的地址里放着b的初始值<br>
-2、将b的地址的值赋值给了eax, 然后 将0复制给了rip里地址地址，也就是b, 然后将11 加上 eax 寄存器的值（我们知道，eax是b的初始值），最后，将结果给了rip的地址（此时rip已经执向a的地址）</p>
+<p>rip 寄存器涉及寻址，我们这里不做讨论，只要知道</p>
+<ul>
+<li>1、首先，rip 里存放的是b的地址，b的地址里放着b的初始值</li>
+<li>2、将b的地址的值赋值给了eax, 然后 将0复制给了rip里地址地址，也就是b, 然后将11 加上 eax 寄存器的值（我们知道，eax是b的初始值），最后，将结果给了rip的地址（此时rip已经执向a的地址）</li>
+</ul>
 <p><strong>我们发现，编译得到的汇编代码和我们原本的C语言代码不顺序并不一致，而是相当于如下C语言代码：</strong></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">	b = <span class="number">0</span>;</span><br><span class="line">  a = b + <span class="number">11</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>编译器的本意是提升程序在CPU上的运行性能，更好的使用寄存器以及现代处理器的流水线技术，减少汇编指令的数量，降低程序执行需要的CPU周期，减少CPU读写主存的时间，但是在多核多线程并行的情况下，这种重排序优化就有可能导致共享变量的可见性问题。</p>
