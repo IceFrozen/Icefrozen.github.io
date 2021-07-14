@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -275,23 +275,23 @@
 </thead>
 <tbody>
 <tr>
-<td>0x200b1a(%rip),%eax</td>
+<td>mov  0x200b1a(%rip),%eax</td>
 <td>movl    b(%rip), %eax</td>
 <td>将rip寄存器里的地址中的值， 赋值给 eax寄存器</td>
 </tr>
 <tr>
-<td>$0x0,0x200b10(%rip)</td>
-<td>$0, b(%rip)</td>
+<td>movl $0x0,0x200b10(%rip)</td>
+<td>movl  $0, b(%rip)</td>
 <td>将 0 赋值到 rip寄存器里地址</td>
 </tr>
 <tr>
-<td>$0xb,%eax</td>
-<td>$11, %eax</td>
+<td>add $0xb,%eax</td>
+<td>add $11, %eax</td>
 <td>将 11 + eax 寄存器里（上面说了是rip寄存器的值）</td>
 </tr>
 <tr>
-<td>%eax,0x200b0b(%rip)</td>
-<td>%eax, a(%rip)</td>
+<td>mov %eax,0x200b0b(%rip)</td>
+<td>mov %eax, a(%rip)</td>
 <td>将集群器eax 里的值赋值给 rip里地址的区域</td>
 </tr>
 </tbody>

@@ -9,7 +9,7 @@
 
     <url>
         <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
-        <lastmod>2021-07-14T07:23:21.772Z</lastmod>
+        <lastmod>2021-07-14T07:24:08.898Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -264,7 +264,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/kafka/</loc>
+        <loc>http://yoursite.com/article/java-thrift-4/</loc>
         <lastmod>2020-08-10T03:11:48.034Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -272,7 +272,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-thrift-4/</loc>
+        <loc>http://yoursite.com/article/kafka/</loc>
         <lastmod>2020-08-10T03:11:48.034Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -528,7 +528,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -536,7 +536,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
