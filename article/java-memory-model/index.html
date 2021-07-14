@@ -227,8 +227,8 @@
 <p><strong>当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</strong></p>
 <p>而随着CPU能力的不断提升，一层缓存就慢慢的无法满足要求了，就逐渐的衍生出多级缓存。按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（<code>L1</code>），二级缓存（<code>L3</code>），部分高端CPU还具有三级缓存（<code>L3</code>），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
 <p>那么，在有了多级缓存之后，程序的执行就变成了：<strong>当CPU要读取一个数据时，首先从一级缓存中查找，如果没有找到再从二级缓存中查找，如果还是没有就从三级缓存或内存中查找。</strong>。单核CPU只含有一套L1，L2，L3缓存；如果CPU含有多个核心，即多核CPU，则每个核心都含有一套L1（甚至和L2）缓存，而共享L3（或者和L2）缓存。</p>
-<p>下图为一个单CPU双核的缓存结构。<br>
-<img src="/article/java-memory-model/1562587586971java-memory-model_.png" alt></p>
+<p>下图为一个单CPU双核的缓存结构。</p>
+<p><img src="/article/java-memory-model/1562587586971java-memory-model_.png" alt></p>
 <h2><span id="多线程下缓存一致性问题">多线程下缓存一致性问题</span></h2>
 <ul>
 <li>
@@ -261,6 +261,13 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">线程 <span class="number">1</span>              线程 <span class="number">2</span></span><br><span class="line"><span class="number">2</span>: b = <span class="number">1</span>;          <span class="number">4</span>: a = <span class="number">2</span> ; </span><br><span class="line"><span class="number">1</span>：x2 = a ;        <span class="number">3</span>: x1 = b ;</span><br></pre></td></tr></table></figure>
 <p>这种执行顺序下就有可能出现x1 = 1 和x2 = 2 的情况，这也就说明在多线程环境下，由于编译器优化重排的存在，两个线程中使用的变量能否保证一致性是无法确定的。</p>
 <h3><span id="处理器指令重排">处理器指令重排</span></h3>
+<p>处理器重排其实氛围了两方面，一方面叫做指令重排，一方面叫做CPU缓存重排序，其两者都是伟重排。什么叫做伪重排？是因为，其本身并没有发生真正意义上的重排序，cpu依旧是按照顺序执行指令，只不过完成的时间或者其他原因导致某个后面的指令先完成。所以，处理器重排序事实上并没有对输入的指令做调整。只有编译器重排序，才会对指令进行重排序。</p>
+<p>处理器重拍一共有两种</p>
+<ul>
+<li>流水线指令重排序</li>
+<li>CPU缓存一致性导致的重排序。</li>
+</ul>
+<p>这里只介绍<strong>流水线指令重排序</strong>，以下的指令重排均是指流水线指令重排序。想要了解<strong>CPU缓存一致性导致的重排序</strong>请参考我的另一篇博文<a href="https://icefrozen.github.io/article/why-memory-barriers-1/" target="_blank" rel="noopener">CPU缓存一致性协议-深入理解内存屏障</a>.</p>
 <p>先了解一下指令重排的概念，处理器指令重排是对CPU的性能优化，从指令的执行角度来说一条指令可以分为多个步骤完成，如下</p>
 <ul>
 <li>取指 IF</li>
@@ -272,7 +279,8 @@
 <p>CPU在工作时，需要将上述指令分为多个步骤依次执行(注意硬件不同有可能不一样),由于每一个步会使用到不同的硬件操作，比如取指时会只有PC寄存器和存储器，译码时会执行到指令寄存器组，执行时会执行ALU(算术逻辑单元)、写回时使用到寄存器组。为了提高硬件利用率，CPU指令是按流水线技术来执行的，如下：</p>
 <p><img src="/article/java-memory-model/1562642803915java-memory-model_.png" alt></p>
 <p>从图中可以看出当指令1还未执行完成时，第2条指令便利用空闲的硬件开始执行，这样做是有好处的，如果每个步骤花费1ms，那么如果第2条指令需要等待第1条指令执行完成后再执行的话，则需要等待5ms，但如果使用流水线技术的话，指令2只需等待1ms就可以开始执行了，这样就能大大提升CPU的执行性能。</p>
-<p>虽然流水线技术可以大大提升CPU的性能，但不幸的是一旦出现流水中断，所有硬件设备将会进入一轮停顿期，当再次弥补中断点可能需要几个周期，这样性能损失也会很大，就好比工厂组装手机的流水线，一旦某个零件组装中断，那么该零件往后的工人都有可能进入一轮或者几轮等待组装零件的过程。因此我们需要尽量阻止指令中断的情况，指令重排就是其中一种优化中断的手段，我们通过一个例子来阐明指令重排是如何阻止流水线技术中断的</p>
+<p>虽然流水线技术可以大大提升CPU的性能，但不幸的是一旦出现流水中断，所有硬件设备将会进入一轮停顿期，当再次弥补中断点可能需要几个周期，这样性能损失也会很大，就好比工厂组装手机的流水线，一旦某个零件组装中断，那么该零件往后的工人都有可能进入一轮或者几轮等待组装零件的过程。</p>
+<p>因此我们需要尽量阻止指令中断的情况，指令重排就是其中一种优化中断的手段，我们通过一个例子来阐明指令重排是如何阻止流水线技术中断的</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = b + c ;</span><br><span class="line">d = e + f ;</span><br></pre></td></tr></table></figure>
 <p>下面通过汇编指令展示了上述代码在CPU执行的处理过程</p>
 <p><img src="https://img-blog.csdn.net/20170611002708717?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamF2YXplamlhbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt></p>
@@ -314,13 +322,21 @@
 <h2><span id="java内存模型即java-memory-model简称jmm">Java内存模型(即Java Memory Model，简称JMM)</span></h2>
 <h2><span id="简介">简介</span></h2>
 <p>本身是一种抽象的概念，并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中各个变量（包括实例字段，静态字段和构成数组对象的元素）的访问方式。</p>
+<p>简单说：Java 为了能在不同架构的 CPU 上运行，提炼出一套自己的内存模型，定义出来 Java 程序该怎么样和这个抽象的内存模型进行交互，定义出来程序的运行过程，什么样的指令可以重排，什么样的不行，指令之间可见性如何等。相当于是规范出来了 Java 程序运行的基本规范。</p>
+<p>这个模型定义会很不容易，它要有足够弹性，以适应各种不同的硬件架构，让这些硬件在支持 JVM 时候都能满足运行规范；它又要足够严谨，让应用层代码编写者能依靠这套规范，知道程序怎么写才能在各种系统上运行都不会有歧义，不会有并发问题。</p>
+<p>综上所述：<strong>JMM（java Memory Model）屏蔽掉各种操作系统和硬件的内存访问差异，使得 java 程序在各种操作系统和硬件环境下，达到一致的内存访问效果。JMM 是一种在多样环境下对内存统一访问的模型</strong>。</p>
 <p>提到Java内存模型，一般指的是JDK 5 开始使用的新的内存模型，主要由JSR-133: JavaTM Memory Model and Thread Specification 描述。感兴趣的可以参看下这份 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/jsr133.pdf" target="_blank" rel="noopener">PDF文档</a></p>
+<h2><span id="jvm-运行时基本的线程模型">JVM 运行时基本的线程模型</span></h2>
 <p>由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存(有些地方称为栈空间)，用于存储线程私有的数据，而Java内存模型中规定所有变量都存储在主内存，主内存是共享内存区域，所有线程都可以访问，但线程对变量的操作(读取赋值等)必须在工作内存中进行，首先要将变量从主内存拷贝的自己的工作内存空间，然后对变量进行操作，操作完成后再将变量写回主内存，不能直接操作主内存中的变量，工作内存中存储着主内存中的变量副本拷贝，前面说过，工作内存是每个线程的私有数据区域，因此不同的线程间无法访问对方的工作内存，线程间的通信(传值)必须通过主内存来完成，其简要访问过程如下图</p>
 <p><img src="/article/java-memory-model/1562642839101java-memory-model_.png" alt></p>
 <h2><span id="并发编程的问题">并发编程的问题</span></h2>
 <ul>
-<li>JMM与Java内存区域的划分是不同的概念层次，更恰当说JMM描述的是一组规则，通过这组规则控制程序中各个变量在共享数据区域和私有数据区域的访问方式。</li>
-<li>JMM是围绕<strong>原子性，有序性、可见性</strong>展开的。JMM与Java内存区域唯一相似点，都存在共享数据区域和私有数据区域，在JMM中主内存属于共享数据区域，从某个程度上讲应该包括了堆和方法区，而工作内存数据线程私有数据区域，从某个程度上讲则应该包括程序计数器、虚拟机栈以及本地方法栈。或许在某些地方，我们可能会看见主内存被描述为堆内存，工作内存被称为线程栈，实际上他们表达的都是同一个含义。关于JMM中的主内存和工作内存说明如下</li>
+<li>
+<p>JMM与Java内存区域的划分是不同的概念层次，更恰当说JMM描述的是一组规则，通过这组规则控制程序中各个变量在共享数据区域和私有数据区域的访问方式。</p>
+</li>
+<li>
+<p>JMM是围绕<strong>原子性，有序性、可见性</strong>展开的。JMM与Java内存区域唯一相似点，都存在共享数据区域和私有数据区域，在JMM中主内存属于共享数据区域，从某个程度上讲应该包括了堆和方法区，而工作内存数据线程私有数据区域，从某个程度上讲则应该包括程序计数器、虚拟机栈以及本地方法栈。或许在某些地方，我们可能会看见主内存被描述为堆内存，工作内存被称为线程栈，实际上他们表达的都是同一个含义。关于JMM中的主内存和工作内存说明如下</p>
+</li>
 </ul>
 <ul>
 <li>
@@ -345,7 +361,8 @@
 <ul>
 <li>
 <p><strong>原子性</strong>：原子性指的是一个操作是不可中断的，即使是在多线程环境下，一个操作一旦开始就不会被其他线程影响。</p>
-<p>比如对于一个静态变量int x，两条线程同时对他赋值，线程A赋值为1，而线程B赋值为2，不管线程如何运行，最终x的值要么是1，要么是2，线程A和线程B间的操作是没有干扰的，这就是原子性操作，不可被中断的特点。有点要注意的是，对于32位系统的来说，long类型数据和double类型数据(对于基本数据类型，byte,short,int,float,boolean,char读写是原子操作)，它们的读写并非原子性的，也就是说如果存在两条线程同时对long类型或者double类型的数据进行读写是存在相互干扰的，因为对于32位虚拟机来说，每次原子读写是32位的，而long和double则是64位的存储单元，这样会导致一个线程在写时，操作完前32位的原子操作后，轮到B线程读取时，恰好只读取到了后32位的数据，这样可能会读取到一个既非原值又不是线程修改值的变量。</p>
+<p>比如对于一个静态变量int x，两条线程同时对他赋值，线程A赋值为1，而线程B赋值为2，不管线程如何运行，最终x的值要么是1，要么是2，线程A和线程B间的操作是没有干扰的，这就是原子性操作，不可被中断的特点。</p>
+<p>有点要注意的是，对于32位系统的来说，long类型数据和double类型数据(对于基本数据类型，byte,short,int,float,boolean,char读写是原子操作)，它们的读写并非原子性的，也就是说如果存在两条线程同时对long类型或者double类型的数据进行读写是存在相互干扰的，因为对于32位虚拟机来说，每次原子读写是32位的，而long和double则是64位的存储单元，这样会导致一个线程在写时，操作完前32位的原子操作后，轮到B线程读取时，恰好只读取到了后32位的数据，这样可能会读取到一个既非原值又不是线程修改值的变量。</p>
 </li>
 <li>
 <p><strong>可见性</strong>：理解了指令重排现象后，可见性容易了，可见性指的是当一个线程修改了某个共享变量的值，其他线程是否能够马上得知这个修改的值</p>
@@ -370,8 +387,20 @@
 <p>对于指令重排导致的可见性问题和有序性问题，则可以利用<code>volatile</code>关键字解决，因为<code>volatile</code>的另外一个作用就是禁止重排序优化，关于<code>volatile</code>稍后会进一步分析。</p>
 </li>
 </ul>
-<p>除了靠<code>sychronized</code>和<code>volatile</code>关键字来保证原子性、可见性以及有序性外，JMM内部还定义一套<code>happens-before</code> 原则来保证多线程环境下两个操作间的原子性、可见性以及有序性。</p>
+<p>除了靠<code>sychronized</code>和<code>volatile</code>关键字来保证原子性、可见性以及有序性外，JMM内部还定义一套<code>as-if-serial, happens-before</code> 原则来保证多线程环境下两个操作间的原子性、可见性以及有序性。</p>
+<h3><span id="as-if-serial">as-if-serial</span></h3>
+<p>as-if-serial 语义的意思是：<strong>所有的操作均可以为了优化而被重排序，但是你必须要保证重排序后执行的结果不能被改变，编译器、runtime、处理器都必须遵守 as-if-serial 语义。注意，as-if-serial 只保证单线程环境，多线程环境下无效。</strong></p>
+<p>下面我们用一个简单的示例来说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span> ;      <span class="comment">// A</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span> ;      <span class="comment">// B</span></span><br><span class="line"><span class="keyword">int</span> c = a + b;   <span class="comment">// C</span></span><br></pre></td></tr></table></figure>
+<p>A、B、C 三个操作存在如下关系：A、B 不存在数据依赖关系，A和C、B和C存在数据依赖关系，因此在进行重排序的时候，A、B 可以随意排序，但是必须位于 C 的前面，执行顺序可以是 A –&gt; B –&gt; C 或者 B –&gt; A –&gt; C 。但是无论是何种执行顺序最终的结果 C 总是等于 3 。</p>
+<p>as-if-serail 语义把单线程程序保护起来了，它可以保证在重排序的前提下程序的最终结果始终都是一致的。</p>
+<p>当然，上述关系还存在着 happens-before 的原则</p>
 <h3><span id="happens-before-原则">happens-before 原则</span></h3>
+<p>根据happens-before的程序顺序规则，上面计算圆的面积的示例代码存在3个happens-before关系。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>） A happens-before B。</span><br><span class="line"><span class="number">2</span>） B happens-before C。</span><br><span class="line"><span class="number">3</span>） A happens-before C。</span><br></pre></td></tr></table></figure>
+<p>而这里的第3个happens-before关系，是根据happens-before的传递性推导出来的。</p>
+<p>注意：</p>
+<p><strong>这里A happens-before B，但实际执行时B却可以排在A之前执行</strong>，JMM并不要求A一定要在B之前执行。JMM仅仅要求前一个操作(执行的结果)对后一个操作可见，且前一个操作按顺序排在第二个操作之前。这里操作A的执行结果不需要对操作B可见，而且重排序操作A和操作B后的执行结果，与操作A和操作B按happens-before顺序执行的结果一致。在这种情况下，JMM会认为这种重排序并不非法，JMM允许这种重排序。</p>
 <p>倘若在程序开发中，仅靠<code>sychronized</code>和<code>volatile</code>关键字来保证原子性、可见性以及有序性，那么编写并发程序可能会显得十分麻烦，幸运的是，在Java内存模型中，还提供了happens-before 原则来辅助保证程序执行的原子性、可见性以及有序性的问题，它是判断数据是否存在竞争、线程是否安全的依据，happens-before 原则内容如下</p>
 <ul>
 <li>
@@ -379,36 +408,39 @@
 </li>
 <li>
 <p><strong>锁规则</strong></p>
+</li>
+</ul>
 <p>解锁(unlock)操作必然发生在后续的同一个锁的加锁(lock)之前，也就是说，如果对于一个锁解锁后，再加锁，那么加锁的动作必须在解锁动作之后(同一个锁)。</p>
-</li>
-<li>
-<p><strong>volatile规则</strong></p>
+<ul>
+<li><strong>volatile规则</strong></li>
+</ul>
 <p>volatile变量的写，先发生于读，这保证了volatile变量的可见性，简单的理解就是，volatile变量在每次被线程访问时，都强迫从主内存中读该变量的值，而当该变量发生变化时，又会强迫将最新的值刷新到主内存，任何时刻，不同的线程总是能够看到该变量的最新值。</p>
-</li>
-<li>
-<p>线程启动规则 线程的start()方法先于它的每一个动作，即如果线程A在执行线程B的start方法之前修改了共享变量的值，那么当线程B执行start方法时，线程A对共享变量的修改对线程B可见</p>
-</li>
+<ul>
+<li><strong>线程启动规则</strong></li>
+</ul>
+<p>线程的start()方法先于它的每一个动作，即如果线程A在执行线程B的start方法之前修改了共享变量的值，那么当线程B执行start方法时，线程A对共享变量的修改对线程B可见</p>
+<ul>
 <li>
 <p><strong>传递性 A先于B ，B先于C 那么A必然先于C</strong></p>
 </li>
 <li>
 <p><strong>线程终止规则</strong></p>
-<p>线程的所有操作先于线程的终结，Thread.join()方法的作用是等待当前执行的线程终止。假设在线程B终止之前，修改了共享变量，线程A从线程B的join方法成功返回后，线程B对共享变量的修改将对线程A可见。</p>
-</li>
-<li>
-<p><strong>线程中断规则</strong></p>
-<p>对线程 interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过Thread.interrupted()方法检测线程是否中断。</p>
-</li>
-<li>
-<p>对象终结规则 对象的构造函数执行，结束先于finalize()方法</p>
 </li>
 </ul>
+<p>线程的所有操作先于线程的终结，Thread.join()方法的作用是等待当前执行的线程终止。假设在线程B终止之前，修改了共享变量，线程A从线程B的join方法成功返回后，线程B对共享变量的修改将对线程A可见。</p>
+<ul>
+<li><strong>线程中断规则</strong></li>
+</ul>
+<p>对线程 interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过Thread.interrupted()方法检测线程是否中断。</p>
+<ul>
+<li>**对象终结规则 **</li>
+</ul>
+<p>对象的构造函数执行，结束先于finalize()方法</p>
 <p>上述8条原则无需手动添加任何同步手段(synchronized|volatile)即可达到效果，下面我们结合前面的案例演示这8条原则如何判断线程是否安全，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MixedOrder</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;</span><br><span class="line">        flag = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">int</span> i = a + <span class="number">1</span>；</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>同样的道理，存在两条线程A和B，线程A调用实例对象的writer()方法，而线程B调用实例对象的read()方法，线程A先启动而线程B后启动，那么线程B读取到的i值是多少呢？</p>
 <p>现在依据8条原则，由于存在两条线程同时调用，因此程序次序原则不合适。writer()方法和read()方法都没有使用同步手段，锁规则也不合适。没有使用volatile关键字，volatile变量原则不适应。</p>
 <p>线程启动规则、线程终止规则、线程中断规则、对象终结规则、传递性和本次测试案例也不合适。线程A和线程B的启动时间虽然有先后，但线程B执行结果却是不确定，也是说上述代码没有适合8条原则中的任意一条，也没有使用任何同步手段，所以上述的操作是线程不安全的，因此线程B读取的值自然也是不确定的。修复这个问题的方式很简单，要么给writer()方法和read()方法添加同步手段，如synchronized或者给变量flag添加volatile关键字，确保线程A修改的值对线程B总是可见。</p>
-<h3><span id="as-if-serial">as-if-serial</span></h3>
 <h3><span id="volatile内存语义">volatile内存语义</span></h3>
 <p>i变量的任何改变都会立马反应到其他线程中</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileVisibility</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> i =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">increase</span><span class="params">()</span></span>&#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -422,8 +454,8 @@
 <p>由于步骤1和步骤2间可能会重排序，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">memory = allocate(); <span class="comment">//1.分配对象内存空间</span></span><br><span class="line">instance = memory;   <span class="comment">//3.设置instance指向刚分配的内存地址，此时instance！=null，但是对象还没有初始化完成！</span></span><br><span class="line">instance(memory);    <span class="comment">//2.初始化对象</span></span><br></pre></td></tr></table></figure>
 <p>由于步骤2和步骤3不存在数据依赖关系，而且无论重排前还是重排后程序的执行结果在单线程中并没有改变，因此这种重排优化是允许的。但是指令重排只会保证串行语义的执行的一致性(单线程)，但并不会关心多线程间的语义一致性。所以当一条线程访问<code>instance</code>不为<code>null</code>时，由于<code>instance</code>实例未必已初始化完成，也就造成了线程安全问题。那么该如何解决呢，很简单，我们使用<code>volatile</code>禁止<code>instance</code>变量被执行指令重排优化即可。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//禁止指令重排优化</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> DoubleCheckLock instance;</span><br></pre></td></tr></table></figure>
-<p>参考:</p>
+<p>关于指令重排序，我们已经讨论了cpu流水线的重排序，接下来没问会讨论另外两种重排序，编译器重排序和缓存引起的重排序。</p>
+<h2><span id="参考">参考:</span></h2>
 <ul>
 <li><a href="https://blog.csdn.net/javazejian/article/details/72772461" target="_blank" rel="noopener">全面理解Java内存模型(JMM)及volatile关键字</a></li>
 <li><a href="http://ifeve.com/wp-content/uploads/2014/03/JSR133%E4%B8%AD%E6%96%87%E7%89%881.pdf" target="_blank" rel="noopener">JSR133中文版1.pdf</a></li>
@@ -505,7 +537,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">为什么要有内存模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">CPU缓存</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">多线程下缓存一致性问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">处理器优化和指令重排</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">编译器重排</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">处理器指令重排</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Java内存模型(即Java Memory Model，简称JMM)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">简介</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">并发编程的问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">JMM存在的必要性</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">Java内存模型的承诺</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">Java内存模型与缓存一致性的联系</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">JMM解决缓存一致性问题的方案</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.1.</span> <span class="toc-nav-text">happens-before 原则</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.2.</span> <span class="toc-nav-text">as-if-serial</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.3.</span> <span class="toc-nav-text">volatile内存语义</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.4.</span> <span class="toc-nav-text">volatile禁止重排优化</span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">为什么要有内存模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">CPU缓存</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">多线程下缓存一致性问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">处理器优化和指令重排</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">编译器重排</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">处理器指令重排</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Java内存模型(即Java Memory Model，简称JMM)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">简介</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">JVM 运行时基本的线程模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">并发编程的问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">JMM存在的必要性</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">Java内存模型的承诺</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">Java内存模型与缓存一致性的联系</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.</span> <span class="toc-nav-text">JMM解决缓存一致性问题的方案</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.1.</span> <span class="toc-nav-text">as-if-serial</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.2.</span> <span class="toc-nav-text">happens-before 原则</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.3.</span> <span class="toc-nav-text">volatile内存语义</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">12.4.</span> <span class="toc-nav-text">volatile禁止重排优化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">13.</span> <span class="toc-nav-text">参考:</span></a></li></ol>
         
         </div>
       </aside>

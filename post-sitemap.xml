@@ -8,6 +8,22 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/java-memory-model/</loc>
+        <lastmod>2021-07-14T07:05:44.576Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
+        <lastmod>2021-07-14T07:04:32.112Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/why-memory-barriers-1/</loc>
         <lastmod>2021-06-29T03:00:35.243Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -304,14 +320,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-memory-model/</loc>
-        <lastmod>2020-08-10T03:11:47.994Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://yoursite.com/article/java-mem-objecat/</loc>
         <lastmod>2020-08-10T03:11:47.979Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -520,7 +528,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -528,7 +536,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

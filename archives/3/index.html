@@ -232,12 +232,48 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-concurrence-2/">
+        <h2 class="post-title">
+            JAVA多线程之Atomic和LongAddr类（1）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/99/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                Atomic类详解
+            </h3>
+        <div class="post-content-preview">
+            概述
+Atomic与LongAddr解决什么问题
+解决变量赋值的原子性问题。 底层采用的是CAS的自旋的方式来实现的。CAS会有ABA和性能的问题，Atomic 采用版本号的方式来解决ABA的问题。ABA问题是否会对业务产生影响，还需要业务方自己评估，大部分情况下比如一些非金融业务系统中，ABA不会对业务造成影响。
+至于性能问题，CAS自旋的方式确实会造成一些CPU的空转，因为严格意义上来说...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2020-05-03
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/tcpip-4-SSL-TLS-3/">
         <h2 class="post-title">
             TCP/IP系列(4)-SSL/TSL详解(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/72/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/18/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -278,7 +314,7 @@ TLS 握手协议包含如下几步:
             TCP/IP系列(4)-SSL/TSL详解(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/65/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/8/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -322,7 +358,7 @@ TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分
             TCP/IP系列(4)-SSL/TLS详解(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/10/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/92/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -360,7 +396,7 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
             Thrift框架详解（四）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/54/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/2/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -398,7 +434,7 @@ TLS:(Transport Layer Security): 是SSL协议（Secure Sockets Layer）的升级�
             Thrift框架详解（四）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/62/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -444,7 +480,7 @@ TProcessor 服务调用组件，完成对服务实...
             系统架构（一）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/21/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/94/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -482,7 +518,7 @@ TProcessor 服务调用组件，完成对服务实...
             Thrift框架详解（三）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/33/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -522,7 +558,7 @@ TProcessor 服务调用组件，完成对服务实...
             Thrift框架详解（二）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/91/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/74/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -562,7 +598,7 @@ IDL 结构规范
             Thrift框架详解（一）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/58/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -586,47 +622,6 @@ Thr...
               <a href="/tags/#Thrift" title="Thrift">Thrift</a>
             
               <a href="/tags/#RPC" title="RPC">RPC</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/java-AQS3-read-write-lock/">
-        <h2 class="post-title">
-            JAVA多线程之AQS分析(3)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                ReentrantReadWriteLock读写锁源码分析
-            </h3>
-        <div class="post-content-preview">
-            基础
-所谓读写锁，是对访问资源共享锁和排斥锁，一般的重入性语义为 如果对资源加了写锁，其他线程无法再获得写锁与读锁，但是持有写锁的线程，可以对资源加读锁（锁降级）；如果一个线程对资源加了读锁，其他线程可以继续加读锁。
-样例
-我们来看一段例子
-1234567891011121314151617181920212223242526272829303132333435363738394041424...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-11-27
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
-            
-              <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-              <a href="/tags/#多线程" title="多线程">多线程</a>
             
         </div>
     
@@ -738,6 +733,10 @@ Thr...
     <ul>
       
         <li>
+          <a href="/article/java-memory-model-complier-reordering/">Java内存模型(2)</a>
+        </li>
+      
+        <li>
           <a href="/article/why-memory-barriers-1/">CPU缓存一致性协议</a>
         </li>
       
@@ -753,10 +752,6 @@ Thr...
           <a href="/article/lvs-3/">负载均衡（3）</a>
         </li>
       
-        <li>
-          <a href="/article/Net-wrok-DNS-2/">DNS服务(2)</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -765,7 +760,7 @@ Thr...
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -786,11 +781,11 @@ Thr...
             
         
             
-            <a href="/tags/#JAVA" title="JAVA" rel="24">JAVA</a>
+            <a href="/tags/#JAVA" title="JAVA" rel="25">JAVA</a>
             
         
             
-            <a href="/tags/#JVM" title="JVM" rel="20">JVM</a>
+            <a href="/tags/#JVM" title="JVM" rel="21">JVM</a>
             
         
             
@@ -870,7 +865,7 @@ Thr...
             
         
             
-            <a href="/tags/#内存模型篇" title="内存模型篇" rel="2">内存模型篇</a>
+            <a href="/tags/#内存模型篇" title="内存模型篇" rel="3">内存模型篇</a>
             
         
             
@@ -882,8 +877,6 @@ Thr...
             
         
             
-        
-            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
@@ -892,11 +885,13 @@ Thr...
             
         
             
+        
+            
+        
+            
+        
+            
             <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
-            
-        
-            
-        
             
         
             
