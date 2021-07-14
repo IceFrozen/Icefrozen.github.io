@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -237,7 +237,7 @@
             Java内存模型(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/17/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,11 +245,17 @@
                 编译器重排序
             </h3>
         <div class="post-content-preview">
-            前言在我的Java内存模型(1)JMM是什么 中我已经阐述了 JMM 是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
-内存模型在JVM的应用首先，我们再来重温一下，三种重排序。
-重排序指令重排序在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
+            前言
+在我的Java内存模型(1)JMM是什么 中我已经阐述了 JMM 是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
+内存模型在JVM的应用
+首先，我们再来重温一下，三种重排序。
+重排序
+指令重排序
+在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
 
-编译器优化的重排序编译器在不改变单线程程序语义的前提下（代码中不包含sy...
+
+编译器优化的重排序
+编译器在不改变单线程程序语义的前提下（代码...
         </div>
     </a>
     
@@ -278,7 +284,7 @@
             CPU缓存一致性协议
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/27/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/78/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -286,7 +292,12 @@
                 深入理解内存屏障
             </h3>
         <div class="post-content-preview">
-            CPU 结构现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。CPU缓存有多级缓存，比如L1, L2, L3等：L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。L2容量比L1大，速度比L1慢，每个核都有L2缓存。L3容量最...
+            CPU 结构
+现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。
+CPU缓存有多级缓存，比如L1, L2, L3等：
+L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。
+L2容量比L1大，速度比L1慢，每个核都有L2缓存。
+...
         </div>
     </a>
     
@@ -317,7 +328,7 @@
             KeepAlived 详解
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -325,7 +336,9 @@
                 
             </h3>
         <div class="post-content-preview">
-            概诉Keepalived 作用keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动实现...
+            概诉
+Keepalived 作用
+keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动...
         </div>
     </a>
     
@@ -348,7 +361,7 @@
             Spring Framework 源码分析（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/35/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -356,9 +369,12 @@
                 基础概念
             </h3>
         <div class="post-content-preview">
-            概诉Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
+            概诉
+Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
 一 、Spring IOC (控制反转)
-IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中.Bea...
+
+
+IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中....
         </div>
     </a>
     
@@ -385,7 +401,7 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
             负载均衡（3）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/23/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -393,13 +409,16 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
                 LVS服务的搭建机及其高级应用
             </h3>
         <div class="post-content-preview">
-            概诉根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
-LVS服务的搭建ipvsadm安装：
+            概诉
+根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
+LVS服务的搭建
+ipvsadm
+安装：
 1sudo yum  ipvsadm  -y
 
 ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
 
-1234567891011ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [ti...
+1234567891011ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p ...
         </div>
     </a>
     
@@ -422,7 +441,7 @@ ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
             DNS服务(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -431,16 +450,20 @@ ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
             </h3>
         <div class="post-content-preview">
             DNS 服务简介
+
 接上篇 DNS服务(1) 简述了DNS的诞生和结构，本节来实际操作一遍，搭建一个DNS服务器。
 
-DNS 服务单台服务器DNS 服务器准备
-CentOS7 ip 为 192.168.100.10 
+DNS 服务单台服务器
+DNS 服务器准备
+
+CentOS7 ip 为 192.168.100.10
 user 用户为root 用户。
 
 安装Bind
+
 查看本机内bind 软件情况
 
-12345678[root@CentOS7 ~]# rpm -qa | grep ^bindbi...
+12345678[root@CentOS7 ~]# rpm -qa | grep ^bin...
         </div>
     </a>
     
@@ -465,7 +488,7 @@ user 用户为root 用户。
             负载均衡（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/78/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -473,10 +496,14 @@ user 用户为root 用户。
                 LVS四层负载均衡器
             </h3>
         <div class="post-content-preview">
-            概诉上节，讨论了负载均衡的常规策略和一般算法负载均衡（1），今天来主要学习一下LVS负载器。
-LVS什么是LVS
+            概诉
+上节，讨论了负载均衡的常规策略和一般算法负载均衡（1），今天来主要学习一下LVS负载器。
+LVS
 什么是LVS
-  LVS是Linux Virtual Server的简称，也就是Linux虚拟服务器，是一个由章文嵩博士发起的自由软件项目，官方站点是：http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux2....
+
+
+什么是LVS
+LVS是Linux Virtual Server的简称，也就是Linux虚拟服务器，是一个由章文嵩博士发起的自由软件项目，官方站点是：http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux...
         </div>
     </a>
     
@@ -499,7 +526,7 @@ LVS什么是LVS
             负载均衡（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/42/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/79/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -510,8 +537,9 @@ LVS什么是LVS
             
 说明：以下大部分内容来自：一篇读懂分布式架构下的负载均衡技术：分类、原理、算法、常见方案等
 
-负载均衡的概念关于“负载均衡”的解释，百度词条里：负载均衡，英文叫Load Balance，意思就是将请求或者数据分摊到多个操作单元上进行执行，共同完成工作任务。
-负载均衡（Load Balance）建立在现有网络结构之上，它提供了一种廉价有效透明的方法扩展网络设备和服务器的带宽、增加吞吐量、加强...
+负载均衡的概念
+关于“负载均衡”的解释，百度词条里：负载均衡，英文叫Load Balance，意思就是将请求或者数据分摊到多个操作单元上进行执行，共同完成工作任务。
+负载均衡（Load Balance）建立在现有网络结构之上，它提供了一种廉价有效透明的方法扩展网络设备和服务器的带宽、增加吞吐量、加...
         </div>
     </a>
     
@@ -534,7 +562,7 @@ LVS什么是LVS
             Redis系列之集群搭建
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/66/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/100/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -542,12 +570,16 @@ LVS什么是LVS
                 
             </h3>
         <div class="post-content-preview">
-            Redis集群模式Redis 主从集群
-(1) 读写分离在redis主从架构中，Master节点负责处理写请求，Slave节点只处理读请求。对于写请求少，读请求多的场景，例如电商详情页，通过这种读写分离的操作可以大幅提高并发量，通过增加redis从节点的数量可以使得redis的QPS达到10W+。
+            Redis集群模式
+Redis 主从集群
+
+(1) 读写分离
+在redis主从架构中，Master节点负责处理写请求，Slave节点只处理读请求。对于写请求少，读请求多的场景，例如电商详情页，通过这种读写分离的操作可以大幅提高并发量，通过增加redis从节点的数量可以使得redis的QPS达到10W+。
 
 
 
-(2) 主从同步Master节点接收到写请求并处理后，需要告知Slave节点数据发生了改...
+(2) 主从同步
+Master节点接收到写请求并处理后，需要告知Slave节点数据...
         </div>
     </a>
     
@@ -570,7 +602,7 @@ LVS什么是LVS
             DNS服务
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/50/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -578,7 +610,10 @@ LVS什么是LVS
                 
             </h3>
         <div class="post-content-preview">
-            简介什么是DNSDomain Name System （缩写：DNS）是互联网的一项服务。它作为将域名和IP地址相互映射的一个分布式数据库，能够使人更方便地访问互联网。他的的作用非常简单，就是根据域名查出IP地址。你可以把它想象成一本巨大的电话本。举例来说，如果你要访问域名math.stackexchange.com，首先要通过DNS查出它的IP地址是151.101.129.69， DNS使...
+            简介
+什么是DNS
+Domain Name System （缩写：DNS）是互联网的一项服务。它作为将域名和IP地址相互映射的一个分布式数据库，能够使人更方便地访问互联网。他的的作用非常简单，就是根据域名查出IP地址。你可以把它想象成一本巨大的电话本。
+举例来说，如果你要访问域名math.stackexchange.com，首先要通过DNS查出它的IP地址是151.101.129.69， D...
         </div>
     </a>
     
@@ -840,8 +875,6 @@ LVS什么是LVS
             
         
             
-        
-            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
@@ -852,9 +885,11 @@ LVS什么是LVS
             
         
             
+            <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
+            
         
             
-            <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
+        
             
         
             

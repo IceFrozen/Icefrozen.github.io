@@ -145,14 +145,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -215,15 +215,20 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概诉">概诉</span></h2><p>上节，讨论了负载均衡的常规策略和一般算法<a href="https://icefrozen.github.io/article/lvs-1/" target="_blank" rel="noopener">负载均衡（1）</a>，今天来主要学习一下LVS负载器。</p>
-<h2><span id="lvs">LVS</span></h2><h3><span id="什么是lvs">什么是LVS</span></h3><ul>
-<li><p>什么是LVS</p>
-<p>  LVS是<strong>Linux Virtual Server</strong>的简称，也就是<strong>Linux虚拟服务器</strong>，是一个由章文嵩博士发起的自由软件项目，官方站点是：<a href="http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux2.4内核以前，使用LVS时必须重新编译内核以支持LVS功能模块，但是从Linux2.4内核心之后，已经完全内置了LVS的各个功能模块，无需给内核打任何补丁，可以直接使用LVS提供的各种功能。" target="_blank" rel="noopener">http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux2.4内核以前，使用LVS时必须重新编译内核以支持LVS功能模块，但是从Linux2.4内核心之后，已经完全内置了LVS的各个功能模块，无需给内核打任何补丁，可以直接使用LVS提供的各种功能。</a></p>
-<p>  <strong>使用LVS技术要达到的目标是</strong>：通过LVS提供的负载均衡技术和Linux操作系统实现一个高性能，高可用的服务器群集，它具有良好的可靠性、可扩展性和可操作性。从而以低廉的成本实现最优的服务性能。</p>
-<p>  <strong>LVS是四层负载技术</strong> 关于四层负载均衡我已经在上一篇博客当中<a href="https://icefrozen.github.io/article/lvs-1/" target="_blank" rel="noopener">负载均衡（1）</a>做了详细说明，这里就不在赘述。</p>
+                <h2><span id="概诉">概诉</span></h2>
+<p>上节，讨论了负载均衡的常规策略和一般算法<a href="https://icefrozen.github.io/article/lvs-1/" target="_blank" rel="noopener">负载均衡（1）</a>，今天来主要学习一下LVS负载器。</p>
+<h2><span id="lvs">LVS</span></h2>
+<h3><span id="什么是lvs">什么是LVS</span></h3>
+<ul>
+<li>
+<p>什么是LVS</p>
+<p>LVS是<strong>Linux Virtual Server</strong>的简称，也就是<strong>Linux虚拟服务器</strong>，是一个由章文嵩博士发起的自由软件项目，官方站点是：<a href="http://www.linuxvirtualserver.org" target="_blank" rel="noopener">http://www.linuxvirtualserver.org</a>。现在LVS已经是Linux标准内核的一部分，在Linux2.4内核以前，使用LVS时必须重新编译内核以支持LVS功能模块，但是从Linux2.4内核心之后，已经完全内置了LVS的各个功能模块，无需给内核打任何补丁，可以直接使用LVS提供的各种功能。</p>
+<p><strong>使用LVS技术要达到的目标是</strong>：通过LVS提供的负载均衡技术和Linux操作系统实现一个高性能，高可用的服务器群集，它具有良好的可靠性、可扩展性和可操作性。从而以低廉的成本实现最优的服务性能。</p>
+<p><strong>LVS是四层负载技术</strong> 关于四层负载均衡我已经在上一篇博客当中<a href="https://icefrozen.github.io/article/lvs-1/" target="_blank" rel="noopener">负载均衡（1）</a>做了详细说明，这里就不在赘述。</p>
 </li>
-<li><p>其他的负载均衡软件</p>
-<p>  除了LVS 之外，还有一些其他的常见的负载均衡软件， 成熟的架构有<strong>LVS+Keepalived、Nginx+Keepalived、HAProxy+keepalived</strong>。</p>
+<li>
+<p>其他的负载均衡软件</p>
+<p>除了LVS 之外，还有一些其他的常见的负载均衡软件， 成熟的架构有<strong>LVS+Keepalived、Nginx+Keepalived、HAProxy+keepalived</strong>。</p>
 <ul>
 <li>HAproxy： 是法国人Willy Tarreau开发的一个开源软件，是一款应对客户端10000以上的同时连接的高性能的TCP和HTTP负载均衡器（LB）。其功能是用来提供基于cookie的持久性，基于内容的交换，过载保护的高级流量管制，自动故障切换，以正则表达式为基础的标题控制运行事件，基于Web的报表，高级日志记录以帮助排除故障的应用或网络及其他功能</li>
 <li>nginx/httpd/Tengine/openresty： 常见的http服务器。</li>
@@ -232,19 +237,26 @@
 <li>varnishi： varnish 是非常轻量级,也很强大的一款提供缓存服务的应用.高性能且开源的反向代理服务器和HTTP加速器；</li>
 </ul>
 </li>
-<li><p>Nginx和LVS对比的总结：</p>
+<li>
+<p>Nginx和LVS对比的总结：</p>
 <ul>
-<li><p>Nginx工作在网络的7层，所以它可以针对http应用本身来做分流策略，比如针对域名、目录结构等，相比之下LVS并不具备这样的功能，所以Nginx单凭这点可利用的场合就远多于LVS了；但Nginx有用的这些功能使其可调整度要高于LVS，所以经常要去触碰触碰，触碰多了，人为出问题的几率也就会大。</p>
+<li>
+<p>Nginx工作在网络的7层，所以它可以针对http应用本身来做分流策略，比如针对域名、目录结构等，相比之下LVS并不具备这样的功能，所以Nginx单凭这点可利用的场合就远多于LVS了；但Nginx有用的这些功能使其可调整度要高于LVS，所以经常要去触碰触碰，触碰多了，人为出问题的几率也就会大。</p>
 </li>
-<li><p>Nginx对网络稳定性的依赖较小，理论上只要ping得通，网页访问正常，Nginx就能连得通，这是Nginx的一大优势！Nginx同时还能区分内外网，如果是同时拥有内外网的节点，就相当于单机拥有了备份线路；LVS就比较依赖于网络环境，目前来看服务器在同一网段内并且LVS使用direct方式分流，效果较能得到保证。另外注意，LVS需要向托管商至少申请多一个ip来做Visual IP，貌似是不能用本身的IP来做VIP的。要做好LVS管理员，确实得跟进学习很多有关网络通信方面的知识，就不再是一个HTTP那么简单了。</p>
+<li>
+<p>Nginx对网络稳定性的依赖较小，理论上只要ping得通，网页访问正常，Nginx就能连得通，这是Nginx的一大优势！Nginx同时还能区分内外网，如果是同时拥有内外网的节点，就相当于单机拥有了备份线路；LVS就比较依赖于网络环境，目前来看服务器在同一网段内并且LVS使用direct方式分流，效果较能得到保证。另外注意，LVS需要向托管商至少申请多一个ip来做Visual IP，貌似是不能用本身的IP来做VIP的。要做好LVS管理员，确实得跟进学习很多有关网络通信方面的知识，就不再是一个HTTP那么简单了。</p>
 </li>
-<li><p>Nginx安装和配置比较简单，测试起来也很方便，因为它基本能把错误用日志打印出来。LVS的安装和配置、测试就要花比较长的时间了；LVS对网络依赖比较大，很多时候不能配置成功都是因为网络问题而不是配置问题，出了问题要解决也相应的会麻烦得多。</p>
+<li>
+<p>Nginx安装和配置比较简单，测试起来也很方便，因为它基本能把错误用日志打印出来。LVS的安装和配置、测试就要花比较长的时间了；LVS对网络依赖比较大，很多时候不能配置成功都是因为网络问题而不是配置问题，出了问题要解决也相应的会麻烦得多。</p>
 </li>
-<li><p>Nginx也同样能承受很高负载且稳定，但负载度和稳定度差LVS还有几个等级：Nginx处理所有流量所以受限于机器IO和配置；本身的bug也还是难以避免的。</p>
+<li>
+<p>Nginx也同样能承受很高负载且稳定，但负载度和稳定度差LVS还有几个等级：Nginx处理所有流量所以受限于机器IO和配置；本身的bug也还是难以避免的。</p>
 </li>
-<li><p>Nginx可以检测到服务器内部的故障，比如根据服务器处理网页返回的状态码、超时等等，并且会把返回错误的请求重新提交到另一个节点。目前LVS中 ldirectd也能支持针对服务器内部的情况来监控，但LVS的原理使其不能重发请求。比如用户正在上传一个文件，而处理该上传的节点刚好在上传过程中出现故障，Nginx会把上传切到另一台服务器重新处理，而LVS就直接断掉了，如果是上传一个很大的文件或者很重要的文件的话，用户可能会因此而恼火。</p>
+<li>
+<p>Nginx可以检测到服务器内部的故障，比如根据服务器处理网页返回的状态码、超时等等，并且会把返回错误的请求重新提交到另一个节点。目前LVS中 ldirectd也能支持针对服务器内部的情况来监控，但LVS的原理使其不能重发请求。比如用户正在上传一个文件，而处理该上传的节点刚好在上传过程中出现故障，Nginx会把上传切到另一台服务器重新处理，而LVS就直接断掉了，如果是上传一个很大的文件或者很重要的文件的话，用户可能会因此而恼火。</p>
 </li>
-<li><p>Nginx对请求的异步处理可以帮助节点服务器减轻负载，假如使用 apache直接对外服务，那么出现很多的窄带链接时apache服务器将会占用大 量内存而不能释放，使用多一个Nginx做apache代理的话，这些窄带链接会被Nginx挡住，apache上就不会堆积过多的请求，这样就减少了相当多的资源占用。这点使用squid也有相同的作用，即使squid本身配置为不缓存，对apache还是有很大帮助的。</p>
+<li>
+<p>Nginx对请求的异步处理可以帮助节点服务器减轻负载，假如使用 apache直接对外服务，那么出现很多的窄带链接时apache服务器将会占用大 量内存而不能释放，使用多一个Nginx做apache代理的话，这些窄带链接会被Nginx挡住，apache上就不会堆积过多的请求，这样就减少了相当多的资源占用。这点使用squid也有相同的作用，即使squid本身配置为不缓存，对apache还是有很大帮助的。</p>
 </li>
 </ul>
 </li>
@@ -254,34 +266,42 @@
 <p>Nginx可作为LVS节点机器使用，一是可以利用Nginx的功能，二是可以利用Nginx的性能。当然这一层面也可以直接使用squid，squid的功能方面就比Nginx弱不少了，性能上也有所逊色于Nginx。Nginx也可作为中层代理使用，这一层面Nginx基本上无对手，唯一可以撼动Nginx的就只有lighttpd了，不过lighttpd目前还没有能做到 Nginx完全的功能，配置也不那么清晰易读。另外，中层代理的IP也是重要的，所以中层代理也拥有一个VIP和LVS是最完美的方案了。具体的应用还得具体分析，如果是比较小的网站（日PV小于1000万），用Nginx就完全可以了，如果机器也不少，可以用DNS轮询，LVS所耗费的机器还是比较多的；大型网站或者重要的服务，机器不发愁的时候，要多多考虑利用LVS。</p>
 <p>现在对网络负载均衡的使用是随着网站规模的提升根据不同的阶段来使用不同的技术：</p>
 <ul>
-<li><p>第一阶段：利用Nginx或HAProxy进行单点的负载均衡，这一阶段服务器规模刚脱离开单服务器、单数据库的模式，需要一定的负载均衡，但是仍然规模较小没有专业的维护团队来进行维护，也没有需要进行大规模的网站部署。这样利用Nginx或HAproxy就是第一选择，此时这些东西上手快， 配置容易，在七层之上利用HTTP协议就可以。这时是第一选择。</p>
+<li>
+<p>第一阶段：利用Nginx或HAProxy进行单点的负载均衡，这一阶段服务器规模刚脱离开单服务器、单数据库的模式，需要一定的负载均衡，但是仍然规模较小没有专业的维护团队来进行维护，也没有需要进行大规模的网站部署。这样利用Nginx或HAproxy就是第一选择，此时这些东西上手快， 配置容易，在七层之上利用HTTP协议就可以。这时是第一选择。</p>
 </li>
-<li><p>第二阶段：随着网络服务进一步扩大，这时单点的Nginx已经不能满足，这时使用LVS或者商用Array就是首要选择，Nginx此时就作为LVS或者Array的节点来使用，具体LVS或Array的是选择是根据公司规模和预算来选择，Array的应用交付功能非常强大，本人在某项目中使用过，性价比也远高于F5，商用首选，但是一般来说这阶段相关人才跟不上业务的提升，所以购买商业负载均衡已经成为了必经之路。</p>
+<li>
+<p>第二阶段：随着网络服务进一步扩大，这时单点的Nginx已经不能满足，这时使用LVS或者商用Array就是首要选择，Nginx此时就作为LVS或者Array的节点来使用，具体LVS或Array的是选择是根据公司规模和预算来选择，Array的应用交付功能非常强大，本人在某项目中使用过，性价比也远高于F5，商用首选，但是一般来说这阶段相关人才跟不上业务的提升，所以购买商业负载均衡已经成为了必经之路。</p>
 </li>
-<li><p>第三阶段：这时网络服务已经成为主流产品，此时随着公司知名度也进一步扩展，相关人才的能力以及数量也随之提升，这时无论从开发适合自身产品的定制，以及降低成本来讲开源的LVS，已经成为首选，这时LVS会成为主流。</p>
+<li>
+<p>第三阶段：这时网络服务已经成为主流产品，此时随着公司知名度也进一步扩展，相关人才的能力以及数量也随之提升，这时无论从开发适合自身产品的定制，以及降低成本来讲开源的LVS，已经成为首选，这时LVS会成为主流。</p>
 </li>
 </ul>
 <p>最终形成比较理想的基本架构为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">         </span><br><span class="line">    Array/LVS - ( keepalived) - Array/LVS   （四层负载层）</span><br><span class="line">---------------------------------------------        </span><br><span class="line">    Nginx/Haproxy  Nginx/Haproxy ...        （七层代理层）</span><br><span class="line">---------------------------------------------</span><br><span class="line">    Squid/Varnish  Squid/Varnish ...        （缓存CDN层）</span><br><span class="line">----------------------------------------------</span><br><span class="line">    AppServer        AppServer   ...         （应用层侧）</span><br></pre></td></tr></table></figure>
-<h2><span id="lvs详解">LVS详解</span></h2><h3><span id="lvs-优点">LVS 优点</span></h3><ul>
+<h2><span id="lvs详解">LVS详解</span></h2>
+<h3><span id="lvs-优点">LVS 优点</span></h3>
+<ul>
 <li>高并发连接：LVS基于内核网络层面工作，有超强的承载能力和并发处理能力。单台LVS负载均衡器，可支持上万并发连接。</li>
 <li>稳定性强：是工作在网络4层之上仅作分发之用，这个特点也决定了它在负载均衡软件里的性能最强，稳定性最好，对内存和cpu资源消耗极低。</li>
 <li>成本低廉：硬件负载均衡器少则十几万，多则几十万上百万，LVS只需一台服务器和就能免费部署使用，性价比极高。</li>
 <li>配置简单：LVS配置非常简单，仅需几行命令即可完成配置，也可写成脚本进行管理。</li>
 <li>支持多种算法：支持多种论调算法，可根据业务场景灵活调配进行使用</li>
 </ul>
-<h3><span id="lvs概念">LVS概念</span></h3><ul>
-<li><p>（1）核心组件：</p>
+<h3><span id="lvs概念">LVS概念</span></h3>
+<ul>
+<li>
+<p>（1）核心组件：</p>
 <ul>
 <li><strong>ipvsadm</strong>：用户空间的命令行工具，也就是LVS的管理工具，用于管理集群服务及集群服务上的RS等；</li>
 <li><strong>ipvs</strong>：工作于内核上的<strong>netfilter INPUT</strong>钩子之上的程序，可根据用户定义的集群实现请求转发, ipvs可以将管理工具的命令转化为系统调用，通过写入规则来到达到调度的问题。</li>
 </ul>
 </li>
-<li><p>（2）专业术语</p>
+<li>
+<p>（2）专业术语</p>
 <ul>
 <li>VS：Virtual Server   #虚拟服务器</li>
 <li>Director, Balancer    #负载均衡器、分发器</li>
-<li>RS：Real Server   #后端请求处理服务器 </li>
+<li>RS：Real Server   #后端请求处理服务器</li>
 <li>CIP: Client IP    #用户端IP</li>
 <li>VIP：Director Virtual IP   #负载均衡器虚拟IP</li>
 <li>DIP：Director IP   #负载均衡器IP</li>
@@ -289,7 +309,9 @@
 </ul>
 </li>
 </ul>
-<h2><span id="lvs原理之网络">LVS原理之网络</span></h2><h3><span id="netfilter"><strong>NETFILTER</strong></span></h3><p>netfilter是Linux系统中真正的防火墙，它是内核的一部分，所以，如果我们想要防火墙能够达到”防火”的目的，则需要在内核中设置关卡，所有进出的报文都要通过这些关卡，经过检查后，符合放行条件的才能放行，符合阻拦条件的则需要被阻止，于是，就出现了<strong>input</strong>关卡和 <strong>output</strong> 关卡</p>
+<h2><span id="lvs原理之网络">LVS原理之网络</span></h2>
+<h3><span id="netfilter"><strong>NETFILTER</strong></span></h3>
+<p>netfilter是Linux系统中真正的防火墙，它是内核的一部分，所以，如果我们想要防火墙能够达到&quot;防火&quot;的目的，则需要在内核中设置关卡，所有进出的报文都要通过这些关卡，经过检查后，符合放行条件的才能放行，符合阻拦条件的则需要被阻止，于是，就出现了<strong>input</strong>关卡和 <strong>output</strong> 关卡</p>
 <p>当数据包流向本机的时候，如果ip地址不是本机，则要进行转发，当本机的内核支持 <strong>IP_FORWARD</strong>时，我们可以将报文转发给其他服务器，转发特性有三个概念， PREROUTING、FORWARD、POSTROUTING， 分别是<strong>路由前、转发、路由后</strong>。</p>
 <p>即内核中的如下五个关卡：</p>
 <ul>
@@ -301,10 +323,15 @@
 </ul>
 <p><img src="/article/lvs-2/lvs-2-1610803269124.png" alt></p>
 <p>如果报文需要转发，那么报文则不会经过input链发往用户空间，而是直接在内核空间中经过forward链和postrouting链转发出去的。</p>
-<h3><span id="nat"><strong>NAT</strong></span></h3><ul>
-<li><p>什么是NAT<br>NAT英文全称是“Network Address Translation”，中文意思是“网络地址转换”，它是一个IETF(Internet Engineering Task Force, Internet工程任务组)标准，允许一个整体机构以一个公用IP（Internet Protocol）地址出现在Internet上。顾名思义，它是一种把内部私有网络地址（IP地址）翻译成合法网络IP地址的技术。因此我们可以认为，NAT在一定程度上，能够有效的解决公网地址不足的问题。</p>
+<h3><span id="nat"><strong>NAT</strong></span></h3>
+<ul>
+<li>
+<p>什么是NAT<br>
+NAT英文全称是“Network Address Translation”，中文意思是“网络地址转换”，它是一个IETF(Internet Engineering Task Force, Internet工程任务组)标准，允许一个整体机构以一个公用IP（Internet Protocol）地址出现在Internet上。顾名思义，它是一种把内部私有网络地址（IP地址）翻译成合法网络IP地址的技术。因此我们可以认为，NAT在一定程度上，能够有效的解决公网地址不足的问题。</p>
 </li>
-<li><p>NAT分类<br>NAT有三种类型：<strong>静态NAT(Static NAT)、动态地址NAT(Pooled NAT)、网络地址端口转换NAPT（Port-Level NAT）</strong>。</p>
+<li>
+<p>NAT分类<br>
+NAT有三种类型：<strong>静态NAT(Static NAT)、动态地址NAT(Pooled NAT)、网络地址端口转换NAPT（Port-Level NAT）</strong>。</p>
 </li>
 </ul>
 <p>其中，网络地址端口转换NAPT（Network Address Port Translation）则是把内部地址映射到外部网络的一个IP地址的不同端口上。它可以将中小型的网络隐藏在一个合法的IP地址后面。NAPT与 动态地址NAT不同，它将内部连接映射到外部网络中的一个单独的IP地址上，同时在该地址上加上一个由NAT设备选定的端口号。</p>
@@ -317,16 +344,21 @@
 <li>NAT 工作原理</li>
 </ul>
 <p>1、 <strong>地址转换</strong></p>
-<p>NAT的基本工作原理是，当私有网主机和公共网主机通信的IP包经过NAT网关时，将IP包中的源IP或目的IP在私有IP和NAT的公共IP之间进行转换。<br>我们来举个例子：</p>
+<p>NAT的基本工作原理是，当私有网主机和公共网主机通信的IP包经过NAT网关时，将IP包中的源IP或目的IP在私有IP和NAT的公共IP之间进行转换。<br>
+我们来举个例子：</p>
 <p><img src="/article/lvs-2/lvs-2-1610803713892.png" alt></p>
 <p>如图所示，NAT网关有2个网络端口，其中公共网络端口的IP地址是统一分配的公共 IP，为202.20.65.5；</p>
 <p>私有网络端口的IP地址是保留地址，为192.168.1.1。私有网中的主机192.168.1.2向公共网中的主机202.20.65.4发送了1个IP包(Dst=202.20.65.4,Src=192.168.1.2)。</p>
 <p>过程如下：</p>
 <ul>
-<li>当IP包经过NAT网关时，<strong>NAT Gateway</strong>会将IP包的源IP转换为NAT Gateway的公共IP并转发到公共网，此时IP包（Dst=202.20.65.4，Src=202.20.65.5）中已经不含任何私有网IP的信息。</li>
-<li><p>由于IP包的源IP已经被转换成NAT Gateway的公共IP，Web Server发出的响应IP包（Dst= 202.20.65.5,Src=202.20.65.4）将被发送到NAT Gateway。</p>
+<li>
+<p>当IP包经过NAT网关时，<strong>NAT Gateway</strong>会将IP包的源IP转换为NAT Gateway的公共IP并转发到公共网，此时IP包（Dst=202.20.65.4，Src=202.20.65.5）中已经不含任何私有网IP的信息。</p>
 </li>
-<li><p>NAT Gateway会将IP包的目的IP转换成私有网中主机的IP，然后将IP包（Des=192.168.1.2，Src=202.20.65.4）转发到私有网。对于通信双方而言，这种地址的转换过程是完全透明的。转换示意图如下。</p>
+<li>
+<p>由于IP包的源IP已经被转换成NAT Gateway的公共IP，Web Server发出的响应IP包（Dst= 202.20.65.5,Src=202.20.65.4）将被发送到NAT Gateway。</p>
+</li>
+<li>
+<p>NAT Gateway会将IP包的目的IP转换成私有网中主机的IP，然后将IP包（Des=192.168.1.2，Src=202.20.65.4）转发到私有网。对于通信双方而言，这种地址的转换过程是完全透明的。转换示意图如下。</p>
 </li>
 </ul>
 <p><img src="/article/lvs-2/lvs-2-1610804025618.png" alt></p>
@@ -336,7 +368,8 @@
 <p>NAT Gateway在收到响应包后，就需要判断将数据包转发给谁。此时如果子网内仅有少量客户机，可以用静态NAT手工指定；但如果内网有多台客户机，并且各自访问不同网站，这时候就需要连接跟踪（connection track）。如下图所示</p>
 <p><img src="/article/lvs-2/lvs-2-1610804515877.png" alt></p>
 <p>在NAT Gateway收到客户机发来的请求包后，做源地址转换，并且将该连接记录保存下来，当NAT Gateway收到服务器来的响应包后，查找Track Table，确定转发目标，做目的地址转换，转发给客户机。</p>
-<p>3、 <strong>端口转换</strong><br>当仅有一台客户机访问服务器时，NAT Gateway只须更改数据包的源IP或目的IP即可正常通讯。但是如果Client A和Client B同时访问Web Server，那么当NAT Gateway收到响应包的时候，就无法判断将数据包转发给哪台客户机，如下图所示</p>
+<p>3、 <strong>端口转换</strong><br>
+当仅有一台客户机访问服务器时，NAT Gateway只须更改数据包的源IP或目的IP即可正常通讯。但是如果Client A和Client B同时访问Web Server，那么当NAT Gateway收到响应包的时候，就无法判断将数据包转发给哪台客户机，如下图所示</p>
 <p><img src="/article/lvs-2/lvs-2-1610804667338.png" alt></p>
 <p>此时，NAT Gateway会在Connection Track中加入端口信息加以区分。如果两客户机访问同一服务器的源端口不同,我们知道TCP链接中，当两台主机要进行通信时候，客户机会在本机的1-65535上随机挑选一个端口作为client端的通信端口。所以，当数据包到大NAT Gateway的时候，是带着本机的端口的。</p>
 <p>那么在Track Table里加入端口信息即可区分，如果源端口正好相同，那么在时行SNAT和DNAT的同时对源端口也要做相应的转换，如下图所示。</p>
@@ -385,18 +418,23 @@
 <p>知道要通bai讯的IP地址后，PC1 为了获取PC2 的MAC地址，需要发送请求，但是不能一个一个请求，效率太慢，所以发送广播，帧目的地址FFFFFFFFFFFF 在同一个广播域的所有设备都能收到这个 请求，如果自己的IP 是对方请求的IP地址就把自己的MACdu复出去。流程如下：</p>
 <p>例如：192.168.3.1 要向 192.168.3.2 发送一个数据包，但是需要192.168.6.2 的MAC地址，那么他要想交换机询问</p>
 <ul>
-<li><p>发出ARP广播包</p>
-<p>  <img src="/article/lvs-2/lvs-2-1610814066477.png" alt></p>
+<li>
+<p>发出ARP广播包</p>
+<p><img src="/article/lvs-2/lvs-2-1610814066477.png" alt></p>
 </li>
-<li><p>交换机发出广播，上报IPMAC地址并记录在案</p>
-<p>  <img src="/article/lvs-2/lvs-2-1610814086495.png" alt></p>
-<p>  <img src="/article/lvs-2/lvs-2-1610814161452.png" alt></p>
+<li>
+<p>交换机发出广播，上报IPMAC地址并记录在案</p>
+<p><img src="/article/lvs-2/lvs-2-1610814086495.png" alt></p>
+<p><img src="/article/lvs-2/lvs-2-1610814161452.png" alt></p>
 </li>
-<li><p>构建自己的记录表之后，再给192.168.3.1 发送MAC地址</p>
-<p>  <img src="/article/lvs-2/lvs-2-1610814195580.png" alt></p>
+<li>
+<p>构建自己的记录表之后，再给192.168.3.1 发送MAC地址</p>
+<p><img src="/article/lvs-2/lvs-2-1610814195580.png" alt></p>
 </li>
 </ul>
-<h2><span id="lvs-工作模式">LVS 工作模式</span></h2><h3><span id="lvs-nat模式">LVS NAT模式</span></h3><p><img src="/article/lvs-2/lvs-2-1610848992199.png" alt></p>
+<h2><span id="lvs-工作模式">LVS 工作模式</span></h2>
+<h3><span id="lvs-nat模式">LVS NAT模式</span></h3>
+<p><img src="/article/lvs-2/lvs-2-1610848992199.png" alt></p>
 <p>LVS NAT原理：</p>
 <p>用户请求LVS到达director，director将请求的报文的目的IP改为RIP，同时将报文的目标端口也改为realserver的相应端口，最后将报文发送到realserver上，realserver将数据返回给director，director再把数据发送给用户</p>
 <p>特点：</p>
@@ -407,12 +445,13 @@
 <li>(4) VS必须为Linux，RS可以是任意的OS；</li>
 <li>(5) RS的RIP与Director的DIP必须在同一IP网络, 相同的网关已经约束了RS 和 VS 必须在相同固定网络。</li>
 </ul>
-<h3><span id="lvs-dr模式">LVS DR模式</span></h3><p><img src="/article/lvs-2/lvs-2-1610849667170.png" alt></p>
+<h3><span id="lvs-dr模式">LVS DR模式</span></h3>
+<p><img src="/article/lvs-2/lvs-2-1610849667170.png" alt></p>
 <ul>
 <li>LVS DR原理：</li>
 </ul>
 <p>用户请求LVS到达director，director将请求的报文的目的MAC地址改为后端的realserver的MAC地址，目的IP为VIP(不变)，源IP为client IP地址(不变)，然后director将报文发送到realserver，realserver检测到目的地址为自己本地的VIP，如果在同一网段，将请求直接返回给用户，如果用户跟realserver不在同一个网段，则需要通过网关返回给用户。</p>
-<p>这里问题： </p>
+<p>这里问题：</p>
 <ul>
 <li>1、 要让RS 接到的数据包源地址 VIP, 想要相应的RS相应该包，那么RS上也必须有VIP,否则RS会丢弃该报文。</li>
 <li>2、 如果RS上也有VIP 那么如何保证，当目标地址是VIP的包只会发送给 VS 而不会发送给RS 呢?</li>
@@ -421,28 +460,40 @@
 <p>RS 的网卡可以配置多个IP地址，但是MAC地址只有一个，当数据包通过交换设备要进行转发的时候是要封装MAC包，那么我们只需要让转发设备只知道 VS 的MAC 地址，而不知道RS 的MAC地址不叫好了？也就是说，转发设备在询问 VIP 的MAC地址的时候，只有VS响应，其他人不响应，就可以解决问题。</p>
 <p>基于这个思想，我们得到了一下特性：</p>
 <ul>
-<li><p>(1) 确保前端路由器将目标IP为VIP的请求报文一定会发送给Director；</p>
-<p>  解决方案：</p>
+<li>
+<p>(1) 确保前端路由器将目标IP为VIP的请求报文一定会发送给Director；</p>
+<p>解决方案：</p>
 <ul>
 <li>RS静态绑定VIP；</li>
 <li>禁止RS响应VIP的ARP请求（修改各RS的内核参数或者iptabls规则过滤相应，并把VIP配置在特定的接口上实现禁止其响应）；</li>
 </ul>
 </li>
-<li><p>(2) RS的RIP可以使用私有地址，也可以使用公网地址；</p>
+<li>
+<p>(2) RS的RIP可以使用私有地址，也可以使用公网地址；</p>
 </li>
-<li>(3) RS跟Director必须在同一物理网络中（VS的下一条是修改MAC的，所以必须在同一个物理网络中）；</li>
-<li>(4) 请求报文必须由Director调度，但响应报文必须不能经由Director；</li>
-<li>(5) 不支持端口映射；（由于是修改MAC,因此不支持端口映射）</li>
-<li>(6) 各RS可以使用大多数的OS；</li>
+<li>
+<p>(3) RS跟Director必须在同一物理网络中（VS的下一条是修改MAC的，所以必须在同一个物理网络中）；</p>
+</li>
+<li>
+<p>(4) 请求报文必须由Director调度，但响应报文必须不能经由Director；</p>
+</li>
+<li>
+<p>(5) 不支持端口映射；（由于是修改MAC,因此不支持端口映射）</p>
+</li>
+<li>
+<p>(6) 各RS可以使用大多数的OS；</p>
+</li>
 </ul>
-<h3><span id="lvs-fullnat">LVS FULLNAT</span></h3><p><img src="/article/lvs-2/lvs-2-1610850532583.png" alt></p>
+<h3><span id="lvs-fullnat">LVS FULLNAT</span></h3>
+<p><img src="/article/lvs-2/lvs-2-1610850532583.png" alt></p>
 <ul>
 <li>FULLNAT模式也不需要DIP和RIP在同一网段</li>
 <li>FULLNAT和NAT相比的话：会保证RS的回包一定可到达LVS</li>
 <li>FULLNAT需要更新源IP，所以性能正常比NAT要低一点</li>
 <li>FULLNAT同样VS 会成为瓶颈</li>
 </ul>
-<h3><span id="lvs-tun原理">LVS TUN原理</span></h3><p><img src="/article/lvs-2/lvs-2-1610850637506.png" alt></p>
+<h3><span id="lvs-tun原理">LVS TUN原理</span></h3>
+<p><img src="/article/lvs-2/lvs-2-1610850637506.png" alt></p>
 <ul>
 <li>LVS TUN原理：</li>
 </ul>
@@ -461,7 +512,7 @@
 <li>(4) 不支持端口映射；</li>
 <li>(5) RS的OS必须支持IP隧道功能；</li>
 </ul>
-<h3><span id="三种类型的对比">三种类型的对比</span></h3><div class="table-container">
+<h3><span id="三种类型的对比">三种类型的对比</span></h3>
 <table>
 <thead>
 <tr>
@@ -472,14 +523,16 @@
 </thead>
 <tbody>
 <tr>
-<td></td>
+<td>建议小规模使用</td>
+<td>建议大规模使用，也是现在较多使用场景的方法</td>
+<td>lvs-tun模型比较少用，因为他不能实现全局负载均衡，不能根据用户区域的距离来挑选最近的机房。这个最多为了实现异地容灾来实现的。比方说日本的机房地震了，而此时美国的机房仍然可使用，那么只要将指向到美国机房即可。而一般只有这种场景下才会用到隧道机制</td>
 </tr>
 </tbody>
 </table>
-</div>
-<p>建议小规模使用 | 建议大规模使用，也是现在较多使用场景的方法|lvs-tun模型比较少用，因为他不能实现全局负载均衡，不能根据用户区域的距离来挑选最近的机房。这个最多为了实现异地容灾来实现的。比方说日本的机房地震了，而此时美国的机房仍然可使用，那么只要将指向到美国机房即可。而一般只有这种场景下才会用到隧道机制</p>
-<h2><span id="lvs-负载算法">LVS 负载算法</span></h2><p>LVS算法分为静态方法和动态方法</p>
-<h3><span id="静态方法">静态方法</span></h3><p>仅根据调度算法本身，不考虑背后服务器的负载</p>
+<h2><span id="lvs-负载算法">LVS 负载算法</span></h2>
+<p>LVS算法分为静态方法和动态方法</p>
+<h3><span id="静态方法">静态方法</span></h3>
+<p>仅根据调度算法本身，不考虑背后服务器的负载</p>
 <ul>
 <li><strong>rr(round robin) 轮询算法</strong></li>
 </ul>
@@ -495,21 +548,28 @@
 <ul>
 <li><strong>dh(destination hashing)目标地址hash</strong></li>
 </ul>
-<p>主要用于实现当你的内部主机上有多个防火墙出口时有用或者正向web代理，负载均衡内网用户对互联网的请求。 </p>
-<h3><span id="动态方法">动态方法</span></h3><p>根据算法及各RS当前的负载状况进行调度 态通常由活动链接（active），非活动链接（inactive）和权重来计算。</p>
+<p>主要用于实现当你的内部主机上有多个防火墙出口时有用或者正向web代理，负载均衡内网用户对互联网的请求。</p>
+<h3><span id="动态方法">动态方法</span></h3>
+<p>根据算法及各RS当前的负载状况进行调度 态通常由活动链接（active），非活动链接（inactive）和权重来计算。</p>
 <ul>
 <li><strong>lc(least connection)最少连接</strong></li>
 </ul>
-<p>通过监控后端RS的连接数，根据TCP协议中的某些计数器来判断。将请求调度到已建立的连接数最少后端的真实服务器上。<br>计算方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Overhead=Active*256+Inactive</span><br><span class="line">Overhead：负载状态</span><br><span class="line">Overhead越小，表示负载越低</span><br></pre></td></tr></table></figure></p>
+<p>通过监控后端RS的连接数，根据TCP协议中的某些计数器来判断。将请求调度到已建立的连接数最少后端的真实服务器上。<br>
+计算方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Overhead=Active*256+Inactive</span><br><span class="line">Overhead：负载状态</span><br><span class="line">Overhead越小，表示负载越低</span><br></pre></td></tr></table></figure>
 <ul>
 <li><strong>wlc(weight lc)加权的lc</strong></li>
 </ul>
-<p>在集群系统中的服务器，如果性能差异较大的情况下，调度器可以根据采用“加权的最少连接”调度算法来提高负载均衡性能，如果权重值较高的RS，将会承接更大比例的连接负载，所以调度器可以根据“加权的最少连接”来判断服务器的负载情况，并动态调整期权重值。<br>计算方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Overhead=(Active*256+Inactive)/weight</span><br></pre></td></tr></table></figure></p>
+<p>在集群系统中的服务器，如果性能差异较大的情况下，调度器可以根据采用“加权的最少连接”调度算法来提高负载均衡性能，如果权重值较高的RS，将会承接更大比例的连接负载，所以调度器可以根据“加权的最少连接”来判断服务器的负载情况，并动态调整期权重值。<br>
+计算方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Overhead=(Active*256+Inactive)/weight</span><br></pre></td></tr></table></figure>
 <ul>
 <li>sed(shortest expertion delay)最短期望延迟</li>
 </ul>
-<p>基于WLC算法，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Overhead = （ACTIVE+1）*256/加权（让权重大的优先接收请求）</span><br></pre></td></tr></table></figure></p>
-<p>不再考虑非活动状态，把当前处于活动状态的数目+1来实现，数目最小的，接受下次请求，+1的目的是为了考虑加权的时候，非活动连<br>接过多缺陷：当权限过大的时候，会倒置空闲服务器一直处于无连接状态。</p>
+<p>基于WLC算法，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Overhead = （ACTIVE+1）*256/加权（让权重大的优先接收请求）</span><br></pre></td></tr></table></figure>
+<p>不再考虑非活动状态，把当前处于活动状态的数目+1来实现，数目最小的，接受下次请求，+1的目的是为了考虑加权的时候，非活动连<br>
+接过多缺陷：当权限过大的时候，会倒置空闲服务器一直处于无连接状态。</p>
 <ul>
 <li><strong>nq(Never Queue)永不排队</strong></li>
 </ul>
@@ -522,7 +582,8 @@
 <li><strong>lblcr(Replicated lblc)带复制功能的lblc，是dh算法的一种改进</strong></li>
 </ul>
 <p>带复制功能的lblc也是针对目标IP地址做负载均衡。主要是根据请求的目标IP找到目标IP对应的服务器组，根据“最小连接”原则，从服务器组中挑选一台服务器。若服务器没有超载，将请求发送到该服务器；若服务器超载，则按“最小连接”原则从这个集群中选出一台服务器，将该服务器加入到服务器组中，将请求发送到该服务器｡同时，当该服务器组有一段时间没有被修改，将最忙的服务器从服务器组中删除，以降低复制的程度。</p>
-<h2><span id="参考">参考</span></h2><ul>
+<h2><span id="参考">参考</span></h2>
+<ul>
 <li><a href="https://www.zhihu.com/column/helloim" target="_blank" rel="noopener">即时通讯技术分享</a></li>
 <li><a href="https://www.cnblogs.com/zhaiyf/p/9051694.html" target="_blank" rel="noopener">四层、七层负载均衡的区别</a></li>
 <li><a href="https://blog.csdn.net/hzhsan/article/details/45038265" target="_blank" rel="noopener">网络地址转换NAT原理（易于理解）</a></li>

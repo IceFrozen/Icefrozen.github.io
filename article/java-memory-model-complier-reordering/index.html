@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -221,45 +221,97 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="前言">前言</span></h2><p>在我的<a href="https://icefrozen.github.io/article/java-memory-model/" target="_blank" rel="noopener">Java内存模型(1)JMM是什么</a> 中我已经阐述了 JMM 是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。</p>
-<h2><span id="内存模型在jvm的应用">内存模型在JVM的应用</span></h2><p>首先，我们再来重温一下，三种重排序。</p>
-<h2><span id="重排序">重排序</span></h2><p>指令重排序<br>在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：</p>
+                <h2><span id="前言">前言</span></h2>
+<p>在我的<a href="https://icefrozen.github.io/article/java-memory-model/" target="_blank" rel="noopener">Java内存模型(1)JMM是什么</a> 中我已经阐述了 JMM 是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。</p>
+<h2><span id="内存模型在jvm的应用">内存模型在JVM的应用</span></h2>
+<p>首先，我们再来重温一下，三种重排序。</p>
+<h2><span id="重排序">重排序</span></h2>
+<p>指令重排序<br>
+在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：</p>
 <ul>
-<li><p>编译器优化的重排序<br>编译器在不改变单线程程序语义的前提下（代码中不包含synchronized关键字），可以重新安排语句的执行顺序。（就是本文要介绍的）</p>
+<li>
+<p>编译器优化的重排序<br>
+编译器在不改变单线程程序语义的前提下（代码中不包含synchronized关键字），可以重新安排语句的执行顺序。（就是本文要介绍的）</p>
 </li>
-<li><p>指令级并行的重排序<br>现代处理器采用了指令级并行技术（Instruction-Level Parallelism， ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序。（具体细节可以参考<a href="https://icefrozen.github.io/article/java-memory-model/" target="_blank" rel="noopener">Java内存模型(1)JMM是什么</a>）</p>
+<li>
+<p>指令级并行的重排序<br>
+现代处理器采用了指令级并行技术（Instruction-Level Parallelism， ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应机器指令的执行顺序。（具体细节可以参考<a href="https://icefrozen.github.io/article/java-memory-model/" target="_blank" rel="noopener">Java内存模型(1)JMM是什么</a>）</p>
 </li>
-<li><p>内存系统的重排序。<br>由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行。（原因请参参考<a href="https://icefrozen.github.io/article/why-memory-barriers-1/" target="_blank" rel="noopener">CPU缓存一致性协议深入理解内存屏障</a>）<br>从java源代码到最终实际执行的指令序列，会分别经历下面三种重排序</p>
+<li>
+<p>内存系统的重排序。<br>
+由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行。（原因请参参考<a href="https://icefrozen.github.io/article/why-memory-barriers-1/" target="_blank" rel="noopener">CPU缓存一致性协议深入理解内存屏障</a>）<br>
+从java源代码到最终实际执行的指令序列，会分别经历下面三种重排序</p>
 </li>
 </ul>
 <p>这里主要分享一下一下编译器优化重排序.</p>
-<h2><span id="编译器重排序">编译器重排序</span></h2><h3><span id="什么是编译器重排序">什么是编译器重排序</span></h3><p>编译器会对高级语言（本文里特指C/C++）的代码进行分析，当编译器认为你的代码可以优化的话，编译器会选择对代码进行优化然后生成汇编代码，当然编译器的优化满足特定的条件，这里要说一下大名鼎鼎的as-if规则：</p>
+<h2><span id="编译器重排序">编译器重排序</span></h2>
+<h3><span id="什么是编译器重排序">什么是编译器重排序</span></h3>
+<p>编译器会对高级语言（本文里特指C/C++）的代码进行分析，当编译器认为你的代码可以优化的话，编译器会选择对代码进行优化然后生成汇编代码，当然编译器的优化满足特定的条件，这里要说一下大名鼎鼎的as-if规则：</p>
 <blockquote>
 <p>Allows any and all code transformations that do not change the observable behavior of the program.</p>
 </blockquote>
 <p>也就是说在不影响这段代码结果的前提下，编译器可以使用任意一种方式对代码进行编译，这也就给了编译器充分的空间对代码进行优化，从而提高代码的运行效率。</p>
-<h3><span id="编译器重排序">编译器重排序</span></h3><p>举个例子,下面是一段简单的C语言代码：</p>
+<h3><span id="编译器重排序">编译器重排序</span></h3>
+<p>举个例子,下面是一段简单的C语言代码：</p>
 <p>环境如下：</p>
 <blockquote>
 <p>inux CentOS7 3.10.0-1127.19.1.el7.x86_64 #1 SMP Tue Aug 25 17:23:54 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux</p>
+</blockquote>
+<blockquote>
 <p>gcc 版本 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC)</p>
 </blockquote>
 <p>我们编译的时候后使用 -O2 进行编译器优化。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// foo.c</span></span><br><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">	a = b + <span class="number">11</span>;</span><br><span class="line">	b = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//编译 </span></span><br><span class="line">gcc -O2 -g3 -o foo.o foo.c</span><br><span class="line"></span><br><span class="line"><span class="comment">//是objdump</span></span><br><span class="line"><span class="meta"># objdump -C -d foo.o | grep -A14 foo</span></span><br><span class="line"></span><br><span class="line">foo.o：     文件格式 elf64-x86<span class="number">-64</span></span><br><span class="line"></span><br><span class="line"><span class="number">0000000000400510</span> &lt;foo&gt;:</span><br><span class="line">  <span class="number">400510</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">1</span>a <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b1a</span>(%rip),%eax        # <span class="number">601030</span> &lt;__TMC_END__&gt;</span><br><span class="line">  <span class="number">400516</span>:	c7 <span class="number">05</span> <span class="number">10</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span> <span class="number">00</span> 	movl   $<span class="number">0x0</span>,<span class="number">0x200b10</span>(%rip)        # <span class="number">601030</span> &lt;__TMC_END__&gt;</span><br><span class="line">  <span class="number">40051</span>d:	<span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line">  <span class="number">400520</span>:	<span class="number">83</span> c0 <span class="number">0b</span>             	add    $<span class="number">0xb</span>,%eax</span><br><span class="line">  <span class="number">400523</span>:	<span class="number">89</span> <span class="number">05</span> <span class="number">0b</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    %eax,<span class="number">0x200b0b</span>(%rip)        # <span class="number">601034</span> &lt;a&gt;</span><br><span class="line">  <span class="number">400529</span>:	c3                   	retq</span><br><span class="line">  <span class="number">40052</span>a:	<span class="number">66</span> <span class="number">0f</span> <span class="number">1f</span> <span class="number">44</span> <span class="number">00</span> <span class="number">00</span>    	nopw   <span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">/// ... 略</span></span><br></pre></td></tr></table></figure>
 <p>当然，我们也可以使用线上的工具进行编译查看 <a href="https://godbolt.org/" target="_blank" rel="noopener">https://godbolt.org/</a></p>
 <p><img src="/article/java-memory-model-complier-reordering/java-memory-model-complier-reordering-1626149586631.png" alt></p>
-<p>我们来解释一下代码：<br>| 编译结果 | 网站结果 | 含义<br>—-| —- | —-<br>0x200b1a(%rip),%eax | movl    b(%rip), %eax | 将rip寄存器里的地址中的值， 赋值给 eax寄存器<br>$0x0,0x200b10(%rip)  | $0, b(%rip) |  将 0 赋值到 rip寄存器里地址<br>$0xb,%eax |  $11, %eax | 将 11 + eax 寄存器里（上面说了是rip寄存器的值）<br>%eax,0x200b0b(%rip)  | %eax, a(%rip) | 将集群器eax 里的值赋值给 rip里地址的区域 </p>
-<p>rip 寄存器涉及寻址，我们这里不做讨论，只要知道<br>1、首先，rip 里存放的是b的地址，b的地址里放着b的初始值<br>2、将b的地址的值赋值给了eax, 然后 将0复制给了rip里地址地址，也就是b, 然后将11 加上 eax 寄存器的值（我们知道，eax是b的初始值），最后，将结果给了rip的地址（此时rip已经执向a的地址） </p>
+<p>我们来解释一下代码：</p>
+<table>
+<thead>
+<tr>
+<th>编译结果</th>
+<th>网站结果</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x200b1a(%rip),%eax</td>
+<td>movl    b(%rip), %eax</td>
+<td>将rip寄存器里的地址中的值， 赋值给 eax寄存器</td>
+</tr>
+<tr>
+<td>$0x0,0x200b10(%rip)</td>
+<td>$0, b(%rip)</td>
+<td>将 0 赋值到 rip寄存器里地址</td>
+</tr>
+<tr>
+<td>$0xb,%eax</td>
+<td>$11, %eax</td>
+<td>将 11 + eax 寄存器里（上面说了是rip寄存器的值）</td>
+</tr>
+<tr>
+<td>%eax,0x200b0b(%rip)</td>
+<td>%eax, a(%rip)</td>
+<td>将集群器eax 里的值赋值给 rip里地址的区域</td>
+</tr>
+</tbody>
+</table>
+<p>rip 寄存器涉及寻址，我们这里不做讨论，只要知道<br>
+1、首先，rip 里存放的是b的地址，b的地址里放着b的初始值<br>
+2、将b的地址的值赋值给了eax, 然后 将0复制给了rip里地址地址，也就是b, 然后将11 加上 eax 寄存器的值（我们知道，eax是b的初始值），最后，将结果给了rip的地址（此时rip已经执向a的地址）</p>
 <p><strong>我们发现，编译得到的汇编代码和我们原本的C语言代码不顺序并不一致，而是相当于如下C语言代码：</strong></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">	b = <span class="number">0</span>;</span><br><span class="line">  a = b + <span class="number">11</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>编译器的本意是提升程序在CPU上的运行性能，更好的使用寄存器以及现代处理器的流水线技术，减少汇编指令的数量，降低程序执行需要的CPU周期，减少CPU读写主存的时间，但是在多核多线程并行的情况下，这种重排序优化就有可能导致共享变量的可见性问题。</p>
 <p>当然编译器的优化也不仅限于对于代码的重排序，编译器还会优化掉它认为不需要的一些变量，同时也会将一些本应去内存中取得数据存入寄存器中，然后下次取得时候就可以直接从寄存器中获取（这样也可能导致多线程中共享变量的可见性问题）。</p>
 <p>当然，as-if规则在单核CPU时代是完全没有问题的，但是随着CPU的发展，出现了可以多核并行的CPU，这时编译器重排序就可能导致一些令人意想不到的问题，这点我们从感性认知上就可以理解，因为在多线程编程中经常会使用一些共享变量来实现不同线程的控制或者数据传输，但是如果编译器把我们精心设计的代码顺序进行了“优化“，就有可能出现我们不希望出现的运行结果</p>
-<h3><span id="编译器优化">编译器优化</span></h3><p>前面我一直想用“优化”这个词，而不是用”重排序”这个词，是因为编译器对于代码的优化不仅限于重排序，编译器同时会删除一些它认为无用的代码，更重要的是，会把一些变量放进寄存器中！</p>
+<h3><span id="编译器优化">编译器优化</span></h3>
+<p>前面我一直想用“优化&quot;这个词，而不是用”重排序”这个词，是因为编译器对于代码的优化不仅限于重排序，编译器同时会删除一些它认为无用的代码，更重要的是，会把一些变量放进寄存器中！</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> run = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (run);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// c 的反馈变代码</span></span><br><span class="line"><span class="number">400500</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">26</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b26</span>(%rip),%eax        # <span class="number">60102</span>c &lt;run&gt;</span><br><span class="line"><span class="number">400506</span>:	<span class="number">85</span> c0                	test   %eax,%eax</span><br><span class="line"><span class="number">400508</span>:	<span class="number">75</span> <span class="number">02</span>                	jne    <span class="number">40050</span>c &lt;foo+<span class="number">0xc</span>&gt;</span><br><span class="line"><span class="number">40050</span>a:	f3 c3                	repz retq</span><br><span class="line"><span class="number">40050</span>c:	eb fe                	jmp    <span class="number">40050</span>c &lt;foo+<span class="number">0xc</span>&gt;</span><br><span class="line"><span class="number">40050</span>e:	<span class="number">66</span> <span class="number">90</span>                	xchg   %ax,%ax</span><br></pre></td></tr></table></figure>
 <p>首先来看一下 几个指令的含义</p>
 <blockquote>
-<p>test a,b是做 AND 运算（虽然通常是用来测试结果是否为零，但不限于此，比如一些位掩码操作，或者正负号判断等），但不把结果写回目的操作数，仅根据结果的值来置标志位。<br>jne 当运算结果不为0时则跳转<br>jmp 为无条件跳转</p>
+<p>test a,b是做 AND 运算（虽然通常是用来测试结果是否为零，但不限于此，比如一些位掩码操作，或者正负号判断等），但不把结果写回目的操作数，仅根据结果的值来置标志位。<br>
+jne 当运算结果不为0时则跳转<br>
+jmp 为无条件跳转</p>
 </blockquote>
 <ul>
 <li>从rip地址中取的run的值放入 eax寄存器</li>
@@ -267,29 +319,36 @@
 <li>如果不是0 则跳转到 40050c 这个地址</li>
 <li>40050c 地址的指令为 jmp 40050c 无条件循环</li>
 </ul>
-<p>那么问题来了，这里跳转以后并没有重新去取内存中run的值，而是进入了死循环，也就是说这段代码理论上会一直运行下去，即使别的线程会去更改内存中run的值，也不会跳出循环，其实这就导致了多线程中共享变量的可见性问题。 </p>
-<h2><span id="禁止重排序优化">禁止重排序/优化</span></h2><p>之前已经说了，多线程情况下编译器优化会导致一些问题的出现，那么有没有方法来阻止编译器的优化呢？答案是肯定的，而且方式还不止一种：</p>
+<p>那么问题来了，这里跳转以后并没有重新去取内存中run的值，而是进入了死循环，也就是说这段代码理论上会一直运行下去，即使别的线程会去更改内存中run的值，也不会跳出循环，其实这就导致了多线程中共享变量的可见性问题。</p>
+<h2><span id="禁止重排序优化">禁止重排序/优化</span></h2>
+<p>之前已经说了，多线程情况下编译器优化会导致一些问题的出现，那么有没有方法来阻止编译器的优化呢？答案是肯定的，而且方式还不止一种：</p>
 <ul>
 <li>将变量声明为volatile变量（注意：Java中的volatile变量更强大）</li>
 <li>代码中插入编译器屏障(Compiler Barrier)，阻止编译器对屏障前后的代码进行优化，因此编译器屏障也被叫做优化屏障(Optimization Barrier)</li>
 </ul>
 <p>为了防止读者误解，在这里先做说明：C/C++中将变量声明为volatile相当于对这个变量的每一次操作前后插入一个编译器屏障。了解了这一点前提后，我们就能更好的解释后续的一些概念。</p>
 <p>编译器屏障的作用是什么？阻止编译器对屏障前后的代码进行重排序优化，同时阻止编译器将变量置入寄存器中随后直接使用，而是需要取内存中（或者CPU缓存中）的变量值进行运算操作。简而言之，就是禁止编译屏障前后编译器对于变量操作的优化（重排序、从寄存器中取值使用）</p>
-<h3><span id="禁止重排序">禁止重排序</span></h3><p>我们来看源码，注意编译还是用的 以上 -O2的编译优化等级。</p>
+<h3><span id="禁止重排序">禁止重排序</span></h3>
+<p>我们来看源码，注意编译还是用的 以上 -O2的编译优化等级。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> barrier() __asm__ __volatile__(<span class="meta-string">""</span>: : :<span class="meta-string">"memory"</span>)</span></span><br><span class="line"><span class="keyword">int</span> a, b;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  a = b + <span class="number">11</span>;</span><br><span class="line">  barrier(); <span class="comment">// 插入编译器屏障(优化屏障)</span></span><br><span class="line">  b = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们继续编译</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000000000400510</span> &lt;foo&gt;:</span><br><span class="line"><span class="number">400510</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">1</span>a <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b1a</span>(%rip),%eax        # <span class="number">601030</span> &lt;__TMC_END__&gt;</span><br><span class="line"><span class="number">400516</span>:	<span class="number">83</span> c0 <span class="number">0b</span>             	add    $<span class="number">0xb</span>,%eax</span><br><span class="line"><span class="number">400519</span>:	<span class="number">89</span> <span class="number">05</span> <span class="number">15</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    %eax,<span class="number">0x200b15</span>(%rip)        # <span class="number">601034</span> &lt;a&gt;</span><br><span class="line"><span class="number">40051f</span>:	c7 <span class="number">05</span> <span class="number">07</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span> <span class="number">00</span> 	movl   $<span class="number">0x0</span>,<span class="number">0x200b07</span>(%rip)        # <span class="number">601030</span> &lt;__TMC_END__&gt;</span><br><span class="line"><span class="number">400526</span>:	<span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">400529</span>:	c3                   	retq</span><br><span class="line"><span class="number">40052</span>a:	<span class="number">66</span> <span class="number">0f</span> <span class="number">1f</span> <span class="number">44</span> <span class="number">00</span> <span class="number">00</span>    	nopw   <span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p><img src="/article/java-memory-model-complier-reordering/java-memory-model-complier-reordering-1626242899935.png" alt></p>
-<p>再来根据上面的方法进行分析，我们得到了 b = 0 已经确实移动到了 a = b + 1 之后了。 原因在于我们加了一个屏障 </p>
-<p><strong><em>#define barrier() <strong>asm</strong> <strong>volatile</strong>(“”: : :”memory”)</em></strong></p>
-<h1><span id="define-barrier-asm-volatile-memory-是一段内嵌汇编代码asm-代表c语言内嵌汇编代码volatile-是告诉编译器不要把这行代码进行任何优化">define barrier() <strong>asm</strong> <strong>volatile</strong>(“”: : :”memory”) 是一段内嵌汇编代码，<strong>asm</strong> 代表C语言内嵌汇编代码，<strong>volatile</strong> 是告诉编译器不要把这行代码进行任何优化</span></h1><p>(“”: : :”memory”)这个比较复杂，但是在这里只需要知道，这段代码的意思是告诉编译器“内存发生了改变”，因此GCC编译时就会知道，不能使用寄存器中的值，而是要去内存中取值，且不能将屏障前后的代码重排序</p>
+<p>再来根据上面的方法进行分析，我们得到了 b = 0 已经确实移动到了 a = b + 1 之后了。 原因在于我们加了一个屏障</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> barrier() __asm__ __volatile__(<span class="meta-string">""</span>: : :<span class="meta-string">"memory"</span>)</span></span><br></pre></td></tr></table></figure>
+<p>这是是一段内嵌汇编代码, <code>__asm__</code>代表C语言内嵌汇编代码，<code>__volatile__</code> 是告诉编译器不要把这行代码进行任何优化</p>
+<p><code>(“”: : :”memory”)</code>这个比较复杂，但是在这里只需要知道，这段代码的意思是告诉编译器“内存发生了改变”，因此GCC编译时就会知道，不能使用寄存器中的值，而是要去内存中取值，且不能将屏障前后的代码重排序</p>
 <p>可以看到，使用了编译器屏障以后，代码并没有进行重排序，之前也提到编译器还会对代码进行优化，将本来应该从内存中取值的变量放在寄存器中，那么编译器屏障能解决这个现象吗？</p>
-<h3><span id="内存取值">内存取值</span></h3><p>本文之前提到，编译器会将变量放入CPU寄存器中，减少访问内存（缓存）耗时，但是有些情况下放入寄存器会导致多线程环境下的变量不可见性。</p>
+<h3><span id="内存取值">内存取值</span></h3>
+<p>本文之前提到，编译器会将变量放入CPU寄存器中，减少访问内存（缓存）耗时，但是有些情况下放入寄存器会导致多线程环境下的变量不可见性。</p>
 <p>那么编译器屏障能解决这个问题吗？我们看之前的代码插入编译器屏障以后：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> barrier() __asm__ __volatile__(<span class="meta-string">""</span>: : :<span class="meta-string">"memory"</span>)</span></span><br><span class="line"><span class="keyword">int</span> run;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(run) &#123;</span><br><span class="line">      barrier();</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>编译得到<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000000000400500</span> &lt;foo&gt;:</span><br><span class="line"><span class="number">400500</span>:	eb <span class="number">06</span>                	jmp    <span class="number">400508</span> &lt;foo+<span class="number">0x8</span>&gt;</span><br><span class="line"><span class="number">400502</span>:	<span class="number">66</span> <span class="number">0f</span> <span class="number">1f</span> <span class="number">44</span> <span class="number">00</span> <span class="number">00</span>    	nopw   <span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br><span class="line"><span class="number">400508</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">1</span>e <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b1e</span>(%rip),%eax        # <span class="number">60102</span>c &lt;run&gt;</span><br><span class="line"><span class="number">40050</span>e:	<span class="number">85</span> c0                	test   %eax,%eax</span><br><span class="line"><span class="number">400510</span>:	<span class="number">75</span> f6                	jne    <span class="number">400508</span> &lt;foo+<span class="number">0x8</span>&gt;</span><br><span class="line"><span class="number">400512</span>:	f3 c3                	repz retq</span><br><span class="line"><span class="number">400514</span>:	<span class="number">66</span> <span class="number">2</span>e <span class="number">0f</span> <span class="number">1f</span> <span class="number">84</span> <span class="number">00</span> <span class="number">00</span> 	nopw   %cs:<span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br><span class="line"><span class="number">40051b</span>:	<span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">40051</span>e:	<span class="number">66</span> <span class="number">90</span>                	xchg   %ax,%ax</span><br></pre></td></tr></table></figure></p>
-<p>编译后，我们可以看到 jne 直接跳到了 400508 而 400508段指令为：mov    0x200b1e(%rip),%eax，<br>表示 run 从地址中取值，而不是直接死循环了。相较于之前的跳转到本行的行为，相当于消除了编译器对于变量存入寄存器的优化。</p>
-<h3><span id="volatilecc">volatile(C/C++)</span></h3><p>相应的，也可以通过把run变量声明为volatile变量，告诉编译器这个变量的不可优化。</p>
+<p>编译得到</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000000000400500</span> &lt;foo&gt;:</span><br><span class="line"><span class="number">400500</span>:	eb <span class="number">06</span>                	jmp    <span class="number">400508</span> &lt;foo+<span class="number">0x8</span>&gt;</span><br><span class="line"><span class="number">400502</span>:	<span class="number">66</span> <span class="number">0f</span> <span class="number">1f</span> <span class="number">44</span> <span class="number">00</span> <span class="number">00</span>    	nopw   <span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br><span class="line"><span class="number">400508</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">1</span>e <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b1e</span>(%rip),%eax        # <span class="number">60102</span>c &lt;run&gt;</span><br><span class="line"><span class="number">40050</span>e:	<span class="number">85</span> c0                	test   %eax,%eax</span><br><span class="line"><span class="number">400510</span>:	<span class="number">75</span> f6                	jne    <span class="number">400508</span> &lt;foo+<span class="number">0x8</span>&gt;</span><br><span class="line"><span class="number">400512</span>:	f3 c3                	repz retq</span><br><span class="line"><span class="number">400514</span>:	<span class="number">66</span> <span class="number">2</span>e <span class="number">0f</span> <span class="number">1f</span> <span class="number">84</span> <span class="number">00</span> <span class="number">00</span> 	nopw   %cs:<span class="number">0x0</span>(%rax,%rax,<span class="number">1</span>)</span><br><span class="line"><span class="number">40051b</span>:	<span class="number">00</span> <span class="number">00</span> <span class="number">00</span></span><br><span class="line"><span class="number">40051</span>e:	<span class="number">66</span> <span class="number">90</span>                	xchg   %ax,%ax</span><br></pre></td></tr></table></figure>
+<p>编译后，我们可以看到 jne 直接跳到了 400508 而 400508段指令为：mov    0x200b1e(%rip),%eax，<br>
+表示 run 从地址中取值，而不是直接死循环了。相较于之前的跳转到本行的行为，相当于消除了编译器对于变量存入寄存器的优化。</p>
+<h3><span id="volatilecc">volatile(C/C++)</span></h3>
+<p>相应的，也可以通过把run变量声明为volatile变量，告诉编译器这个变量的不可优化。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> <span class="keyword">volatile</span> run;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(run)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0000000000400500</span> &lt;foo&gt;:</span><br><span class="line"><span class="number">400500</span>:	<span class="number">8b</span> <span class="number">05</span> <span class="number">26</span> <span class="number">0b</span> <span class="number">20</span> <span class="number">00</span>    	mov    <span class="number">0x200b26</span>(%rip),%eax        # <span class="number">60102</span>c &lt;run&gt;</span><br><span class="line"><span class="number">400506</span>:	<span class="number">85</span> c0                	test   %eax,%eax</span><br><span class="line"><span class="number">400508</span>:	<span class="number">75</span> f6                	jne    <span class="number">400500</span> &lt;foo&gt;</span><br><span class="line"><span class="number">40050</span>a:	f3 c3                	repz retq</span><br><span class="line"><span class="number">40050</span>c:	<span class="number">0f</span> <span class="number">1f</span> <span class="number">40</span> <span class="number">00</span>          	nopl   <span class="number">0x0</span>(%rax)</span><br></pre></td></tr></table></figure>
 <p>可以看到 jne 跳到了400500 行，而 400500 行正式从内存中取值run</p>
@@ -297,12 +356,16 @@
 <p>C/C++中的volatile关键字，我之说过，相当于对这个变量前后插入了内存屏障，其实这样说有些不够精确，其核心作用就是禁止编译器对于这个变量/代码块进行任何优化，禁止重排序、禁止使用寄存器而不取内存值、禁止编译器将其认为无用的代码优化掉。</p>
 <p>但是Linux内核编程中是很抵制程序员使用volatile关键字的，因为Linux本身对于同步控制提供了各种API，都可以替代直接使用volatile关键字，其实Linux和JVM设计思路上有些一直，屏蔽了这些API的实现细节，就像JVM屏蔽了volatile、synchronized关键字的实现细节。但是有一点不得不说，无论是Linux还是JVM，底层都使用到了编译器屏障来防止一些问题的出现。</p>
 <p>下一篇，我会讨论Java volatile 和 synchronized 关键字的底层实现原理。</p>
-<h2><span id="参考">参考</span></h2><ul>
-<li><p><a href="https://mp.weixin.qq.com/s?__biz=MzUzMDk3NjM3Mg==&amp;mid=2247483755&amp;idx=1&amp;sn=50f80e73f46fab04d8a799e8731432c6&amp;chksm=fa48da70cd3f5366d9658277cccd9e36fca540276f580822d41aef7d8af4dda480fc85e3bde4&amp;token=1422563498&amp;lang=zh_CN&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">从 Java 内存模型看内部细节</a></p>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzUzMDk3NjM3Mg==&amp;mid=2247483755&amp;idx=1&amp;sn=50f80e73f46fab04d8a799e8731432c6&amp;chksm=fa48da70cd3f5366d9658277cccd9e36fca540276f580822d41aef7d8af4dda480fc85e3bde4&amp;token=1422563498&amp;lang=zh_CN&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">从 Java 内存模型看内部细节</a></p>
 </li>
-<li><p><a href="https://blog.csdn.net/CringKong/article/details/99759216?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_v2~rank_aggregation-1-99759216.pc_agg_rank_aggregation&amp;utm_term=%E7%BC%96%E8%AF%91%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F&amp;spm=1000.2123.3001.4430" target="_blank" rel="noopener">编译器重排序</a></p>
+<li>
+<p><a href="https://blog.csdn.net/CringKong/article/details/99759216?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_v2~rank_aggregation-1-99759216.pc_agg_rank_aggregation&amp;utm_term=%E7%BC%96%E8%AF%91%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F&amp;spm=1000.2123.3001.4430" target="_blank" rel="noopener">编译器重排序</a></p>
 </li>
-<li><p>[synchronized 关键字实现细节)[<a href="https://blog.csdn.net/CringKong/article/details/99759216" target="_blank" rel="noopener">https://blog.csdn.net/CringKong/article/details/99759216</a>]</p>
+<li>
+<p>[synchronized 关键字实现细节][<a href="https://blog.csdn.net/CringKong/article/details/99759216" target="_blank" rel="noopener">https://blog.csdn.net/CringKong/article/details/99759216</a>]</p>
 </li>
 </ul>
 
@@ -377,7 +440,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">内存模型在JVM的应用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">重排序</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">编译器重排序</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是编译器重排序</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">编译器重排序</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">编译器优化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">禁止重排序/优化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">禁止重排序</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">define barrier() asm volatile(“”: : :”memory”) 是一段内嵌汇编代码，asm 代表C语言内嵌汇编代码，volatile 是告诉编译器不要把这行代码进行任何优化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.1.</span> <span class="toc-nav-text">内存取值</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.2.</span> <span class="toc-nav-text">volatile(C/C++)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">内存模型在JVM的应用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">重排序</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">编译器重排序</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是编译器重排序</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">编译器重排序</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">编译器优化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">禁止重排序/优化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">禁止重排序</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">内存取值</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">volatile(C/C++)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
         
         </div>
       </aside>

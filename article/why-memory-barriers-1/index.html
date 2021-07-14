@@ -153,14 +153,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -223,13 +223,21 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1><span id="cpu-结构">CPU 结构</span></h1><p>现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。<br>CPU缓存有多级缓存，比如L1, L2, L3等：<br>L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。<br>L2容量比L1大，速度比L1慢，每个核都有L2缓存。<br>L3容量最大，速度最慢，多个核共享一个L3缓存。<br>有些CPU可能还有L4缓存，不过不常见；此外还有其他类型的缓存，比如TLB(translation lookaside buffer)，用于物理地址和虚拟地址转译，这不是我们关心的缓存。</p>
+                <h1><span id="cpu-结构">CPU 结构</span></h1>
+<p>现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。<br>
+CPU缓存有多级缓存，比如L1, L2, L3等：<br>
+L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。<br>
+L2容量比L1大，速度比L1慢，每个核都有L2缓存。<br>
+L3容量最大，速度最慢，多个核共享一个L3缓存。<br>
+有些CPU可能还有L4缓存，不过不常见；此外还有其他类型的缓存，比如TLB(translation lookaside buffer)，用于物理地址和虚拟地址转译，这不是我们关心的缓存。</p>
 <p>这里盗个图</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624332073901.png" alt></p>
-<h1><span id="cpu-缓存工作原理">CPU 缓存工作原理</span></h1><p>CPU cache和内存系统使用固定大小的数据块来进行交互，这个数据块被称为<code>Cache line</code>，<code>Cache line</code>的大小一般是2的整数次幂。根据设计的不同，从16B到256B不等。当CPU首次访问某个数据的时候，它没有在<code>Cpu cache</code>中，我们称之为<code>Cache miss</code>。在这种情况下，cpu需要花费几百个cycle去把该数据对应的<code>Cache line</code>从内存中中加载到cpu cache中，而在这个过程中，cpu只能是等待那个耗时内存操作完成。一旦完成了cpu cache数据的加载，随后的访问会由于数据在cache中而使得cpu全速运行。</p>
+<h1><span id="cpu-缓存工作原理">CPU 缓存工作原理</span></h1>
+<p>CPU cache和内存系统使用固定大小的数据块来进行交互，这个数据块被称为<code>Cache line</code>，<code>Cache line</code>的大小一般是2的整数次幂。根据设计的不同，从16B到256B不等。当CPU首次访问某个数据的时候，它没有在<code>Cpu cache</code>中，我们称之为<code>Cache miss</code>。在这种情况下，cpu需要花费几百个cycle去把该数据对应的<code>Cache line</code>从内存中中加载到cpu cache中，而在这个过程中，cpu只能是等待那个耗时内存操作完成。一旦完成了cpu cache数据的加载，随后的访问会由于数据在cache中而使得cpu全速运行。</p>
 <p>运行一段时间之后，cpu cache的所有<code>Cache line</code>都会被填充有效的数据，这时候的，要加载新的数据到cache中必须将其他原来有效的cache数据“强制驱离”（一般选择最近最少使用的那些<code>Cache line</code>）。这种cache miss被称为capacity miss，因为CPU cache的容量有限，必须为新数据找到空闲的<code>Cache line</code>。有的时候，即便是cache中还有闲置的<code>Cache line</code>，旧的cache数据也会被“强制驱离”，以便为新的数据加载到<code>Cache line</code>中做准备。</p>
 <p>当然，这是和cache的组织有关。比较大的cache往往实现成hash table（为了硬件性能），所有的cache line被分成了若干个固定大小的hash buckets（更专业的术语叫做set），这些hash buckets之间不是形成链表，而是类似阵列。</p>
-<h2><span id="缓存结构">缓存结构</span></h2><p>一块CPU缓存可以看成是一个数组，数组元素是缓存项(cache entry)，一个缓存项的内容大概是这样的：</p>
+<h2><span id="缓存结构">缓存结构</span></h2>
+<p>一块CPU缓存可以看成是一个数组，数组元素是缓存项(cache entry)，一个缓存项的内容大概是这样的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------+   </span><br><span class="line">|  tag  |   data block(cache line) |  flag  |   </span><br><span class="line">+-------------------------------------------+</span><br></pre></td></tr></table></figure>
 <ul>
 <li>data block就是从内存中拷贝过来的数据，也就是我们说的cache line，从上面信息可知大小是64字节。（linux 内存的最小单位是字节）</li>
@@ -238,7 +246,8 @@
 </ul>
 <p>我们可以通过以下命令来查看case line 的大小</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@CentOS7 ~]<span class="comment"># getconf -a | grep CACHE</span></span><br><span class="line">LEVEL1_ICACHE_SIZE                 32768  <span class="comment"># 32KB 指令缓存</span></span><br><span class="line">LEVEL1_ICACHE_ASSOC                8        <span class="comment"># ASSOC表示主存地址映射到缓存的策略，这里L18路组相联</span></span><br><span class="line">LEVEL1_ICACHE_LINESIZE             64       <span class="comment"># cache line 每行的大小为64Bytes</span></span><br><span class="line">LEVEL1_DCACHE_SIZE                 32768    <span class="comment">#</span></span><br><span class="line">LEVEL1_DCACHE_ASSOC                8    </span><br><span class="line">LEVEL1_DCACHE_LINESIZE             64</span><br><span class="line">LEVEL2_CACHE_SIZE                  262144</span><br><span class="line">LEVEL2_CACHE_ASSOC                 4         <span class="comment"># ASSOC表示主存地址映射到缓存的策略，这里L2 是4路组相联</span></span><br><span class="line">LEVEL2_CACHE_LINESIZE              64</span><br><span class="line">LEVEL3_CACHE_SIZE                  12582912 <span class="comment"># 12M</span></span><br><span class="line">LEVEL3_CACHE_ASSOC                 16       </span><br><span class="line">LEVEL3_CACHE_LINESIZE              64</span><br><span class="line">LEVEL4_CACHE_SIZE                  0           <span class="comment"># 没有l4 缓存</span></span><br><span class="line">LEVEL4_CACHE_ASSOC                 0           </span><br><span class="line">LEVEL4_CACHE_LINESIZE              0</span><br></pre></td></tr></table></figure>
-<h2><span id="缓存映射">缓存映射</span></h2><p>缓存首先要解决的问题是：怎么映射内存地址和缓存地址？比如CPU要检查一个内存值是否已经缓存，那么它首先要能算出这个内存地址对应的缓存地址，然后才能检查。</p>
+<h2><span id="缓存映射">缓存映射</span></h2>
+<p>缓存首先要解决的问题是：怎么映射内存地址和缓存地址？比如CPU要检查一个内存值是否已经缓存，那么它首先要能算出这个内存地址对应的缓存地址，然后才能检查。</p>
 <p>为了解决这个问题，缓存将一个内存地址分成下面几个部分：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------------------------+   </span><br><span class="line">|  tag                | index    | offset   |   </span><br><span class="line">+-------------------------------------------+</span><br></pre></td></tr></table></figure>
 <ul>
@@ -246,24 +255,31 @@
 <li>index 缓存项数组中的索引。</li>
 <li>offset 缓存块(cache line)中的偏移，因为缓存块是64字节，而内存值可能只有4个字节，一个缓存块可以保存多个连续的内存值。这个offset实际上就是指明内存值在cache line中的位置。</li>
 </ul>
-<h3><span id="直接映射direct-mapped">直接映射（Direct mapped）</span></h3><p>假如缓存的大小是32768B(32KB)，缓存块大小是64B，那么缓存项数组就有‭ 32768‬/64=512 个。</p>
+<h3><span id="直接映射direct-mapped">直接映射（Direct mapped）</span></h3>
+<p>假如缓存的大小是32768B(32KB)，缓存块大小是64B，那么缓存项数组就有‭ 32768‬/64=512 个。</p>
 <ul>
 <li>CPU要访问一个内存地址0x1CAABBDD‬，它首先检查这个内存地址是否在缓存中，检查过程是这样的：</li>
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624334918090.png" alt></p>
 <ul>
-<li><p>先计算内存在cache line中的偏移，因为缓存块是64字节，那么offset需要占6位(2^6=64)，即offset=011101=29。</p>
+<li>
+<p>先计算内存在cache line中的偏移，因为缓存块是64字节，那么offset需要占6位(2^6=64)，即offset=011101=29。</p>
 </li>
-<li><p>接着要计算缓存项的索引，因为缓存项数组是512个，所以index需要占9位(2^9=512)，即index=011101111=239。</p>
+<li>
+<p>接着要计算缓存项的索引，因为缓存项数组是512个，所以index需要占9位(2^9=512)，即index=011101111=239。</p>
 </li>
-<li><p>现在我们通过offset和index已经找到缓存块的具体位置了，但是因为内存要远比缓存大很多，所以多个内存块是可以映射到同一个位置的，怎么判断这个缓存块位置存的就是这个内存的值呢？答案就是tag：内存地址去掉index和offset的部分，剩下的就是tag=00011100101010101=0x3955。</p>
+<li>
+<p>现在我们通过offset和index已经找到缓存块的具体位置了，但是因为内存要远比缓存大很多，所以多个内存块是可以映射到同一个位置的，怎么判断这个缓存块位置存的就是这个内存的值呢？答案就是tag：内存地址去掉index和offset的部分，剩下的就是tag=00011100101010101=0x3955。</p>
 </li>
-<li><p>通过index找到缓存项，比较缓存项中的tag是否与内存地址中的tag相同，如果相同表示命中，就直接取缓存块中的值；如果不同表示未命中，CPU需要将内存值拷贝到缓存(替换掉老的)。</p>
+<li>
+<p>通过index找到缓存项，比较缓存项中的tag是否与内存地址中的tag相同，如果相同表示命中，就直接取缓存块中的值；如果不同表示未命中，CPU需要将内存值拷贝到缓存(替换掉老的)。</p>
 </li>
 </ul>
 <p>这种映射方式就称为直接映射(Direct mapped)，它的缺点就是多个内存地址会映射到同一个缓存地址，拿上面的内存地址来看，<strong>只要offset和index相同的内存地址</strong>，就一定会映射到同一个地方.</p>
-<p>比如内存地址为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00011100101010100 011101111 011101</span><br><span class="line">00011100101010110 011101111 011101</span><br><span class="line">00011100101010111 011101111 011101</span><br></pre></td></tr></table></figure></p>
-<h3><span id="组相联映射">组相联映射</span></h3><p>为了解决上面的问题，我试着把缓存项数组分成2个数组(2路)，比如分成2个256的数组，那么按照上述的匹配，会匹配出如下图所示：</p>
+<p>比如内存地址为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00011100101010100 011101111 011101</span><br><span class="line">00011100101010110 011101111 011101</span><br><span class="line">00011100101010111 011101111 011101</span><br></pre></td></tr></table></figure>
+<h3><span id="组相联映射">组相联映射</span></h3>
+<p>为了解决上面的问题，我试着把缓存项数组分成2个数组(2路)，比如分成2个256的数组，那么按照上述的匹配，会匹配出如下图所示：</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624358096959.png" alt></p>
 <ul>
 <li>先通过index找到数组索引，只不过因为是2路，所以存在2个数组。</li>
@@ -272,42 +288,56 @@
 </ul>
 <p>那这个和直接映射相比，好在哪里呢，因为一个内存值会随机拷贝到2路中的1个，所以缓存冲突(多个内存地址映射到同一个缓存地址)的概率会降低一半；如果把缓存项数组分成4个数组，这就是4路组相联。上面LEVEL1_ICACHE_ASSOC的值等于8，表明是8路组相联。分组越多，缓存冲突率越低，但是CPU要遍历的数组就越多，这是一个权衡的问题。通过观察也可以发现，其实直接映射就是1路组相联。如果直接分成512个数组，那每个数组只有1项，这种就是全相联，CPU直接遍历512个数组，判断内存地址在哪1个。</p>
 <p>关于缓存映射，这里还有<a href="https://www.scss.tcd.ie/Jeremy.Jones/VivioJS/caches/cache.htm" target="_blank" rel="noopener">动画演示</a></p>
-<h2><span id="缓存分配策略和更新策略">缓存分配策略和更新策略</span></h2><h3><span id="读数据">读数据</span></h3><p>当CPU从内存读数据时，如果该数据没有在缓存中(read miss)，CPU会把数据拷贝到缓存。</p>
-<h3><span id="写数据">写数据</span></h3><p>缓存写策略， 我们看到缓存当中有个一个flag，flag的存在是在表示该缓行的状态。</p>
+<h2><span id="缓存分配策略和更新策略">缓存分配策略和更新策略</span></h2>
+<h3><span id="读数据">读数据</span></h3>
+<p>当CPU从内存读数据时，如果该数据没有在缓存中(read miss)，CPU会把数据拷贝到缓存。</p>
+<h3><span id="写数据">写数据</span></h3>
+<p>缓存写策略， 我们看到缓存当中有个一个flag，flag的存在是在表示该缓行的状态。</p>
 <ul>
-<li><p><strong>Write through</strong> 更新缓存的数据，同时更新内存的数据。</p>
+<li>
+<p><strong>Write through</strong> 更新缓存的数据，同时更新内存的数据。</p>
 <p>当cache写命中时，处理器对Cache写入的同时，将数据写入到内存中，内存的数据和Cache中的数据都是同步的，这种方式比较简单、可靠。但是处理每次对cache更新都需要对内存写操作，因此总线工作繁忙，内存的带宽被大大占用，因此运行速度会受到影响。</p>
 <p>假设一段程序在频繁地修改一个局部变量，局部变量生存周期很短，而且其他进程/线程也用不到它，CPU依然会频繁地在Cache和内存之间交换数据，造成不必要的带宽损失。当cache写未命中时，只有直接向主存写入了，但此时是否将修改过的主存块取到cache，</p>
 <p><strong>如果在写的时候数据没有在缓存中(write miss)，也有两种策略</strong></p>
 <ul>
-<li><p><strong>WTWA（Write–Through–with–Write–Allocate)</strong> 在写之前先把数据加载到缓存，然后再实施上面的写策略。</p>
+<li>
+<p><strong>WTWA（Write–Through–with–Write–Allocate)</strong> 在写之前先把数据加载到缓存，然后再实施上面的写策略。</p>
 </li>
-<li><p><strong>WTNWA法（WriteThrough–with．NO-Write–Allocate)</strong> 加载缓存，直接把数据写到内存。数据只有在 read miss 时才会加载到缓存</p>
+<li>
+<p><strong>WTNWA法（WriteThrough–with．NO-Write–Allocate)</strong> 加载缓存，直接把数据写到内存。数据只有在 read miss 时才会加载到缓存</p>
 </li>
 </ul>
 </li>
 </ul>
 <ul>
-<li><p><strong>Write back</strong> </p>
+<li>
+<p><strong>Write back</strong></p>
 <p>当CPU对cache写命中时，只修改cache的内容不立即写入主存，只当此行被换出时才写回主存。这种策略使cache在CPU－主存之间，不仅在读方而且在写方向上都起到高速缓存作用。对一cache行的多次写命中都在cache中快速完成修改，只是需被替换时才写回速度较慢的主存，减少了访问主的次数从而提高了效率。为支持这种策略，每个cache行必须配置一个修改位，以反映此行是否被CPU修改过。</p>
 <p>当某行被换出时，根据此行修改位为是为0。对于cache写未命中，写回法的处理是为包含欲写字的主存块在cache分配一行，将此块整个拷贝到Cache后对其进行修改， 因为尔后对此块的多读/写访问的可能性很大。拷贝主存块时虽已读访问到主存，但此时并不对主存块修改。因为换出的cache很可能此期间要写回主存，为避免此过程耗时长，写未命中对将新块读入后，只在cache中进行写修改。统一地将主存写修改操作留待换出时进行</p>
 </li>
-<li><p><strong>Write-once</strong></p>
+<li>
+<p><strong>Write-once</strong></p>
 <p>写一次是一种基于写回又结合了写通的写策略，即写命中和写未命中的处理与写回法基本相同，只是第一次写命中时要同时写入主存。这策略主要用于某些处理器的片内cache，例如Pentium处理器的片内数据cache就采用的是写一次法。因为片内cache写命中时，写操作就在CPU内部高完成，若没有 内存地址及其它指示信号送出，就不便于系统中的其它cache监听（snoop）。采用写一次法，在第一次片内cache写命中时，CPU要在线上启动一个存储写周期。其它cache监听到此主存块地址及写信号后，即可把它们各自保存可能有的该块拷贝及时作废（无效处理）。尔后若有 对片cache此行的再次或多次写命中，则按回写法处理，无需再送出信号了。</p>
 </li>
-<li><p>其他</p>
+<li>
+<p>其他</p>
 <p>WC（write-combining）， UC（uncacheable）在这里不做详细展开，有兴趣可以自己深入了解。</p>
 </li>
 </ul>
 <p>关于写策略，可以参看<a href="https://www.scss.tcd.ie/Jeremy.Jones/VivioJS/" target="_blank" rel="noopener">这个</a> 动画演示。</p>
 <p>从上面描述我们知道，当我们向一个内存写数据时，内存中的数据可能不马上被更新，这个新数据可能还在cache line呆着。因为每个核都有自己的缓存，如果CPU不做处理，可以想象一定会出问题的：比如核1改了数据，核2去读同一个数据，此时数据还在核1的缓存中，核2读到的就是老的数据。CPU为了处理多核间的缓存同步,有一套复杂的一致性协议。</p>
-<h1><span id="mesi-协议">MESI 协议</span></h1><h2><span id="mesi-协议状态">MESI 协议状态</span></h2><p>MESI是“modified”, “exclusive”, “shared”, 和 “invalid”首字母的大写，当使用MESI 协议的时候，cacheline可以处于这四个状态中的一个，因此除了物理地址和具体的数据之外，还需要为每一个cacheline设计一个2-bit的tag来标识该cacheline的状态。</p>
-<h3><span id="modified-状态">modified 状态</span></h3><p>处于modified状态的cacheline说明近期有过来自对应cpu的写操作，同时也说明该该数据不会存在其他cpu对应的cache中。因此，处于modified状态的cacheline也可以说是被该CPU独占。而又因为只有该CPU的cache保存了最新的数据（最终的memory中都没有更新），所以，该cache需要对该数据负责到底。例如根据请求，该cache将数据及其控制权传递到其他cache中，或者cache需要负责将数据写回到memory中，而这些操作都需要在reuse该cache line之前完成。</p>
-<h3><span id="exclusive">exclusive</span></h3><p>exclusive状态和modified状态非常类似，唯一的区别是对应CPU还没有修改cacheline中的数据，也正因为还没有修改数据，因此memory中对应的data也是最新的。在exclusive状态下，cpu也可以不通知其他CPU cache而直接对cacheline进行操作，因此，<strong>exclusive状态也可以被认为是被该CPU独占</strong>。由于memory中的数据和cacheline中的数据都是最新的，因此，cpu不需对exclusive状态的cacheline执行写回的操作或者将数据以及归属权转交其他cpu cache，而直接reuse该cacheline（将cacheine中的数据丢弃，用作他用）。</p>
-<h3><span id="share">share</span></h3><p>处于share状态的cacheline，其数据可能在一个或者多个CPU cache中，因此，处于这种状态的cache line，CPU不能直接修改cacheline的数据，而是需要首先和其他CPU cache进行沟通。和exclusive状态类似，处于share状态的cacheline对应的memory中的数据也是最新的，因此，cpu也可以直接丢弃cacheline中的数据而不必将其转交给其他CPU cache或者写回到memory中。</p>
-<h3><span id="invalid">invalid</span></h3><p>处于invalid状态的cacheline是空的，没有数据。当新的数据要进入cache的时候，优选状态是invalid的cacheline，之所以如此是因为如果选中其他状态的cacheline，则说明需要替换cacheline数据，而未来如果再次访问这个被替换掉的cacheline数据的时候将遇到开销非常大的cache miss。</p>
+<h1><span id="mesi-协议">MESI 协议</span></h1>
+<h2><span id="mesi-协议状态">MESI 协议状态</span></h2>
+<p>MESI是“modified”, “exclusive”, “shared”, 和 “invalid”首字母的大写，当使用MESI 协议的时候，cacheline可以处于这四个状态中的一个，因此除了物理地址和具体的数据之外，还需要为每一个cacheline设计一个2-bit的tag来标识该cacheline的状态。</p>
+<h3><span id="modified-状态">modified 状态</span></h3>
+<p>处于modified状态的cacheline说明近期有过来自对应cpu的写操作，同时也说明该该数据不会存在其他cpu对应的cache中。因此，处于modified状态的cacheline也可以说是被该CPU独占。而又因为只有该CPU的cache保存了最新的数据（最终的memory中都没有更新），所以，该cache需要对该数据负责到底。例如根据请求，该cache将数据及其控制权传递到其他cache中，或者cache需要负责将数据写回到memory中，而这些操作都需要在reuse该cache line之前完成。</p>
+<h3><span id="exclusive">exclusive</span></h3>
+<p>exclusive状态和modified状态非常类似，唯一的区别是对应CPU还没有修改cacheline中的数据，也正因为还没有修改数据，因此memory中对应的data也是最新的。在exclusive状态下，cpu也可以不通知其他CPU cache而直接对cacheline进行操作，因此，<strong>exclusive状态也可以被认为是被该CPU独占</strong>。由于memory中的数据和cacheline中的数据都是最新的，因此，cpu不需对exclusive状态的cacheline执行写回的操作或者将数据以及归属权转交其他cpu cache，而直接reuse该cacheline（将cacheine中的数据丢弃，用作他用）。</p>
+<h3><span id="share">share</span></h3>
+<p>处于share状态的cacheline，其数据可能在一个或者多个CPU cache中，因此，处于这种状态的cache line，CPU不能直接修改cacheline的数据，而是需要首先和其他CPU cache进行沟通。和exclusive状态类似，处于share状态的cacheline对应的memory中的数据也是最新的，因此，cpu也可以直接丢弃cacheline中的数据而不必将其转交给其他CPU cache或者写回到memory中。</p>
+<h3><span id="invalid">invalid</span></h3>
+<p>处于invalid状态的cacheline是空的，没有数据。当新的数据要进入cache的时候，优选状态是invalid的cacheline，之所以如此是因为如果选中其他状态的cacheline，则说明需要替换cacheline数据，而未来如果再次访问这个被替换掉的cacheline数据的时候将遇到开销非常大的cache miss。</p>
 <p>CPU中每个缓存行（Caceh line)使用4种状态进行标记，使用2bit来表示:</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -332,8 +362,9 @@
 </tr>
 <tr>
 <td>S 共享 (Shared)</td>
-<td>该Cache line有效，数据和内存中的数据一致，数据存在于很多Cache中。    缓存行也必须监听其它缓存使该缓存行无效或者独享该缓存行的请求，并将该缓存行变成无效（Invalid）。</td>
+<td>该Cache line有效，数据和内存中的数据一致，数据存在于很多Cache中。	缓存行也必须监听其它缓存使该缓存行无效或者独享该缓存行的请求，并将该缓存行变成无效（Invalid）。</td>
 <td>当有一个CPU修改该缓存行时，其它CPU中该缓存行可以被作废（变成无效状态 Invalid）。</td>
+<td></td>
 </tr>
 <tr>
 <td>I 无效 (Invalid)</td>
@@ -343,10 +374,9 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624520651865.png" alt></p>
-<h2><span id="mesi-协议消息">MESI 协议消息</span></h2><p>当cpu对内存数据进行修改的或者读取的时候，自然缓存状态需要改变，因此，多核CPU就要通过总线来告知其他cpu自己对某个缓存的状态修改。因此CPU之间也会通过传递消息来传递这种消息的改变</p>
-<div class="table-container">
+<h2><span id="mesi-协议消息">MESI 协议消息</span></h2>
+<p>当cpu对内存数据进行修改的或者读取的时候，自然缓存状态需要改变，因此，多核CPU就要通过总线来告知其他cpu自己对某个缓存的状态修改。因此CPU之间也会通过传递消息来传递这种消息的改变</p>
 <table>
 <thead>
 <tr>
@@ -357,13 +387,39 @@
 </thead>
 <tbody>
 <tr>
+<td>Read</td>
+<td>read message用来获取指定物理地址上的cacheline数据</td>
+<td>Read Response</td>
+</tr>
+<tr>
+<td>Read Response</td>
+<td>该消息携带了read message请求的数据。read response可能来自memory，也可能来自其他的cache。例如：如果一个cache有read message请求的数据并且该cacheline的状态是modified，那么该cache必须以read response回应这个read message，因为该cache中保存了最新的数据。</td>
+<td></td>
+</tr>
+<tr>
+<td>Read Invalidate</td>
+<td>该命令用来将其他cpu cache中的数据设定为无效。该命令携带物理地址的参数，其他CPU cache在收到该命令后，必须进行匹配，发现自己的cacheline中有该物理地址的数据，那么就将其移除并用Invalidate Acknowledge回应。</td>
+<td>Invalidate Acknowledge</td>
+</tr>
+<tr>
+<td>Invalidate Acknowledge</td>
+<td>收到invalidate message的cpu cache，在移除了其cache line中的特定数据之后，必须发送invalidate acknowledge消息</td>
+<td></td>
+</tr>
+<tr>
+<td>Read Invalidate</td>
+<td>该message中也包括了物理地址这个参数，以便说明其想要读取哪一个cacheline数据。此外，该message还同时有invalidate message的功效，即其他的cache在收到该命令后，移除自己cacheline中的数据。因此，Read Invalidate message实际上就是read ＋ invalidate。发送Read Invalidate之后，cache期望收到一个read response以及多个invalidate acknowledge。</td>
+<td>read response、invalidate acknowledge</td>
+</tr>
+<tr>
+<td>Writeback</td>
+<td>该message包括两个参数，一个是地址，另外一个是写回的数据。该消息用在modified状态的cacheline被驱逐出境（给其他数据腾出地方）的时候发出，该命名用来将最新的数据写回到memory（或者其他的CPU cache中）。</td>
 <td></td>
 </tr>
 </tbody>
 </table>
-</div>
-<p>Read | read message用来获取指定物理地址上的cacheline数据 | Read Response<br>Read Response| 该消息携带了read message请求的数据。read response可能来自memory，也可能来自其他的cache。例如：如果一个cache有read message请求的数据并且该cacheline的状态是modified，那么该cache必须以read response回应这个read message，因为该cache中保存了最新的数据。|<br>Read Invalidate | 该命令用来将其他cpu cache中的数据设定为无效。该命令携带物理地址的参数，其他CPU cache在收到该命令后，必须进行匹配，发现自己的cacheline中有该物理地址的数据，那么就将其移除并用Invalidate Acknowledge回应。| Invalidate Acknowledge<br>Invalidate Acknowledge | 收到invalidate message的cpu cache，在移除了其cache line中的特定数据之后，必须发送invalidate acknowledge消息 |<br>Read Invalidate | 该message中也包括了物理地址这个参数，以便说明其想要读取哪一个cacheline数据。此外，该message还同时有invalidate message的功效，即其他的cache在收到该命令后，移除自己cacheline中的数据。因此，Read Invalidate message实际上就是read ＋ invalidate。发送Read Invalidate之后，cache期望收到一个read response以及多个invalidate acknowledge。| read response、invalidate acknowledge<br>Writeback | 该message包括两个参数，一个是地址，另外一个是写回的数据。该消息用在modified状态的cacheline被驱逐出境（给其他数据腾出地方）的时候发出，该命名用来将最新的数据写回到memory（或者其他的CPU cache中）。</p>
-<h2><span id="mesi-协议状态变换">MESI 协议状态变换</span></h2><p>下图是MESI 协议通过MESI 消息进行的变换</p>
+<h2><span id="mesi-协议状态变换">MESI 协议状态变换</span></h2>
+<p>下图是MESI 协议通过MESI 消息进行的变换</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624521537740.png" alt></p>
 <p>对上图中的状态迁移解释如下：</p>
 <ul>
@@ -375,7 +431,7 @@
 </ul>
 <p>在Exclusive状态下，cpu可以直接将数据写入cacheline，不需要其他操作。相应的，该cacheline状态从Exclusive状态迁移到Modified状态。这个状态迁移过程不涉及bus上的Transaction（即无需MESI Protocol Messages的交互）。</p>
 <ul>
-<li>Transition (c)：</li>
+<li>Transition ©：</li>
 </ul>
 <p>CPU 在总线上收到一个read invalidate的请求，同时，该请求是针对一个处于modified状态的cacheline，在这种情况下，CPU必须该cacheline状态设置为无效，并且用read response”和“invalidate acknowledge来回应收到的read invalidate的请求，完成整个bus transaction。一旦完成这个transaction，数据被送往其他cpu cache中，本地的copy已经不存在了。</p>
 <ul>
@@ -414,10 +470,10 @@
 <li>Transition (l)：</li>
 </ul>
 <p>当cacheline处于shared状态的时候，说明在多个cpu的local cache中存在副本，因此，这些cacheline中的数据都是read only的，一旦其中一个cpu想要执行数据写入的动作，必须先通过invalidate获取该数据的独占权，而其他的CPU会以invalidate acknowledge回应，清空数据并将其cacheline从shared状态修改成invalid状态。</p>
-<h2><span id="mesi-协议例子">MESI 协议例子</span></h2><p>OK，在理解了各种cacheline状态、各种MESI协议消息以及状态迁移的描述之后，我们从cache line数据的角度来看看MESI协议是如何运作的。开始，数据保存在memory的0地址中，随后，该数据会穿行在四个CPU的local cache中。</p>
+<h2><span id="mesi-协议例子">MESI 协议例子</span></h2>
+<p>OK，在理解了各种cacheline状态、各种MESI协议消息以及状态迁移的描述之后，我们从cache line数据的角度来看看MESI协议是如何运作的。开始，数据保存在memory的0地址中，随后，该数据会穿行在四个CPU的local cache中。</p>
 <p>为了方便起见，我们让CPU local cache使用最简单的Direct-mapped的组织形式。具体的过程可以参考下面的图片：</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624522274781.png" alt></p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -430,7 +486,7 @@
 <tr>
 <td>Sequence</td>
 <td>第一列是操作序列号，也就是时间执行顺序</td>
-<td>0 , 1, 2 </td>
+<td>0 , 1, 2</td>
 </tr>
 <tr>
 <td>CPU</td>
@@ -454,38 +510,48 @@
 </tr>
 </tbody>
 </table>
-</div>
 <hr>
-<p><br></p>
+<br>
 <ul>
-<li><p>最开始的时候（sequence 0），各个cpu cache中的cacheline都是Invalid状态，而Memory中的数据都保存了最新的数据。</p>
+<li>
+<p>最开始的时候（sequence 0），各个cpu cache中的cacheline都是Invalid状态，而Memory中的数据都保存了最新的数据。</p>
 </li>
-<li><p>随后（sequence 1），CPU 0执行了load操作，将address 0的数据加载到寄存器，这个操作使得保存0地址数据的那个cacheline从invalid状态迁移到shared状态。</p>
+<li>
+<p>随后（sequence 1），CPU 0执行了load操作，将address 0的数据加载到寄存器，这个操作使得保存0地址数据的那个cacheline从invalid状态迁移到shared状态。</p>
 </li>
-<li><p>随后（sequence 2），CPU3也对0地址执行了load操作，导致其local cache上对应的cacheline也切换到shared状态</p>
+<li>
+<p>随后（sequence 2），CPU3也对0地址执行了load操作，导致其local cache上对应的cacheline也切换到shared状态</p>
 </li>
-<li><p>sequence 3中，CPU 0执行了对地址8的load操作，由于地址0和地址8都是选择同一个cache set，而且，我们之前已经说过，该cache是direct-mapped的（即每个set只有一个cacheline），因此需要首先清空该cacheline中的数据（该操作被称为Invalidation），由于cacheline的状态是shared，因此，不需要通知其他CPU。 invalidation local cache上的cacheline之后，cpu 0的load操作将该cacheline状态修改成Shared状态（保存地址8的数据）</p>
+<li>
+<p>sequence 3中，CPU 0执行了对地址8的load操作，由于地址0和地址8都是选择同一个cache set，而且，我们之前已经说过，该cache是direct-mapped的（即每个set只有一个cacheline），因此需要首先清空该cacheline中的数据（该操作被称为Invalidation），由于cacheline的状态是shared，因此，不需要通知其他CPU。 invalidation local cache上的cacheline之后，cpu 0的load操作将该cacheline状态修改成Shared状态（保存地址8的数据）</p>
 </li>
-<li><p>sequence 4 CPU 2也开始执行load操作了虽然是load操作，但是CPU知道程序随后会修改该值（不是原子操作的read-modify-write，否就是迁移到Modified状态了，也不是单纯的load操作，否则会迁移到shared状态），因此向总线发送了read invalidate命令，一方面获取该数据（自己的local cache中没有地址0的数据），另外，CPU 2想独占该数据（因为随后要write）。这个操作导致CPU 3的cacheline迁移到invalid状态。当然，这时候，memory仍然是最新的有效数据。</p>
+<li>
+<p>sequence 4 CPU 2也开始执行load操作了虽然是load操作，但是CPU知道程序随后会修改该值（不是原子操作的read-modify-write，否就是迁移到Modified状态了，也不是单纯的load操作，否则会迁移到shared状态），因此向总线发送了read invalidate命令，一方面获取该数据（自己的local cache中没有地址0的数据），另外，CPU 2想独占该数据（因为随后要write）。这个操作导致CPU 3的cacheline迁移到invalid状态。当然，这时候，memory仍然是最新的有效数据。</p>
 </li>
-<li><p>Sequence5 CPU 2的store操作很快到来，由于准备工作做的比较充分（Exclusive状态，独占该数据），cpu直接修改cacheline中的数据（对应地址0），从而将其状态迁移到modified状态，同时要注意的是：memory中的数据已经失效，不是最新的数据了，任何其他CPU发起对地址0的load操作都不能从memory中读取，而是通过嗅探（snoop）的方式从CPU 2的local cache中获取。</p>
+<li>
+<p>Sequence5 CPU 2的store操作很快到来，由于准备工作做的比较充分（Exclusive状态，独占该数据），cpu直接修改cacheline中的数据（对应地址0），从而将其状态迁移到modified状态，同时要注意的是：memory中的数据已经失效，不是最新的数据了，任何其他CPU发起对地址0的load操作都不能从memory中读取，而是通过嗅探（snoop）的方式从CPU 2的local cache中获取。</p>
 </li>
-<li><p>sequence 6中，CPU 1对地址0的数据执行原子的加1操作，这时候CPU 1会发出read invalidate命令，将地址0的数据从CPU 2的cacheline中嗅探得到，同时通过invalidate其他CPU local cache的内容而获得独占性的数据访问权。这时候，CPU 2中的cacheline状态变成invalid状态，而CPU 1将从invalid状态迁移到modified状态</p>
+<li>
+<p>sequence 6中，CPU 1对地址0的数据执行原子的加1操作，这时候CPU 1会发出read invalidate命令，将地址0的数据从CPU 2的cacheline中嗅探得到，同时通过invalidate其他CPU local cache的内容而获得独占性的数据访问权。这时候，CPU 2中的cacheline状态变成invalid状态，而CPU 1将从invalid状态迁移到modified状态</p>
 </li>
-<li><p>sequence 7，CPU 1对地址8进行load操作，由于cacheline被地址0占据，因此需要首先将其驱逐出cache，于是执行write back操作将地址0的数据写回到memory，同时发送read命名，从CPU 0的cache中获得数据加载其cacheline，最后，CPU1的cache变成shared状态（保存地址8的数据）。由于执行了write back操作，memory中地址0的数据又变成最新的有效数据了。</p>
+<li>
+<p>sequence 7，CPU 1对地址8进行load操作，由于cacheline被地址0占据，因此需要首先将其驱逐出cache，于是执行write back操作将地址0的数据写回到memory，同时发送read命名，从CPU 0的cache中获得数据加载其cacheline，最后，CPU1的cache变成shared状态（保存地址8的数据）。由于执行了write back操作，memory中地址0的数据又变成最新的有效数据了。</p>
 </li>
 </ul>
 <p><strong>这里有个动画，来说明CPU MESI协议的工作原理 这里做个传送门<a href="https://www.scss.tcd.ie/Jeremy.Jones/VivioJS/caches/MESIHelp.htm" target="_blank" rel="noopener">MESI协议动画演示</a></strong></p>
-<h2><span id="store-buffers">Store Buffers</span></h2><p>在上面的现代计算机cache结构图，我们可以看出，针对某些特定地址的数据（在一个cacheline中）重复的进行读写，这种结构可以获得很好的性能，不过，对于第一次写，其性能非常差。下面的这个图可以展示为何写性能差：</p>
+<h2><span id="store-buffers">Store Buffers</span></h2>
+<p>在上面的现代计算机cache结构图，我们可以看出，针对某些特定地址的数据（在一个cacheline中）重复的进行读写，这种结构可以获得很好的性能，不过，对于第一次写，其性能非常差。下面的这个图可以展示为何写性能差：</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624589488820.png" alt></p>
-<p>cpu 0发起一次对某个地址的写操作，但是local cache没有数据，该数据在CPU 1的local cache中，因此，为了完成写操作，CPU 0发出invalidate的命令，invalidate其他CPU的cache数据。只有完成了这些总线上的transaction之后，CPU 0才能正在发起写的操作，这是一个漫长的等待过程，<br>但是，其实没必要等待这么长的时间，毕竟，物理CPU 1中的cacheline保存有什么样子的数据，其实都没有意义，这个值都会被CPU 0新写入的值覆盖的。</p>
+<p>cpu 0发起一次对某个地址的写操作，但是local cache没有数据，该数据在CPU 1的local cache中，因此，为了完成写操作，CPU 0发出invalidate的命令，invalidate其他CPU的cache数据。只有完成了这些总线上的transaction之后，CPU 0才能正在发起写的操作，这是一个漫长的等待过程，<br>
+但是，其实没必要等待这么长的时间，毕竟，物理CPU 1中的cacheline保存有什么样子的数据，其实都没有意义，这个值都会被CPU 0新写入的值覆盖的。</p>
 <p>有一种可以阻止cpu进入无聊等待状态的方法就是在CPU和cache之间增加store buffer。</p>
 <p><strong>注意下图，写入store buffer是单向的</strong></p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624589532895.png" alt></p>
 <p>一旦增加了store buffer，那么cpu0无需等待其他CPU的相应，只需要将要修改的内容放入store buffer，然后继续执行就OK了。当cacheline完成了bus transaction，并更新了cacheline的状态后，要修改的数据将从store buffer进入cacheline。</p>
 <p>这些store buffer对于cpu而言是私有的的，多核CPU的情况下，每一个cpu拥有自己私有的stroe buffer，一个cpu只能访问自己私有的那个store buffer。</p>
 <p>在上图中，cpu 0不能访问cpu1的store buffer，store buffer增加了CPU连续写的性能，同时把各个CPU之间的通信的任务交给维护cache一致性的协议。当然这种设计会引入了一些复杂性问题。</p>
-<h2><span id="store-forwarding">Store Forwarding</span></h2><p>上文提到store buffer引入了复杂性，我们先看第一个例子：本地数据不一致的问题。我们先看看下面的代码：</p>
+<h2><span id="store-forwarding">Store Forwarding</span></h2>
+<p>上文提到store buffer引入了复杂性，我们先看第一个例子：本地数据不一致的问题。我们先看看下面的代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> b = a + <span class="number">1</span>;</span><br><span class="line">System.out.println(b == <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624610580058.png" alt></p>
 <ul>
@@ -516,7 +582,8 @@
 <p>有了store forwarding的设计，上面的步骤（5）和 （6）中就可以在store buffer获取正确的a值是”1“而不是”0“，因此计算得到的b的结果就是2，和我们预期的一致了。</p>
 <p>如下图：</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624611544452.png" alt></p>
-<h2><span id="memory-barriers">Memory Barriers</span></h2><p>关于store buffer引入的复杂性，我们再来看看第二个例子：</p>
+<h2><span id="memory-barriers">Memory Barriers</span></h2>
+<p>关于store buffer引入的复杂性，我们再来看看第二个例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = b = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  a = <span class="number">1</span>;</span><br><span class="line">  b = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (b == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">  <span class="keyword">assert</span>(a == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>同样的，a和b都是初始化成0.我们假设CPU 0执行foo函数，CPU 1执行bar函数。我们再进一步假设a变量在CPU 1的cache中，b在CPU 0 cache中</p>
 <p>执行的操作序列如下：</p>
@@ -526,13 +593,17 @@
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624617764687.png" alt></p>
 <ul>
-<li><p>（2）CPU 1执行 while (b == 0) 循环，由于b不在CPU 1的cache中，因此 CPU1发送一个read message到总线上，看看是否可以从其他cpu的local cache中或者memory中获取数据</p>
+<li>
+<p>（2）CPU 1执行 while (b == 0) 循环，由于b不在CPU 1的cache中，因此 CPU1发送一个read message到总线上，看看是否可以从其他cpu的local cache中或者memory中获取数据</p>
 </li>
-<li><p>（3）CPU 0继续执行b=1的赋值语句，由于b就在自己的local cache中（cacheline处于modified状态或者exclusive状态），因此CPU0可以直接操作将新的值1写入cache line。</p>
+<li>
+<p>（3）CPU 0继续执行b=1的赋值语句，由于b就在自己的local cache中（cacheline处于modified状态或者exclusive状态），因此CPU0可以直接操作将新的值1写入cache line。</p>
 </li>
-<li><p>（4）CPU 0收到了read message，将最新的b值”1“回送给CPU 1，同时将b cacheline的状态设定为shared</p>
+<li>
+<p>（4）CPU 0收到了read message，将最新的b值”1“回送给CPU 1，同时将b cacheline的状态设定为shared</p>
 </li>
-<li><p>（5）CPU 1收到了来自CPU 0的read response消息，将b变量的最新值”1“值写入自己的cacheline，状态修改为shared。</p>
+<li>
+<p>（5）CPU 1收到了来自CPU 0的read response消息，将b变量的最新值”1“值写入自己的cacheline，状态修改为shared。</p>
 </li>
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624617938017.png" alt></p>
@@ -542,38 +613,49 @@
 <li>（8）CPU 1收到了来自CPU 0的read invalidate消息，以a变量的值进行回应，同时清空自己的cacheline，但是这已经太晚了。</li>
 </ul>
 <p>遇到这样的问题，CPU设计者也不能直接帮什么忙，毕竟CPU并不知道哪些变量有相关性，这些变量是如何相关的。不过CPU设计者可以间接提供一些工具让软件工程师来控制这些相关性。这些工具就是memory-barrier指令。要想程序正常运行，必须增加一些memory barrier的操作.</p>
-<h2><span id="memory-barrier">memory-barrier</span></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = b = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  a = <span class="number">1</span>;</span><br><span class="line">  smp_mb();</span><br><span class="line">  b = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (b == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">  <span class="keyword">assert</span>(a == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="memory-barrier">memory-barrier</span></h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = b = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  a = <span class="number">1</span>;</span><br><span class="line">  smp_mb();</span><br><span class="line">  b = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (b == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">  <span class="keyword">assert</span>(a == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>smp_mb() 这个内存屏障的操作会在执行后续的store操作之前，首先flush store buffer（也就是将之前的值写入到cacheline中）smp_mb() 操作主要是为了让数据在local cache中的操作顺序是符合program order的顺序的，为了达到这个目标有两种方法：</p>
 <ul>
-<li><p>CPU stall，直到完成了清空了store buffer（也就是把store buffer中的数据写入cacheline了）</p>
+<li>
+<p>CPU stall，直到完成了清空了store buffer（也就是把store buffer中的数据写入cacheline了）</p>
 </li>
-<li><p>CPU可以继续运行，不过需要在store buffer中做些文章，也就是要记录store buffer中数据的顺序，在将store buffer的数据更新到cacheline的操作中，严格按照顺序执行，即便是后来的store buffer数据对应的cacheline已经ready，也不能执行操作，要等前面的store buffer值写到cacheline之后才操作。</p>
+<li>
+<p>CPU可以继续运行，不过需要在store buffer中做些文章，也就是要记录store buffer中数据的顺序，在将store buffer的数据更新到cacheline的操作中，严格按照顺序执行，即便是后来的store buffer数据对应的cacheline已经ready，也不能执行操作，要等前面的store buffer值写到cacheline之后才操作。</p>
 </li>
 </ul>
 <p>接下来，我们再来看一下整个的运行过程：</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624673274521.png" alt></p>
 <ul>
-<li><p>(1） CPU 0执行a=1的赋值操作，由于a不在local cache中，因此，CPU 0将a值放到store buffer中之后，发送了read invalidate命令到总线上去。</p>
+<li>
+<p>(1） CPU 0执行a=1的赋值操作，由于a不在local cache中，因此，CPU 0将a值放到store buffer中之后，发送了read invalidate命令到总线上去。</p>
 </li>
-<li><p>（2） CPU 1执行 while (b == 0) 循环，由于b不在CPU 1的cache中，因此，CPU发送一个read message到总线上，看看是否可以从其他cpu的local cache中或者memory中获取数据</p>
+<li>
+<p>（2） CPU 1执行 while (b == 0) 循环，由于b不在CPU 1的cache中，因此，CPU发送一个read message到总线上，看看是否可以从其他cpu的local cache中或者memory中获取数据</p>
 </li>
-<li><p>（3） CPU 0执行smp_mb()函数，给目前store buffer中的所有项做一个标记（后面我们称之marked entries）。当然，针对我们这个例子，store buffer中只有一个marked entry就是“a=1”。</p>
+<li>
+<p>（3） CPU 0执行smp_mb()函数，给目前store buffer中的所有项做一个标记（后面我们称之marked entries）。当然，针对我们这个例子，store buffer中只有一个marked entry就是“a=1”。</p>
 </li>
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624673505186.png" alt></p>
 <ul>
-<li><p>（4）CPU 0继续执行b=1的赋值语句，虽然b就在自己的local cache中（cacheline处于modified状态或者exclusive状态），不过在store buffer中有marked entry，因此CPU0并没有直接操作将新的值1写入cache line，取而代之是b的新值”1“被写入store buffer，当然是unmarked状态。</p>
+<li>
+<p>（4）CPU 0继续执行b=1的赋值语句，虽然b就在自己的local cache中（cacheline处于modified状态或者exclusive状态），不过在store buffer中有marked entry，因此CPU0并没有直接操作将新的值1写入cache line，取而代之是b的新值”1“被写入store buffer，当然是unmarked状态。</p>
 </li>
-<li><p>（5）CPU 0收到了read message，将b值”0“（新值”1“还在store buffer中）回送给CPU 1，同时将b cacheline的状态设定为shared。</p>
+<li>
+<p>（5）CPU 0收到了read message，将b值”0“（新值”1“还在store buffer中）回送给CPU 1，同时将b cacheline的状态设定为shared。</p>
 </li>
-<li><p>（6） CPU 1收到了来自CPU 0的read response消息，将b变量的值（”0“）写入自己的cacheline，状态修改为shared。</p>
+<li>
+<p>（6） CPU 1收到了来自CPU 0的read response消息，将b变量的值（”0“）写入自己的cacheline，状态修改为shared。</p>
 </li>
-<li><p>（7） 完成了bus transaction之后，CPU 1可以load b到寄存器中了（local cacheline中已经有b值了），当然，这时候b仍然等于0，因此循环不断的loop。虽然b值在CPU 0上已经赋值等于1，但是那个新值被安全的隐藏在CPU 0的store buffer中。</p>
+<li>
+<p>（7） 完成了bus transaction之后，CPU 1可以load b到寄存器中了（local cacheline中已经有b值了），当然，这时候b仍然等于0，因此循环不断的loop。虽然b值在CPU 0上已经赋值等于1，但是那个新值被安全的隐藏在CPU 0的store buffer中。</p>
 </li>
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624673637069.png" alt></p>
 <ul>
-<li>（8）CPU 1收到了来自CPU 0的read invalidate消息，以a变量的值进行回应，同时清空自己的cacheline。<br>（9）CPU 0将store buffer中的a值写入cacheline，并且将cacheline状态修改为modified状态。</li>
+<li>（8）CPU 1收到了来自CPU 0的read invalidate消息，以a变量的值进行回应，同时清空自己的cacheline。<br>
+（9）CPU 0将store buffer中的a值写入cacheline，并且将cacheline状态修改为modified状态。</li>
 <li>（10） 因此，完成step 9之后，store buffer的b也可以进入cacheline了。不过需要注意的是，当前b对应的cacheline的状态是shared。因此还不能进入到cacheline里</li>
 <li>（11）CPU 0发送invalidate消息，请求b数据的独占权</li>
 <li>（12） CPU 1收到invalidate消息，清空自己的b cacheline，并回送acknowledgement给CPU 0。</li>
@@ -587,26 +669,34 @@
 <li>（17） CPU 1执行assert(a == 1)，不过这时候a值没有在自己的cacheline中，因此需要通过cache一致性协议从CPU 0那里获得，这时候获取的是a的最新值，也就是1值，因此assert成功。</li>
 </ul>
 <p>通过上面的描述，我们可以看到，一个直观上很简单的给a变量赋值的操作，都需要那么长的执行过程，而且每一步都需要芯片参与，最终完成整个复杂的赋值操作过程。</p>
-<h2><span id="store-sequences-result-in-unnecessary-stalls">Store Sequences Result in Unnecessary Stalls</span></h2><h3><span id="invalidate-queues">Invalidate Queues</span></h3><p>不幸的是：每个cpu的store buffer不能实现的太大，其entry的数目不会太多。当cpu以中等的频率执行store操作的时候（假设所有的store操作导致了cache miss），store buffer会很快的被填满。在这种状况下，CPU只能又进入等待状态，直到cache line完成invalidation和ack的交互之后，可以将store buffer的entry写入cacheline，从而为新的store让出空间之后，CPU才可以继续执行。这种状况也可能发生在调用了memory barrier指令之后，因为一旦store buffer中的某个entry被标记了，那么随后的store都必须等待invalidation完成，因此不管是否cache miss，这些store都必须进入store buffer。</p>
+<h2><span id="store-sequences-result-in-unnecessary-stalls">Store Sequences Result in Unnecessary Stalls</span></h2>
+<h3><span id="invalidate-queues">Invalidate Queues</span></h3>
+<p>不幸的是：每个cpu的store buffer不能实现的太大，其entry的数目不会太多。当cpu以中等的频率执行store操作的时候（假设所有的store操作导致了cache miss），store buffer会很快的被填满。在这种状况下，CPU只能又进入等待状态，直到cache line完成invalidation和ack的交互之后，可以将store buffer的entry写入cacheline，从而为新的store让出空间之后，CPU才可以继续执行。这种状况也可能发生在调用了memory barrier指令之后，因为一旦store buffer中的某个entry被标记了，那么随后的store都必须等待invalidation完成，因此不管是否cache miss，这些store都必须进入store buffer。</p>
 <p>引入invalidate queues可以缓解这个状况。store buffer之所以很容易被填充满，主要是其他CPU回应invalidate acknowledge比较慢，如果能够加快这个过程，让store buffer尽快进入cacheline，那么也就不会那么容易填满了。</p>
 <p>invalidate acknowledge不能尽快回复的主要原因是invalidate cacheline的操作没有那么快完成，特别是cache比较繁忙的时候，这时，CPU往往进行密集的loading和storing的操作，而来自其他CPU的，对本CPU local cacheline的操作需要和本CPU的密集的cache操作进行竞争，只要完成了invalidate操作之后，本CPU才会发生invalidate acknowledge。此外，如果短时间内收到大量的invalidate消息，CPU有可能跟不上处理，从而导致其他CPU不断的等待。</p>
 <p>然而，CPU其实不需要完成invalidate操作就可以回送acknowledgement消息，这样，就不会阻止发生invalidate请求的那个CPU进入无聊的等待状态。CPU可以buffer这些invalidate message（放入Invalidate Queues），然后直接回应acknowledgement，表示自己已经收到请求，随后会慢慢处理。当然，再慢也要有一个度，例如对a变量cacheline的invalidate处理必须在该CPU发送任何关于a变量对应cacheline的操作到bus之前完成。</p>
-<h2><span id="invalidate-queues-and-invalidate-acknowledge">Invalidate Queues and Invalidate Acknowledge</span></h2><p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624851575788.png" alt></p>
+<h2><span id="invalidate-queues-and-invalidate-acknowledge">Invalidate Queues and Invalidate Acknowledge</span></h2>
+<p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624851575788.png" alt></p>
 <p>有了Invalidate Queue的CPU，在收到invalidate消息的时候首先把它放入Invalidate Queue，同时立刻回送acknowledge 消息，无需等到该cacheline被真正invalidate之后再回应。当然，如果本CPU想要针对某个cacheline向总线发送invalidate消息的时候，那么CPU必须首先去Invalidate Queue中看看是否有相关的cacheline，如果有，那么不能立刻发送，需要等到Invalidate Queue中的cacheline被处理完之后再发送。</p>
 <p>一旦将一个invalidate（例如针对变量a的cacheline）消息放入CPU的Invalidate Queue，实际上该CPU就等于作出这样的承诺：在处理完该invalidate消息之前，不会发送任何相关（即针对变量a的cacheline）的MESI协议消息。只要是对该cacheline的竞争不是那么剧烈，CPU还是对这样的承诺很有信心的。</p>
 <p>然而，缓存了invalidate消息也会引入一些其他的memory order的问题，我们在下一节讨论。</p>
-<h3><span id="invalidate-queues-and-memory-barriers">Invalidate Queues and Memory Barriers</span></h3><p>我们假设CPU缓存invalidation消息，在操作cacheline之前直接回应该invalidation消息。这样的机制对于发送invalidation的CPU侧是非常好的事，该CPU的store性能会非常高，但是会使内存屏障指令失效，我们来看看下面的例子：</p>
+<h3><span id="invalidate-queues-and-memory-barriers">Invalidate Queues and Memory Barriers</span></h3>
+<p>我们假设CPU缓存invalidation消息，在操作cacheline之前直接回应该invalidation消息。这样的机制对于发送invalidation的CPU侧是非常好的事，该CPU的store性能会非常高，但是会使内存屏障指令失效，我们来看看下面的例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    a = <span class="number">1</span>;</span><br><span class="line">    smp_mb();</span><br><span class="line">    b = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="keyword">while</span> (b == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line"> <span class="keyword">assert</span>(a == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在上面的代码片段中，我们假设a和b初值是0，并且a在CPU 0和CPU 1都有缓存的副本，即a变量对应的CPU0和CPU 1的cacheline都是shared状态。b处于exclusive或者modified状态，被CPU 0独占。我们假设CPU 0执行foo函数，CPU 1执行bar函数。</p>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624856118442.png" alt></p>
 <ul>
-<li><p>（1） CPU 0执行a=1的赋值操作，由于a在CPU 0 local cache中的cacheline处于shared状态，因此，CPU 0将a的新值“1”放入store buffer，并且发送了invalidate消息去清空CPU 1对应的cacheline。</p>
+<li>
+<p>（1） CPU 0执行a=1的赋值操作，由于a在CPU 0 local cache中的cacheline处于shared状态，因此，CPU 0将a的新值“1”放入store buffer，并且发送了invalidate消息去清空CPU 1对应的cacheline。</p>
 </li>
-<li><p>（2）CPU 1执行while (b == 0)的循环操作，但是b没有在local cache，因此发送read消息试图获取该值。</p>
+<li>
+<p>（2）CPU 1执行while (b == 0)的循环操作，但是b没有在local cache，因此发送read消息试图获取该值。</p>
 </li>
-<li><p>（3）CPU 1收到了CPU 0的invalidate消息，放入Invalidate Queue，并立刻回送Ack。</p>
+<li>
+<p>（3）CPU 1收到了CPU 0的invalidate消息，放入Invalidate Queue，并立刻回送Ack。</p>
 </li>
-<li><p>（4） CPU 0收到了CPU 1的invalidate ACK之后，即可以越过程序设定内存屏障（第四行代码的smp_mb() ），这样a的新值从store buffer进入cacheline，状态变成Modified。</p>
+<li>
+<p>（4） CPU 0收到了CPU 1的invalidate ACK之后，即可以越过程序设定内存屏障（第四行代码的smp_mb() ），这样a的新值从store buffer进入cacheline，状态变成Modified。</p>
 </li>
 </ul>
 <p><img src="/article/why-memory-barriers-1/why-memory-barriers-1624856146651.png" alt></p>
@@ -627,20 +717,25 @@
 <li>（11） 由于a变量在local cache中无效，因此CPU 1在执行assert(a == 1)的时候需要发送一个read消息去获取a值。CPU 0用a的新值1回应来自CPU 1的请求。</li>
 <li>（12） CPU 1获得了a的新值，并放入cacheline，这时候assert(a == 1)不会失败了。</li>
 </ul>
-<h3><span id="read-and-write-memory-barriers">Read and Write Memory Barriers</span></h3><p>在我们上面的例子中，memory barrier指令对store buffer和invalidate queue都进行了标注，不过，在实际的代码片段中，foo函数不需要mark invalidate queue，bar函数不需要mark store buffer</p>
+<h3><span id="read-and-write-memory-barriers">Read and Write Memory Barriers</span></h3>
+<p>在我们上面的例子中，memory barrier指令对store buffer和invalidate queue都进行了标注，不过，在实际的代码片段中，foo函数不需要mark invalidate queue，bar函数不需要mark store buffer</p>
 <p>因此，许多CPU architecture提供了弱一点的memory barrier指令只mark其中之一。如果只mark invalidate queue，那么这种memory barrier被称为read memory barrier。相应的，write memory barrier只mark store buffer。一个全功能的memory barrier会同时mark store buffer和invalidate queue。</p>
 <p>我们一起来看看读写内存屏障的执行效果：对于read memory barrier指令，它只是约束执行CPU上的load操作的顺序，具体的效果就是CPU一定是完成read memory barrier之前的load操作之后，才开始执行read memory barrier之后的load操作。read memory barrier指令象一道栅栏，严格区分了之前和之后的load操作。同样的，write memory barrier指令，它只是约束执行CPU上的store操作的顺序，具体的效果就是CPU一定是完成write memory barrier之前的store操作之后，才开始执行write memory barrier之后的store操作。全功能的memory barrier会同时约束load和store操作，当然只是对执行memory barrier的CPU有效。</p>
 <p>现在，我们可以改一个用读写内存屏障的版本了，具体如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    a = <span class="number">1</span>;</span><br><span class="line">    smp_wmb();</span><br><span class="line">    b = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bar</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="keyword">while</span> (b == <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line"> smp_rmb()</span><br><span class="line"> <span class="keyword">assert</span>(a == <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="总结">总结</span></h2><p>简单总结一下：smp_mb 包含的语义有些“重”，既包含了 Store Buffer 的 flush，又包含了 Invalidate Queue 的等待环节，但现实场景下，我们可能只需要与其中一个数据结构打交道即可。于是，CPU 的设计者把 smp_mb 屏障进一步拆分，一分为二， smp_rmb 称之为读内存屏障，smp_wmb 称之为写内存屏障。他们分别的语义也相应做了简化：</p>
+<h2><span id="总结">总结</span></h2>
+<p>简单总结一下：smp_mb 包含的语义有些“重”，既包含了 Store Buffer 的 flush，又包含了 Invalidate Queue 的等待环节，但现实场景下，我们可能只需要与其中一个数据结构打交道即可。于是，CPU 的设计者把 smp_mb 屏障进一步拆分，一分为二， smp_rmb 称之为读内存屏障，smp_wmb 称之为写内存屏障。他们分别的语义也相应做了简化：</p>
 <ul>
-<li><p>smp_wmb(StoreStore)：执行后需等待 Store Buffer 中的写入变更 flush 完全到缓存后，后续的写操作才能继续执行，保证执行前后的写操作对其他 CPU 而言是顺序执行的；</p>
+<li>
+<p>smp_wmb(StoreStore)：执行后需等待 Store Buffer 中的写入变更 flush 完全到缓存后，后续的写操作才能继续执行，保证执行前后的写操作对其他 CPU 而言是顺序执行的；</p>
 </li>
-<li><p>smp_rmb(LoadLoad)：执行后需等待 Invalidate Queue 完全应用到缓存后，后续的读操作才能继续执行，保证执行前后的读操作对其他 CPU 而言是顺序执行的；</p>
+<li>
+<p>smp_rmb(LoadLoad)：执行后需等待 Invalidate Queue 完全应用到缓存后，后续的读操作才能继续执行，保证执行前后的读操作对其他 CPU 而言是顺序执行的；</p>
 </li>
 </ul>
 <p>如果没有 smp_wmb，那么 foo 方法对于别的 CPU 而言，a 与 b 赋值语句的执行顺序是不确定的，可能会导致 assert failed；如果没有 smp_rmb，那么 bar 方法对于其他 CPU 而言，b 与 a 的 读取指令的执行顺序也是不确定的，也可能会导致 assert failed。（这里做个说明，如果 当b 读取成功后，那么意味着 a 在其他的cpu已经值已经完成，那么load b 之后 在去load a 就是没问题的就会让其他CPU 告诉 a = 1 这样是没问题的，如果没有这个屏障，相当于a还是等于0，那么意味着这个cpu 是先load a的值，然后用a的值惊醒操作，在load b 之后，a = 1 已经写入内存完成，那么就产生了乱序。）</p>
-<h2><span id="参考">参考</span></h2><ul>
+<h2><span id="参考">参考</span></h2>
+<ul>
 <li><a href="https://zhuanlan.zhihu.com/p/80672073" target="_blank" rel="noopener">程序优化：CPU缓存基础知识</a></li>
 <li><a href="https://blinkfox.github.io/2018/11/18/ruan-jian-gong-ju/cpu-duo-ji-huan-cun/" target="_blank" rel="noopener">CPU多级缓存</a></li>
 <li><a href="http://lihaizhou.top/2020/06/20/Memory-Barrier%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" target="_blank" rel="noopener">内存屏障</a></li>
