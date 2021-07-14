@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,14 +221,11 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概诉">概诉</span></h2>
-<p><a href="https://icefrozen.github.io/article/reservoir-sampling/" target="_blank" rel="noopener">水库抽样算法</a> 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。</p>
+                <h2><span id="概诉">概诉</span></h2><p><a href="https://icefrozen.github.io/article/reservoir-sampling/" target="_blank" rel="noopener">水库抽样算法</a> 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。</p>
 <p>Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那些在数据流中出现频率最高的数据项。频繁项挖掘，这个看似简单的任务却是很多复杂算法的基础，同时也有着广泛的应用。</p>
 <p>对于频繁项挖掘而言，一个简单的想法是，为所有的数据项分配计数器，当一个数据项到达，我们即增加相应计数器的值。但当数据流的规模较大时，出于内存的限制，我们往往不可能为每个数据项分配计数器。而Misra-Gries算法则是以一种清奇的思路解决了这个问题，实现了在内存受限的情况下，以较小的错误率统计数据流中的频繁项。</p>
-<h5><span id="问题描述">问题描述</span></h5>
-<ul>
-<li>
-<p>先讲解一下大数据的数据流模型特点：</p>
+<h5><span id="问题描述">问题描述</span></h5><ul>
+<li><p>先讲解一下大数据的数据流模型特点：</p>
 <ul>
 <li>数据只能扫描1次或几次；</li>
 <li>能够使用的内存是有限的（内存&lt;&lt;数据规模）；</li>
@@ -238,29 +235,22 @@
 </ul>
 <p>总结来说：<strong>数据要快速处理；空间亚线性。</strong></p>
 <ul>
-<li>
-<p>问题描述</p>
+<li><p>问题描述</p>
 <ul>
-<li>输入：大数据流序列&lt;x1,x2,x3… …&gt;。</li>
+<li>输入：大数据流序列<x1,x2,x3... ...>。</x1,x2,x3...></li>
 <li>输出：找出数据流中当前扫描的元素序列中出现最频繁的元素的信息。</li>
 </ul>
 </li>
-<li>
-<p>问题定义</p>
-<p><strong><em>对于流<img src="/article/most-frequent-number-in-stream/1560856790132most-frequent-number-in-stream_.png" alt> 隐式地定义了一个频率向量f=(f1,…,fn)。注意f1+…+fn=m。</em></strong></p>
-<p><strong><em>对于一个参数k，输出集合<img src="/article/most-frequent-number-in-stream/1560856883155most-frequent-number-in-stream_.png" alt></em></strong></p>
+<li><p>问题定义</p>
+<p>  <strong><em>对于流<img src="/article/most-frequent-number-in-stream/1560856790132most-frequent-number-in-stream_.png" alt> 隐式地定义了一个频率向量f=(f1,…,fn)。注意f1+…+fn=m。</em></strong></p>
+<p>  <strong><em>对于一个参数k，输出集合<img src="/article/most-frequent-number-in-stream/1560856883155most-frequent-number-in-stream_.png" alt></em></strong></p>
 </li>
 </ul>
 <pre><code>频繁元素问题有广泛的应用。在网络当中找到“elephant flow”、ip地址等，在搜索引擎中找到频繁查询，可以给这些最频繁的查询做一些优化。在应用当中求频繁元素时有一个假设，即**Zipf原则:典型的频率分布是高度偏斜的，只有少数频繁元素，大多数元素是非常不频繁的**。这个假设是合法的，根据统计一般最多10%的元素占元素总个数的90%。
-</code></pre>
-<h2><span id="问题分析">问题分析</span></h2>
+</code></pre><h2><span id="问题分析">问题分析</span></h2><ul>
+<li><p>举个简单的例子，例如<br>输入 ： <code>&lt;32,12,14,32,7,12,32,7,6,12,4&gt;</code> 其中 <code>n=6，k=3，m=11</code></p>
 <ul>
-<li>
-<p>举个简单的例子，例如<br>
-输入 ： <code>&lt;32,12,14,32,7,12,32,7,6,12,4&gt;</code> 其中 <code>n=6，k=3，m=11</code></p>
-<ul>
-<li>算法如下：
-<ol>
+<li>算法如下：<ol>
 <li>对于接收到的元素x，如果已经为其分配计数器，则把相应计数器加1；</li>
 <li>如果没有相应计数器，但计数器个数少于k,就为其分配计数器，并设为1，意味着内存中还有空间；</li>
 <li>如果当前计数器的个数为k，说明内存已经满了，则把所有计数器减1，然后删除取值为0的计数器，这样内存就又有空间了，再依次处理下一个。</li>
@@ -268,70 +258,26 @@
 </li>
 </ul>
 </li>
-<li>
-<p>计算过程如下</p>
+<li><p>计算过程如下</p>
 <ul>
-<li>
-<ol>
-<li>接收<code>32</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="2">
-<li>接收<code>12</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>，<code>&lt;12,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="3">
-<li>接收<code>14</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="4">
-<li>接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="5">
-<li>接收<code>7，7</code>不在内存当中，需要为其分配新的计数器，但是内存没有空间了。这时将所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除，这时候，<code>12</code>和<code>14</code>的计数器就没有了。注意此时不将<code>7</code>的计数器加<code>1</code>,内存状态<code>&lt;32,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="6">
-<li>接收<code>12</code>，内存又有空间，为其重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="7">
-<li>接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="8">
-<li>接收<code>7</code>，为其分配计数器，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;7,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="9">
-<li>接收<code>6</code>，这时候内存满了，把所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除,内存状态<code>&lt;32,1&gt;</code>。</li>
-</ol>
-</li>
-<li>
-<ol start="10">
-<li>接收<code>12</code>，内存又有空间，为其再重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</li>
-</ol>
+<li>1) 接收<code>32</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>。</li>
+<li>2) 接收<code>12</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;</code>，<code>&lt;12,1&gt;</code>。</li>
+<li>3) 接收<code>14</code>，内存有空间，为其分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
+<li>4) 接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;14,1&gt;</code>。</li>
+<li>5) 接收<code>7，7</code>不在内存当中，需要为其分配新的计数器，但是内存没有空间了。这时将所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除，这时候，<code>12</code>和<code>14</code>的计数器就没有了。注意此时不将<code>7</code>的计数器加<code>1</code>,内存状态<code>&lt;32,1&gt;</code>。</li>
+<li>6) 接收<code>12</code>，内存又有空间，为其重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</li>
+<li>7) 接收<code>32，32</code>对应计数器加<code>1</code>，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;</code>。</li>
+<li>8) 接收<code>7</code>，为其分配计数器，内存状态<code>&lt;32,2&gt;，&lt;12,1&gt;,&lt;7,1&gt;</code>。</li>
+<li>9) 接收<code>6</code>，这时候内存满了，把所有计数器减<code>1</code>，然后把值为<code>0</code>的计数器删除,内存状态<code>&lt;32,1&gt;</code>。</li>
+<li><p>10) 接收<code>12</code>，内存又有空间，为其再重新分配计数器，内存状态<code>&lt;32,1&gt;，&lt;12,1&gt;</code>。</p>
 <p>这时候，将内存里最后的数据定为x出现的次数，计数器在内存中将x返回，没有则返回0。很显然这种方法低估了计数问题，32出现了3次，但是最后只返回1次。</p>
 </li>
 </ul>
 </li>
 </ul>
-<h2><span id="算法精确性分析">算法精确性分析</span></h2>
-<p><img src="/article/most-frequent-number-in-stream/1560858227232most-frequent-number-in-stream_.png" alt><br>
-<img src="/article/most-frequent-number-in-stream/1560858254559most-frequent-number-in-stream_.png" alt></p>
-<h2><span id="代码实现">代码实现</span></h2>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span><span class="params">(total = <span class="number">2000</span>)</span>:</span></span><br><span class="line">    data = np.random.zipf(<span class="number">2</span>, total)</span><br><span class="line">    count_map = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> data:</span><br><span class="line">        oldValue = count_map.get(value, <span class="number">0</span>)</span><br><span class="line">        oldValue +=<span class="number">1</span></span><br><span class="line">        count_map[value] = oldValue</span><br><span class="line">    <span class="keyword">return</span> data,count_map</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">misra_gries</span><span class="params">(S,k)</span>:</span></span><br><span class="line">    c = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> S:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> c:</span><br><span class="line">            c[i]+=<span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> len(c)&lt;k<span class="number">-1</span>:</span><br><span class="line">            c[i]=<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> list(c):</span><br><span class="line">                c[j]-=<span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> c[j]==<span class="number">0</span>:</span><br><span class="line">                    c.pop(j)</span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    s, cmap = getData()</span><br><span class="line">    result = misra_gries(s, <span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    print(result)</span><br><span class="line">    print(result.keys())</span><br></pre></td></tr></table></figure>
+<h2><span id="算法精确性分析">算法精确性分析</span></h2><p><img src="/article/most-frequent-number-in-stream/1560858227232most-frequent-number-in-stream_.png" alt><br><img src="/article/most-frequent-number-in-stream/1560858254559most-frequent-number-in-stream_.png" alt></p>
+<h2><span id="代码实现">代码实现</span></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span><span class="params">(total = <span class="number">2000</span>)</span>:</span></span><br><span class="line">    data = np.random.zipf(<span class="number">2</span>, total)</span><br><span class="line">    count_map = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> data:</span><br><span class="line">        oldValue = count_map.get(value, <span class="number">0</span>)</span><br><span class="line">        oldValue +=<span class="number">1</span></span><br><span class="line">        count_map[value] = oldValue</span><br><span class="line">    <span class="keyword">return</span> data,count_map</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">misra_gries</span><span class="params">(S,k)</span>:</span></span><br><span class="line">    c = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> S:</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> c:</span><br><span class="line">            c[i]+=<span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> len(c)&lt;k<span class="number">-1</span>:</span><br><span class="line">            c[i]=<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> list(c):</span><br><span class="line">                c[j]-=<span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> c[j]==<span class="number">0</span>:</span><br><span class="line">                    c.pop(j)</span><br><span class="line">    <span class="keyword">return</span> c</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    s, cmap = getData()</span><br><span class="line">    result = misra_gries(s, <span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    print(result)</span><br><span class="line">    print(result.keys())</span><br></pre></td></tr></table></figure>
 <h2><span id="总结">总结</span></h2>
-
         
                 <hr>
                 <!-- Pager -->

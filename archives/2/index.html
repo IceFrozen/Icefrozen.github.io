@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -237,7 +237,7 @@
             Linux 操作系统原理-文件系统(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/23/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/9/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,12 +245,9 @@
                 虚拟文件系统
             </h3>
         <div class="post-content-preview">
-            概诉
-接上篇 Linux 操作系统原理-文件系统(1) 本节来讨论一下，文件类型。
-文件类型
-普通文件类型
-理解了文件系统的结构之后，我们来看一下文件的类型。
-Linux以文件的形式对计算机中的数据和硬件资源进行管理，也就是彻底的一切皆文件，反映在Linux的文件类型上就是：**普通文件、目录文件（也就是文件夹）、设备文件、链接文件、管道文件、套接字文件（数据通信的接口）**等等。而这些种类...
+            概诉接上篇 Linux 操作系统原理-文件系统(1) 本节来讨论一下，文件类型。
+文件类型普通文件类型理解了文件系统的结构之后，我们来看一下文件的类型。
+Linux以文件的形式对计算机中的数据和硬件资源进行管理，也就是彻底的一切皆文件，反映在Linux的文件类型上就是：普通文件、目录文件（也就是文件夹）、设备文件、链接文件、管道文件、套接字文件（数据通信的接口）等等。而这些种类繁多的文件被L...
         </div>
     </a>
     
@@ -275,7 +272,7 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             Linux 操作系统原理-文件系统(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/95/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -285,10 +282,11 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
         <div class="post-content-preview">
             简介
 
+![](openerating-learning-vfs-1/openerating-learning-vfs-1-1601175693517.png)
 
 
-虚拟文件系统（Virtual File System，简称VFS）是Linux内核的子系统之一，它为用户程序提供文件和文件系统操作的统一接口，屏蔽不同文件系统的差异和操作细节。借助VFS可以直接使用open()、read()、write()这样的系统调用操作文件，而无须考虑具体的文件系统和实际的存储介质。
-通过VFS系统，Linux提供了通用的系统调用，可以跨越不同文件系统和介质...
+
+虚拟文件系统（Virtual File System，简称VFS）是Linux内核的子系统之一，它为用户程序提供文件和文件系统操作的统一接口，屏蔽不同文件系统的差异和操作细节。借助VFS可以直接使用open()、read()、...
         </div>
     </a>
     
@@ -313,7 +311,7 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             深入JVM字节码(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/77/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/47/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -321,14 +319,10 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
                 Java ClassLoader 加载过程
             </h3>
         <div class="post-content-preview">
-            前言
-我们上一章节讨论了字节码的一些分布，具体的请看深入JVM字节码(1) Java Class 详解，字节码是对象生成的一个模板，本节将会从个源码分析来剖析一下，JVM是怎样加载类到内存的。
-ClassLoader
-JAVA类加载流程
-Java语言系统自带有三个类加载器:
+            前言我们上一章节讨论了字节码的一些分布，具体的请看深入JVM字节码(1) Java Class 详解，字节码是对象生成的一个模板，本节将会从个源码分析来剖析一下，JVM是怎样加载类到内存的。
+ClassLoaderJAVA类加载流程Java语言系统自带有三个类加载器:
 
-
-Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HOME%\lib下的rt...
+Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HOME%\lib下的rt.jar...
         </div>
     </a>
     
@@ -355,7 +349,7 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
             深入JVM字节码(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/34/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/41/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -363,8 +357,7 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
                 Java Class 详解
             </h3>
         <div class="post-content-preview">
-            前言
-作为一个Java开发者，对技术的追求而不仅仅停留在会用API，会写基本功能上，要想在技术上有更高的造诣，就需要深入到原理层面去认识代码运行的机制。因此，本文从class字节码文件的结构入手，一步步来解剖二进制字节码的内部工作原理，这对深入理解JVM的运行机制大有裨益，同时，对于想要使用BCEL来动态改变Class字节码指令的工作也很有帮助(示例：JVM Class字节码之三-使用BCE...
+            前言作为一个Java开发者，对技术的追求而不仅仅停留在会用API，会写基本功能上，要想在技术上有更高的造诣，就需要深入到原理层面去认识代码运行的机制。因此，本文从class字节码文件的结构入手，一步步来解剖二进制字节码的内部工作原理，这对深入理解JVM的运行机制大有裨益，同时，对于想要使用BCEL来动态改变Class字节码指令的工作也很有帮助(示例：JVM Class字节码之三-使用BCEL...
         </div>
     </a>
     
@@ -391,7 +384,7 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
             Java垃圾回收详解(6)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/86/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/90/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -399,11 +392,8 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
                 CMS 垃圾回收器详解之一 CMS GC常见问题分析
             </h3>
         <div class="post-content-preview">
-            定位GC日志中STW时间较长的行为
-打印所有STW停顿
-1-XX:+PrintGCApplicationStoppedTime和-XX:+PrintGCApplicationConcurrentTime
-找出所有暂停时间超过阈值的地方，如下：
-1awk &apos;&#123;match($0,/.*stopped:(.*)seconds,/,a);if(a[1]&gt;0.5) print...
+            定位GC日志中STW时间较长的行为打印所有STW停顿1-XX:+PrintGCApplicationStoppedTime和-XX:+PrintGCApplicationConcurrentTime
+找出所有暂停时间超过阈值的地方，如下：1awk &apos;&#123;match($0,/.*stopped:(.*)seconds,/,a);if(a[1]&gt;0.5) print $0...
         </div>
     </a>
     
@@ -432,7 +422,7 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
             Java垃圾回收详解(4)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/26/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -440,19 +430,14 @@ Bootstrap ClassLoader 最顶层的加载类，主要加载核心类库，%JRE_HO
                 CMS 垃圾回收器详解之一 CMS 处理流程
             </h3>
         <div class="post-content-preview">
-            CMS 垃圾回收器简介
-由于上一篇博文已经详细介绍了，这里就不在赘述，有兴趣可以围观一下Java垃圾回收详解(2)
-GC方式介绍
+            CMS 垃圾回收器简介由于上一篇博文已经详细介绍了，这里就不在赘述，有兴趣可以围观一下Java垃圾回收详解(2)GC方式介绍
 这里做一个简单的回顾:
-
 
 获取最短回收停顿时间为目标的多线程并发收集器
 
-
 cms 只会回收老年代和永久带（1.8开始为元数据区，需要设置- CMSClassUnloadingEnabled, 不会收集年轻带；
 
-
-cms 是一种预处理垃圾回收器，它不能等到ol...
+cms 是一种预处理垃圾回收器，它不能等到old内存用尽...
         </div>
     </a>
     
@@ -481,7 +466,7 @@ cms 是一种预处理垃圾回收器，它不能等到ol...
             Java垃圾回收详解(5)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -489,17 +474,12 @@ cms 是一种预处理垃圾回收器，它不能等到ol...
                 CMS 垃圾回收器详解之二 CMS 深入分析
             </h3>
         <div class="post-content-preview">
-            回顾
-继上一节，讨论了CMS的gc 流程，本篇讨论几个遗留的问题。
-CMS 的缺点
-CMS GC 和Full GC 和 Minor GC 的区别
+            回顾继上一节，讨论了CMS的gc 流程，本篇讨论几个遗留的问题。
+CMS 的缺点CMS GC 和Full GC 和 Minor GC 的区别
+CMS GC 
+ 通过一个后台线程触发，触发机制是默认每隔2秒判断一下当前老年代的内存使用率是否达到阈值，当然具体的触发条件没有这么简单，如果是则触发一次cms gc，在该过程中只会标记出存活对象，然后清除死亡对象，期间会产生碎片空间。
 
-
-CMS GC
-通过一个后台线程触发，触发机制是默认每隔2秒判断一下当前老年代的内存使用率是否达到阈值，当然具体的触发条件没有这么简单，如果是则触发一次cms gc，在该过程中只会标记出存活对象，然后清除死亡对象，期间会产生碎片空间。
-
-
-Ful...
+Full G...
         </div>
     </a>
     
@@ -528,7 +508,7 @@ Ful...
             Spring-Retry 源码分析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/37/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -537,11 +517,8 @@ Ful...
             </h3>
         <div class="post-content-preview">
             前面我们用自己的代理模式完成一些重试的操作，接下来我们将分析一下 SpringRetry 的实现方式spring-retry 项目实现了重试和熔断功能，目前已用于SpringBatch、Spring Integration等项目
-详解
-QuickStart
-我们首先来看一下使用。
-首先我们引入使用,这里我们使用的是1.3版本
-123456&lt;!-- https://mvnreposito...
+详解QuickStart我们首先来看一下使用。首先我们引入使用,这里我们使用的是1.3版本
+123456&lt;!-- https://mvnrepository....
         </div>
     </a>
     
@@ -568,7 +545,7 @@ QuickStart
             JAVA多线程之Atomic和LongAddr类（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -576,11 +553,10 @@ QuickStart
                 LongAddr 类详解
             </h3>
         <div class="post-content-preview">
-            概诉
-上一节，我们讨论了Atomic类的实现原理，以及代码分析。这一节我来看 LongAddr 类。LongAdder 是JDK8添加到JUC中的。它是一个线程安全的、比Atomic*系工具性能更好的&quot;计数器&quot;。
+            概诉上一节，我们讨论了Atomic类的实现原理，以及代码分析。这一节我来看 LongAddr 类。LongAdder 是JDK8添加到JUC中的。它是一个线程安全的、比Atomic*系工具性能更好的”计数器”。
 首先我们来看一下 Doug Lea 大神对这个类的概述 LongAddr
 
-LongAdder 中会维护一个或多个变量，这些变量共同组成一个long型的和(这个...
+LongAdder 中会维护一个或多个变量，这些变量共同组成一个long型的和(这个和就是 LongAdd...
         </div>
     </a>
     
@@ -607,7 +583,7 @@ LongAdder 中会维护一个或多个变量，这些变量共同组成一个long
             JAVA多线程之常见的并发工具类(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/40/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -615,14 +591,11 @@ LongAdder 中会维护一个或多个变量，这些变量共同组成一个long
                 并发工具类举例
             </h3>
         <div class="post-content-preview">
-            概诉
-本文会对java JUC 下的并发包做一个统一的讲解，针对于源码分析环境，需要取查看博主的另外一个系列——多线程，这里对细节不在深入。
-
+            概诉本文会对java JUC 下的并发包做一个统一的讲解，针对于源码分析环境，需要取查看博主的另外一个系列——多线程，这里对细节不在深入。
 
 Semaphore 信号量是一类经典的同步工具。信号量通常用来限制线程可以同时访问的（物理或逻辑）资源数量。
 
-
-CountDownLatch 一种非常简单、但很常用的同步辅助类。其作用是在完成一组正在其他线程中执行的操作之前,允许一个或多个线程一...
+CountDownLatch 一种非常简单、但很常用的同步辅助类。其作用是在完成一组正在其他线程中执行的操作之前,允许一个或多个线程一直阻塞...
         </div>
     </a>
     
@@ -890,13 +863,13 @@ CountDownLatch 一种非常简单、但很常用的同步辅助类。其作用�
             
         
             
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
-            
-        
             
         
             

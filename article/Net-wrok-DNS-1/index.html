@@ -147,14 +147,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -217,84 +217,60 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="简介">简介</span></h2>
-<h2><span id="什么是dns">什么是DNS</span></h2>
-<p>Domain Name System （缩写：DNS）是互联网的一项服务。它作为将域名和IP地址相互映射的一个分布式数据库，能够使人更方便地访问互联网。他的的作用非常简单，就是根据域名查出IP地址。你可以把它想象成一本巨大的电话本。<br>
-举例来说，<a href="http://xn--math-uo6ft1wu7gzrdk29bg34eoff3s9a.stackexchange.com" target="_blank" rel="noopener">如果你要访问域名math.stackexchange.com</a>，首先要通过DNS查出它的IP地址是151.101.129.69， DNS使用TCP和UDP端口53。当前，对于每一级域名长度的限制是63个字符，域名总长度则不能超过253个字符</p>
-<h3><span id="dns-的运行过程">DNS 的运行过程</span></h3>
-<p>当一台主机想要通过域名访问某个服务的内容时，需要先通过当前域名获取对应的 IP 地址。这时就需要通过一个 DNS 解析器负责域名的解析，下面的图片展示了 DNS 查询的执行过程：</p>
+                <h2><span id="简介">简介</span></h2><h2><span id="什么是dns">什么是DNS</span></h2><p>Domain Name System （缩写：DNS）是互联网的一项服务。它作为将域名和IP地址相互映射的一个分布式数据库，能够使人更方便地访问互联网。他的的作用非常简单，就是根据域名查出IP地址。你可以把它想象成一本巨大的电话本。<br>举例来说，如果你要访问域名math.stackexchange.com，首先要通过DNS查出它的IP地址是151.101.129.69， DNS使用TCP和UDP端口53。当前，对于每一级域名长度的限制是63个字符，域名总长度则不能超过253个字符</p>
+<h3><span id="dns-的运行过程">DNS 的运行过程</span></h3><p>当一台主机想要通过域名访问某个服务的内容时，需要先通过当前域名获取对应的 IP 地址。这时就需要通过一个 DNS 解析器负责域名的解析，下面的图片展示了 DNS 查询的执行过程：</p>
 <p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607870989235.png" alt></p>
 <ul>
-<li>本地的 DNS 客户端向 DNS 解析器发出解析 <a href="http://draveness.me" target="_blank" rel="noopener">draveness.me</a> 域名的请求；</li>
+<li>本地的 DNS 客户端向 DNS 解析器发出解析 draveness.me 域名的请求；</li>
 <li>DNS 解析器首先会向就近的根 DNS 服务器 . 请求顶级域名 DNS 服务的地址；</li>
-<li>拿到顶级域名 DNS 服务 me. 的地址之后会向顶级域名服务请求负责 <a href="http://dravenss.me" target="_blank" rel="noopener">dravenss.me</a>. 域名解析的命名服务；</li>
+<li>拿到顶级域名 DNS 服务 me. 的地址之后会向顶级域名服务请求负责 dravenss.me. 域名解析的命名服务；</li>
 <li>得到授权的 DNS 命名服务时，就可以根据请求的具体的主机记录直接向该服务请求域名对应的 IP 地址；</li>
 </ul>
-<p>这里涉及到几个名词，一个是DNS服务器，一个是顶级域名，一个是根DNS服务器。<br>
-想要了解这几个概念，先要了解一下什么事ICANN.</p>
-<h3><span id="icann">ICANN</span></h3>
-<p>全世界域名的最高管理机构，是一个叫做 **ICANN （Internet Corporation for Assigned Names and Numbers）**的组织。它的总部在美国加州。</p>
+<p>这里涉及到几个名词，一个是DNS服务器，一个是顶级域名，一个是根DNS服务器。<br>想要了解这几个概念，先要了解一下什么事ICANN.</p>
+<h3><span id="icann">ICANN</span></h3><p>全世界域名的最高管理机构，是一个叫做 <strong>ICANN （Internet Corporation for Assigned Names and Numbers）</strong>的组织。它的总部在美国加州。</p>
 <p>它原来是美国商务部下面的一个非盈利机构，所以有人说，美国政府控制了全世界的域名，这种说法是有根据的。2016年，美国政府宣布，<strong>ICANN</strong> 不再隶属于商务部，成为一个自我管理的独立机构。但是可想而知，美国政府依然对它有绝对影响。</p>
 <p>ICANN 负责管理全世界域名系统的运作。它的一项主要工作，就是规定顶级域名（t<strong>op level domain，简写为 TLD</strong>）。</p>
-<h3><span id="dns-的命名语法">DNS 的命名语法</span></h3>
-<p><img src="/article/Net-wrok-DNS-1/DNS%E5%91%BD%E5%90%8D%E8%AF%AD%E6%B3%95.png" alt></p>
-<h3><span id="域名系统">域名系统</span></h3>
-<p>域名空间用于指定组织名称的域的层次结构，不同域间以英文句点隔开，如<br>
-<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> 中的 com、baidu、<a href="http://baidu.com" target="_blank" rel="noopener">baidu.com</a> 都是域。</p>
+<h3><span id="dns-的命名语法">DNS 的命名语法</span></h3><p><img src="/article/Net-wrok-DNS-1/DNS命名语法.png" alt></p>
+<h3><span id="域名系统">域名系统</span></h3><p>域名空间用于指定组织名称的域的层次结构，不同域间以英文句点隔开，如<br>www.baidu.com 中的 com、baidu、baidu.com 都是域。</p>
 <p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607871331360.png" alt></p>
-<h4><span id="根域名">根域名</span></h4>
-<p>由于 <strong>ICANN</strong> 管理着所有的顶级域名，所以它是最高一级的域名节点，被称为根域名**（root domain）**。在有些场合，<a href="http://www.example.xn--comwww-kw2jx10ikv6e.example.com" target="_blank" rel="noopener">www.example.com被写成www.example.com</a>.，即最后还会多出一个点。这个点就是根域名。</p>
+<h4><span id="根域名">根域名</span></h4><p>由于 <strong>ICANN</strong> 管理着所有的顶级域名，所以它是最高一级的域名节点，被称为根域名<strong>（root domain）</strong>。在有些场合，www.example.com被写成www.example.com.，即最后还会多出一个点。这个点就是根域名。</p>
 <p>理论上，所有域名查询都必须先查询根域名，因为只有根域名才能告诉你，某个顶级域名由哪台服务器管理。事实上也确实如此，ICANN 维护着一张列表，里面记载着顶级域名和对应的托管商。</p>
-<p>比如，<a href="http://xn--www-st5fu45oo2cory.example.com" target="_blank" rel="noopener">我要访问www.example.com</a>，就必须先询问 ICANN 的根域名列表，它会告诉我.com域名由 <strong>Verisign</strong> 托管，我必须去找 <strong>Verisign</strong>，它会告诉我example.com服务器在哪里。</p>
+<p>比如，我要访问www.example.com，就必须先询问 ICANN 的根域名列表，它会告诉我.com域名由 <strong>Verisign</strong> 托管，我必须去找 <strong>Verisign</strong>，它会告诉我example.com服务器在哪里。</p>
 <p>再比如，我要访问abc.xyz，也必须先去询问根域名列表，它会告诉我.xyz域名由 CentralNic 公司托管。根域名列表还记载，.google由谷歌公司托管，.apple由苹果公司托管等等。</p>
 <p>由于根域名列表很少变化，大多数 DNS 服务商都会提供它的缓存，所以根域名的查询事实上不是那么频繁。</p>
-<h4><span id="顶级域名tld">顶级域名（TLD）</span></h4>
-<p>所谓顶级域名（TLD），就是最高层级的域名。简单说，就是网址的最后一个部分。比如，<a href="http://xn--www-cs6eq54p.example.xn--com-t33er8owvhvrttz4awkpy14d.com" target="_blank" rel="noopener">网址www.example.com的顶级域名就是.com</a>。</p>
+<h4><span id="顶级域名tld">顶级域名（TLD）</span></h4><p>所谓顶级域名（TLD），就是最高层级的域名。简单说，就是网址的最后一个部分。比如，网址www.example.com的顶级域名就是.com。</p>
 <p>ICANN 就负责规定，哪些字符串可以当作顶级域名。截至2015年7月，顶级域名共有1058个。</p>
-<p>它们可以分成两类。一类是一般性顶级域名（gTLD），<a href="http://xn--bvs393b.com" target="_blank" rel="noopener">比如.com</a>、.net、.edu、.org、.xxx等等，共有700多个。另一类是国别顶级域名（ccTLD），代表不同的国家和地区，<a href="http://xn--bvs393b.cn" target="_blank" rel="noopener">比如.cn</a>（中国）、.io（英属印度洋领地）、.cc（ 科科斯群岛）、.tv（图瓦卢）等，共有300多个。</p>
+<p>它们可以分成两类。一类是一般性顶级域名（gTLD），比如.com、.net、.edu、.org、.xxx等等，共有700多个。另一类是国别顶级域名（ccTLD），代表不同的国家和地区，比如.cn（中国）、.io（英属印度洋领地）、.cc（ 科科斯群岛）、.tv（图瓦卢）等，共有300多个。</p>
 <p>ICANN 自己不会去管理这些顶级域名，因为根本管不过来。想想看，顶级域名有1000多个，每个顶级域名下面都有许多批发商，如果每个都要管，就太麻烦了。</p>
 <p>ICANN 的政策是，每个顶级域名都找一个托管商，该域名的所有事项都由托管商负责。ICANN 只与托管商联系，这样管理起来就容易多了。举例来说，.cn域名的托管商就是中国互联网络信息中心（CNNIC），它决定了.cn域名的各种政策。</p>
 <p>目前，世界最大的顶级域名托管商是美国的 Verisign 公司。</p>
-<h2><span id="dns-的查找过程">DNS 的查找过程</span></h2>
-<p>DNS解析流程分为递归查询和迭代查询，递归查询是以本地名称服务器为中心查询， 递归查询是默认方式，迭代查询是以DNS客户端，也就是客户机器为中心查询。<strong>其实DNS客户端和本地名称服务器是递归，而本地名称服务器和其他名称服务器之间是迭代</strong></p>
-<h3><span id="迭代查询的区别">迭代查询的区别</span></h3>
-<p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607924406934.png" alt></p>
-<h3><span id="递归查询">递归查询</span></h3>
-<p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607924398443.png" alt></p>
+<h2><span id="dns-的查找过程">DNS 的查找过程</span></h2><p>DNS解析流程分为递归查询和迭代查询，递归查询是以本地名称服务器为中心查询， 递归查询是默认方式，迭代查询是以DNS客户端，也就是客户机器为中心查询。<strong>其实DNS客户端和本地名称服务器是递归，而本地名称服务器和其他名称服务器之间是迭代</strong></p>
+<h3><span id="迭代查询的区别">迭代查询的区别</span></h3><p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607924406934.png" alt></p>
+<h3><span id="递归查询">递归查询</span></h3><p><img src="/article/Net-wrok-DNS-1/Net-wrok-DNS-1-1607924398443.png" alt></p>
 <p>在这个查询过程中，一直是以本地名称服务器（Local DNS）为中心的，DNS客户端只是发出原始的域名查询请求报文，然后就一直处于等待状态的，直到本地名称服务器发来了最终的查询结果。此时的本地名称服务器就相当于<strong>中介代理</strong>的作用。如果考虑了本地名称服务器的缓存技术（也就是在DNS服务器上对一定数量的以前查询记录保存一定时间，这样后面查询同样的域名信息时就可直接从缓存中调出来，以加速查询效率）的话，则递归解析的基本流程如下：</p>
 <ul>
-<li>
-<p>（1）客户端向本机配置的本地名称服务器（在此仅以首选DNS服务器为例进行介绍，所配置其它备用DNS服务器的解析流程完全一样）发出DNS域名查询请求。</p>
+<li><p>（1）客户端向本机配置的本地名称服务器（在此仅以首选DNS服务器为例进行介绍，所配置其它备用DNS服务器的解析流程完全一样）发出DNS域名查询请求。</p>
 </li>
-<li>
-<p>（2）本地名称服务器收到请求后，先查询本地的缓存，如果有该域名的记录项，则本地名称服务器就直接把查询的结果返回给客户端；如果本地缓存中没有该域名的记录，则本地名称服务器再以DNS客户端的角色发送与前面一样的DNS域名查询请求发给根名称服务器。</p>
+<li><p>（2）本地名称服务器收到请求后，先查询本地的缓存，如果有该域名的记录项，则本地名称服务器就直接把查询的结果返回给客户端；如果本地缓存中没有该域名的记录，则本地名称服务器再以DNS客户端的角色发送与前面一样的DNS域名查询请求发给根名称服务器。</p>
 </li>
-<li>
-<p>（3）根名称服务器收到DNS请求后，把所查询得到的所请求的DNS域名中顶级域名所对应的顶级名称服务器地址返回给本地名称服务器。</p>
+<li><p>（3）根名称服务器收到DNS请求后，把所查询得到的所请求的DNS域名中顶级域名所对应的顶级名称服务器地址返回给本地名称服务器。</p>
 </li>
-<li>
-<p>（4）本地名称服务器根据根名称服务器所返回的顶级名称服务器地址，向对应的顶级名称服务器发送与前面一样的DNS域名查询请求。</p>
+<li><p>（4）本地名称服务器根据根名称服务器所返回的顶级名称服务器地址，向对应的顶级名称服务器发送与前面一样的DNS域名查询请求。</p>
 </li>
-<li>
-<p>（5）对应的顶级名称服务器在收到DNS查询请求后，也是先查询自己的缓存，如果有所请求的DNS域名的记录项，则相接把对应的记录项返回给本地名称服务器，然后再由本地名称服务器返回给DNS客户端，否则向本地名称服务器返回所请求的DNS域名中的二级域名所对应的二级名称服务器地址。</p>
+<li><p>（5）对应的顶级名称服务器在收到DNS查询请求后，也是先查询自己的缓存，如果有所请求的DNS域名的记录项，则相接把对应的记录项返回给本地名称服务器，然后再由本地名称服务器返回给DNS客户端，否则向本地名称服务器返回所请求的DNS域名中的二级域名所对应的二级名称服务器地址。</p>
 </li>
 </ul>
 <p><strong>然后本地名称服务器继续按照前面介绍的方法一次次地向三级、四级名称服务器查询</strong>，直到最终的对应域名所在区域的权威名称服务器返回到最终的记录给本地名称服务器。然后再由本地名称服务器返回给DNS客户，同时本地名称服务器会缓存本次查询得到的记录项。</p>
-<h3><span id="dns-主从服务器">DNS 主从服务器</span></h3>
-<p>据服务器与所提供域名解析记录的关系，将DNS服务器分为不同的角色：</p>
+<h3><span id="dns-主从服务器">DNS 主从服务器</span></h3><p>据服务器与所提供域名解析记录的关系，将DNS服务器分为不同的角色：</p>
 <ul>
-<li>
-<p>1）缓存域名服务器，也称为 唯高速缓存服务器，通过向其他域名服务器查询获得域名-&gt;IP地址记录，将域名查询结果缓存到本地，提高重复查询时的速度</p>
+<li><p>1）缓存域名服务器，也称为 唯高速缓存服务器，通过向其他域名服务器查询获得域名-&gt;IP地址记录，将域名查询结果缓存到本地，提高重复查询时的速度</p>
 </li>
-<li>
-<p>2）主域名服务器，特定DNS区域的官方服务器，具有唯一性，负责维护该区域内所有域名-&gt;IP地址的映射记录</p>
+<li><p>2）主域名服务器，特定DNS区域的官方服务器，具有唯一性，负责维护该区域内所有域名-&gt;IP地址的映射记录</p>
 </li>
-<li>
-<p>3）从域名服务器（通俗一点就是用于备份DNS服务器的）也称为 辅助域名服务器，其维护的 域名-&gt;IP地址记录 来源于主域名服务器</p>
+<li><p>3）从域名服务器（通俗一点就是用于备份DNS服务器的）也称为 辅助域名服务器，其维护的 域名-&gt;IP地址记录 来源于主域名服务器</p>
 </li>
 </ul>
-<h3><span id="dns-权威解释和非权威解释">DNS 权威解释和非权威解释</span></h3>
-<p>DNS服务器在自己的区域文件里找到了客户端需要查询的记录，就会返回一个权威性应答。</p>
+<h3><span id="dns-权威解释和非权威解释">DNS 权威解释和非权威解释</span></h3><p>DNS服务器在自己的区域文件里找到了客户端需要查询的记录，就会返回一个权威性应答。</p>
 <blockquote>
 <p>例如客户端要查找srv1.contoso.com主机的IP地址。在contoso.com的DC（也就是DNS服务器）上查找该主机的“A记录”，我们找到了。就把记录内容通过DNS应答的方式发还给客户端，这就是一个权威性应答。――当然实际的查询方式比较复杂远没有我说的这么简单。</p>
 </blockquote>
@@ -306,13 +282,14 @@
 <li>其次，推荐客户端到上一级DNS服务器找。―――非权威性应答。</li>
 <li>最后，如果原来被别人访问过，本地有该缓存，那么用缓存里的数据回答―――非权威性应答。</li>
 </ul>
-<h3><span id="dns的记录类型">DNS的记录类型</span></h3>
-<p>DNS server 内的每一个域名都有自己的域文件(zone file)，zone file 是由多个记录组成的，每一个记录就被称为资源记录(Resource Record，简称RR)。</p>
+<h3><span id="dns的记录类型">DNS的记录类型</span></h3><p>DNS server 内的每一个域名都有自己的域文件(zone file)，zone file 是由多个记录组成的，每一个记录就被称为资源记录(Resource Record，简称RR)。</p>
 <p>当在设定 DNS 域名解析、反向解析及其他的管理目的时，往往需要使用不同类型的RR，也就是我们常说的记录类型。</p>
 <p>RR 记录类型格式</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>owner</th>
 <th>TTL</th>
 <th>CLASS</th>
@@ -320,26 +297,25 @@
 <th>RDATA</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
 </table>
+</div>
 <ul>
-<li>
-<p>owner<br>
-指示拥有资源记录的DNS域名</p>
+<li><p>owner<br>指示拥有资源记录的DNS域名</p>
 </li>
-<li>
-<p>TTL<br>
-对大多数资源记录，该字段为可选项。指明其它DNS服务器在期满放弃该记录信息之前对其缓存多长时间。TTL值为零的资源记录不会被缓存</p>
+<li><p>TTL<br>对大多数资源记录，该字段为可选项。指明其它DNS服务器在期满放弃该记录信息之前对其缓存多长时间。TTL值为零的资源记录不会被缓存</p>
 </li>
-<li>
-<p>CLASS</p>
+<li><p>CLASS</p>
 <ul>
 <li>IN（Internet类）</li>
 <li>CS（CSNET类）、CH（CHAOS类）、HS（Hesiod）很少使用</li>
 </ul>
 </li>
-<li>
-<p>TYPE（这里只列出以下常见）：</p>
+<li><p>TYPE（这里只列出以下常见）：</p>
 <ul>
 <li>A：主机地址</li>
 <li>AAAA：IPv6主机地址</li>
@@ -349,36 +325,24 @@
 <li>MX：邮件交换</li>
 </ul>
 </li>
-<li>
-<p>RDATA<br>
-用于描述资源的信息且长度可变的必要字段，随CLASS和TYPE的变化而变化</p>
+<li><p>RDATA<br>用于描述资源的信息且长度可变的必要字段，随CLASS和TYPE的变化而变化</p>
 </li>
 </ul>
-<h3><span id="记录类型举例">记录类型举例</span></h3>
-<ul>
+<h3><span id="记录类型举例">记录类型举例</span></h3><ul>
 <li>SOA 记录</li>
 </ul>
 <p><strong>SOA记录表明了DNS服务器之间的关系</strong>。SOA记录表明了谁是这个区域的所有者。就是谁对这个区域有修改权利。常见的DNS服务器只能创建一个标准区域，然后可以创建很多个辅助区域。标准区域是可以读写修改的。</p>
 <p>而辅助区域只能通过标准区域复制来完成，不能在辅助区域中进行修改。而创建标准区域的DNS就会有SOA记录，或者准确说SOA记录中的主机地址一定是这个标准区域的服务器IP地址。</p>
 <p><strong>NS记录NS记录和SOA记录是任何一个DNS区域都不可或缺的两条记录，NS记录也叫名称服务器记录，用于说明这个区域有哪些DNS服务器负责解析，SOA记录说明负责解析的DNS服务器中哪一个是主服务器。因此，任何一个DNS区域都不可能缺少这两条记录。NS记录，说明了在这个区域里，有多少个服务器来承担解析的任务</strong></p>
 <p><strong>OA记录 NS记录说明了有多台服务器在进行解析，但哪一个才是主服务器呢，NS并没有说明，这个就要看SOA记录了，SOA名叫起始授权机构记录，SOA记录说明了在众多NS记录里那一台才是主要的服务器！</strong></p>
-<p>SOA 格式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">domain.com.  IN SOA ns1.domain.com. admin.domain.com. (</span><br><span class="line">                                            12083   ; serial number</span><br><span class="line">                                            3h      ; refresh interval</span><br><span class="line">                                            30m     ; retry interval</span><br><span class="line">                                            3w      ; expiry period</span><br><span class="line">                                            1h      ; negative TTL</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>SOA 格式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">domain.com.  IN SOA ns1.domain.com. admin.domain.com. (</span><br><span class="line">                                            12083   ; serial number</span><br><span class="line">                                            3h      ; refresh interval</span><br><span class="line">                                            30m     ; retry interval</span><br><span class="line">                                            3w      ; expiry period</span><br><span class="line">                                            1h      ; negative TTL</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>
-<p><strong><a href="http://domain.com" target="_blank" rel="noopener">domain.com</a>.</strong>：这是区域的根。这表明该区域文件用于 <a href="http://domain.com" target="_blank" rel="noopener">http://domain.com</a> 域名。通常，你会看到这个用 @ 代替，它只是一个占位符，</p>
+<li><strong>domain.com.</strong>：这是区域的根。这表明该区域文件用于 <a href="http://domain.com" target="_blank" rel="noopener">http://domain.com</a> 域名。通常，你会看到这个用 @ 代替，它只是一个占位符，</li>
+<li><strong>IN SOA</strong>：”IN” 部分表示互联网（它会出现在许多记录中）。 SOA 是表示这是开始权限记录。</li>
+<li><strong>ns1.domain.com.</strong>：这定义了该域的主名称服务器。名称服务器可以是主服务器或从服务器，如果配置了动态 DNS，就像这里，则一个服务器需要是 “主服务器”。如果你未配置动态 DNS，那么这只是你其中一个主名称服务器。</li>
+<li><p><strong>admin.domain.com.</strong>：这是这个区域文件管理员的邮箱地址。邮箱地址的 @ 这里用一个 . 代替。如果你的名字中也有 . 它会用 \ 代替。（比如 your.name@domain.com 变成 your\<a href="http://name.domain.com）" target="_blank" rel="noopener">http://name.domain.com）</a></p>
 </li>
-<li>
-<p><strong>IN SOA</strong>：”IN” 部分表示互联网（它会出现在许多记录中）。 SOA 是表示这是开始权限记录。</p>
-</li>
-<li>
-<p><strong><a href="http://ns1.domain.com" target="_blank" rel="noopener">ns1.domain.com</a>.</strong>：这定义了该域的主名称服务器。名称服务器可以是主服务器或从服务器，如果配置了动态 DNS，就像这里，则一个服务器需要是 “主服务器”。如果你未配置动态 DNS，那么这只是你其中一个主名称服务器。</p>
-</li>
-<li>
-<p><strong><a href="http://admin.domain.com" target="_blank" rel="noopener">admin.domain.com</a>.</strong>：这是这个区域文件管理员的邮箱地址。邮箱地址的 @ 这里用一个 . 代替。如果你的名字中也有 . 它会用 \ 代替。（比如 <a href="mailto:your.name@domain.com" target="_blank" rel="noopener">your.name@domain.com</a> 变成 your\<a href="http://name.domain.com" target="_blank" rel="noopener">http://name.domain.com</a>）</p>
-</li>
-<li>
-<p>附加说明</p>
+<li><p>附加说明</p>
 <ul>
 <li>12083：这是区域文件的序列号。每次编辑区域文件时，必须增加此序列号以使区域文件能够正确传播。从服务器将检查主服务器的区域序列号是否大于它们在系统上的序列号。如果是，它请求新的区域文件，如果不是，它继续服务原始文件。</li>
 <li>3h：这是区域的刷新间隔。这是从服务器向主服务器轮询检查区域文件是否变更之间等待的时间量。</li>
@@ -389,43 +353,32 @@
 </li>
 </ul>
 <ul>
-<li>NS 记录<br>
-NS记录实际上也是在DNS服务器之间，表明谁对某个区域有解释权，即权威DNS。<br>
-语法</li>
-</ul>
+<li><p>NS 记录<br>NS记录实际上也是在DNS服务器之间，表明谁对某个区域有解释权，即权威DNS。<br>语法</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">owner  TTL  CLASS  NS name_server_domain_name</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line">www.baidu.com.  IN  NS  baidu.com.</span><br></pre></td></tr></table></figure>
-<ul>
-<li>CNAME记录：<br>
-CNAME 记录为您的服务器（由A或AAAA记录定义的名称）定义规范名称的别名。比较多的是用在CDN加速上</li>
+</li>
+<li><p>CNAME记录：<br>CNAME 记录为您的服务器（由A或AAAA记录定义的名称）定义规范名称的别名。比较多的是用在CDN加速上</p>
+</li>
 </ul>
-<p>举个CDN的栗子 ：假如你是DD公司老板，你公司中的一台IP为1.1.1.1的服务器，注册了域名为http://www.dd.com，要对外提供客户访问。随着公司越做越大，访问量也越来越多，服务器顶不住了，你去找CDN提供商购买CDN加速服务，这个时候他们要求你的域名做个CNAME指向,他们给你的一个域名叫http://www.xdd.com，当用户访问http://www.dd.com的时候，本地DNS会获得CDN提供的CNAME域名：<a href="http://www.xdd.com" target="_blank" rel="noopener">http://www.xdd.com</a>，然后再次向DNS调度系统发出请求，通过DNS调度系统的智能分析，把这个http://www.xdd.com指向一个（离用户地理位置最近的）CDN提供商的服务器IP，让用户就近取到想要的资源（如访问网站），大大降低了延迟。</p>
+<p>举个CDN的栗子 ：假如你是DD公司老板，你公司中的一台IP为1.1.1.1的服务器，注册了域名为<a href="http://www.dd.com，要对外提供客户访问。随着公司越做越大，访问量也越来越多，服务器顶不住了，你去找CDN提供商购买CDN加速服务，这个时候他们要求你的域名做个CNAME指向,他们给你的一个域名叫http://www.xdd.com，当用户访问http://www.dd.com的时候，本地DNS会获得CDN提供的CNAME域名：http://www.xdd.com，然后再次向DNS调度系统发出请求，通过DNS调度系统的智能分析，把这个http://www.xdd.com指向一个（离用户地理位置最近的）CDN提供商的服务器IP，让用户就近取到想要的资源（如访问网站），大大降低了延迟。" target="_blank" rel="noopener">http://www.dd.com，要对外提供客户访问。随着公司越做越大，访问量也越来越多，服务器顶不住了，你去找CDN提供商购买CDN加速服务，这个时候他们要求你的域名做个CNAME指向,他们给你的一个域名叫http://www.xdd.com，当用户访问http://www.dd.com的时候，本地DNS会获得CDN提供的CNAME域名：http://www.xdd.com，然后再次向DNS调度系统发出请求，通过DNS调度系统的智能分析，把这个http://www.xdd.com指向一个（离用户地理位置最近的）CDN提供商的服务器IP，让用户就近取到想要的资源（如访问网站），大大降低了延迟。</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">owner  TTL  CLASS  NS name_server_domain_name</span><br><span class="line">例如：</span><br><span class="line">www.baidu.com.		413	IN	CNAME	www.a.shifen.com.</span><br></pre></td></tr></table></figure>
 <ul>
-<li>A记录：<br>
-通俗来说A记录就是服务器的IP，域名绑定A记录就是告诉DNS，当输入域名的时候给你引导向设置在DNS的A记录所对应的服务器。</li>
-</ul>
+<li><p>A记录：<br>通俗来说A记录就是服务器的IP，域名绑定A记录就是告诉DNS，当输入域名的时候给你引导向设置在DNS的A记录所对应的服务器。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">owner  TTL  CLASS  NS name_server_domain_name</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line">www.a.shifen.com.	98	IN	A	220.181.38.149</span><br></pre></td></tr></table></figure>
-<ul>
-<li>其他的略</li>
+</li>
+<li><p>其他的略 </p>
+</li>
 </ul>
-<h3><span id="dns-相关命令">DNS 相关命令</span></h3>
-<ul>
-<li>dig 命令<br>
-虽然只需要返回一个IP地址，但是DNS的查询过程非常复杂，分成多个步骤。<br>
-工具软件dig可以显示整个查询过程。</li>
+<h3><span id="dns-相关命令">DNS 相关命令</span></h3><ul>
+<li>dig 命令<br>虽然只需要返回一个IP地址，但是DNS的查询过程非常复杂，分成多个步骤。<br>工具软件dig可以显示整个查询过程。</li>
 </ul>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ dig www.baidu.com</span><br><span class="line"><span class="comment">// dig 相关信息</span></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG <span class="number">9.10</span><span class="number">.6</span> &lt;&lt;&gt;&gt; www.baidu.com  <span class="comment">//dig程序的版本号，和要查询的域名</span></span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, <span class="attr">status</span>: NOERROR, <span class="attr">id</span>: <span class="number">10663</span></span><br><span class="line">;; flags: qr rd ra; QUERY: <span class="number">1</span>, <span class="attr">ANSWER</span>: <span class="number">3</span>, <span class="attr">AUTHORITY</span>: <span class="number">0</span>, <span class="attr">ADDITIONAL</span>: <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * opcode 操作码，QUERY，代表是查询操作</span></span><br><span class="line"><span class="comment">* status 状态，NOERROR，代表没有错误</span></span><br><span class="line"><span class="comment">* id 编号，54864，16bit数字，在dns协议中，通过编号匹配返回和查询。</span></span><br><span class="line"><span class="comment">* flags 标志，如果出现就表示有标志，如果不出现就未设置标志：</span></span><br><span class="line"><span class="comment">  qr query，查询标志，代表是查询操作</span></span><br><span class="line"><span class="comment">  rd recursion desired， 代表希望进行递归(recursive)查询操作</span></span><br><span class="line"><span class="comment">  ra recursive available 在返回中设置，代表查询的服务器支持递归(recursive)查询操作。</span></span><br><span class="line"><span class="comment">  aa Authoritative Answer 权威回复，如果查询结果由管理域名的域名服务器而不是缓存服务器提供的，则称为权威回复。</span></span><br><span class="line"><span class="comment">* QUERY 查询数，1代表1个查询，对应下面的QUESTION SECTION中的记录数</span></span><br><span class="line"><span class="comment">* ANSWER 结果数，4代表有4项结果，对应下面ANSWER SECTION中的记录数</span></span><br><span class="line"><span class="comment">* AUTHORITY 权威域名服务器记录数，0代表该域名有0个权威域名服务器，可供域名解析用。</span></span><br><span class="line"><span class="comment">* ADDITIONAL 格外记录数，0代表有0项格外记录。</span></span><br><span class="line"><span class="comment">  </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">;; OPT PSEUDOSECTION:</span><br><span class="line">; EDNS: version: <span class="number">0</span>, <span class="attr">flags</span>:; udp: <span class="number">512</span></span><br><span class="line">;; QUESTION SECTION:</span><br><span class="line">;www.baidu.com.			IN	A</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 以下是返回的记录列表</span></span><br><span class="line">;; ANSWER SECTION:</span><br><span class="line"><span class="comment">// 域名             ttl     记录类型    类型值</span></span><br><span class="line">www.baidu.com.		<span class="number">362</span>	IN	CNAME	www.a.shifen.com.</span><br><span class="line">www.a.shifen.com.	<span class="number">43</span>	IN	A	<span class="number">220.181</span><span class="number">.38</span><span class="number">.150</span></span><br><span class="line">www.a.shifen.com.	<span class="number">43</span>	IN	A	<span class="number">220.181</span><span class="number">.38</span><span class="number">.149</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 一下是DNS 服务器返回的结果</span></span><br><span class="line">;; Query time: <span class="number">34</span> msec</span><br><span class="line">;; SERVER: 114.114.114.114#53(114.114.114.114)</span><br><span class="line">;; WHEN: Thu Dec <span class="number">17</span> <span class="number">19</span>:<span class="number">47</span>:<span class="number">02</span> CST <span class="number">2020</span></span><br><span class="line">;; MSG SIZE  rcvd: <span class="number">101</span></span><br></pre></td></tr></table></figure>
 <ul>
 <li>nslookup</li>
 </ul>
-<p>用于查询DNS的记录，查询域名解析是否正常，在网络故障时用来诊断网络问题<br>
-nslookup domain [dns-server]<br>
-//如果没有指定dns服务器，就采用系统默认的dns服务器。</p>
+<p>用于查询DNS的记录，查询域名解析是否正常，在网络故障时用来诊断网络问题<br>nslookup domain [dns-server]<br>  //如果没有指定dns服务器，就采用系统默认的dns服务器。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">nslookup -qt = type domain [dns-server]</span><br><span class="line">type:</span><br><span class="line">    A --&gt;地址记录</span><br><span class="line">    AAAA   --&gt;地址记录</span><br><span class="line">    AFSDB Andrew    --&gt;文件系统数据库服务器记录</span><br><span class="line">    ATMA --&gt;ATM地址记录</span><br><span class="line">    CNAME   --&gt;别名记录</span><br><span class="line">    HINHO  --&gt;硬件配置记录，包括CPU、操作系统信息 </span><br><span class="line">    ISDN   --&gt;域名对应的ISDN号码</span><br><span class="line">    MB   --&gt;存放指定邮箱的服务器</span><br><span class="line">    MG    --&gt;邮件组记录</span><br><span class="line">    MINFO   --&gt;邮件组和邮箱的信息记录</span><br><span class="line">    MR   --&gt;改名的邮箱记录</span><br><span class="line">    MX   --&gt;邮件服务器记录</span><br><span class="line">    NS  --&gt; 名字服务器记录</span><br><span class="line">    PTR    -&gt;反向记录</span><br><span class="line">    RP    --&gt;负责人记录</span><br><span class="line">    RT  --&gt;路由穿透记录</span><br><span class="line">    SRV    --&gt;TCP服务器信息记录</span><br><span class="line">    TXT   --&gt;域名对应的文本信息</span><br><span class="line">    X25  --&gt;域名对应的X<span class="number">.25</span>地址记录</span><br></pre></td></tr></table></figure>
-<p>看一下返回结果</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Server:		<span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span></span><br><span class="line">Address:	114.114.114.114#53</span><br><span class="line"></span><br><span class="line">Non-authoritative answer:       <span class="comment">//是否是权威回答</span></span><br><span class="line">Name:	baidu.com               <span class="comment">// 域名</span></span><br><span class="line">Address: <span class="number">220.181</span><span class="number">.38</span><span class="number">.148</span>         <span class="comment">//域名ip地址</span></span><br><span class="line">Name:	baidu.com               </span><br><span class="line">Address: <span class="number">39.156</span><span class="number">.69</span><span class="number">.79</span></span><br></pre></td></tr></table></figure>
-<h2><span id="参考">参考</span></h2>
-<ul>
+<p>看一下返回结果<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Server:		<span class="number">114.114</span><span class="number">.114</span><span class="number">.114</span></span><br><span class="line">Address:	114.114.114.114#53</span><br><span class="line"></span><br><span class="line">Non-authoritative answer:       <span class="comment">//是否是权威回答</span></span><br><span class="line">Name:	baidu.com               <span class="comment">// 域名</span></span><br><span class="line">Address: <span class="number">220.181</span><span class="number">.38</span><span class="number">.148</span>         <span class="comment">//域名ip地址</span></span><br><span class="line">Name:	baidu.com               </span><br><span class="line">Address: <span class="number">39.156</span><span class="number">.69</span><span class="number">.79</span></span><br></pre></td></tr></table></figure></p>
+<h2><span id="参考">参考</span></h2><ul>
 <li><a href="https://draveness.me/dns-coredns/" target="_blank" rel="noopener">详解 DNS 与 CoreDNS 的实现原理</a></li>
 <li><a href="https://www.jianshu.com/p/6b502d0f2ede" target="_blank" rel="noopener">DNS解析原理:递归 VS 迭代</a></li>
 <li><a href="https://blog.csdn.net/mooncarp/article/details/51556059" target="_blank" rel="noopener">使用nslookup定位权威域名服务器得到权威应答</a></li>

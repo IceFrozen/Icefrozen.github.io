@@ -8,16 +8,16 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-memory-model/</loc>
-        <lastmod>2021-07-14T07:05:44.576Z</lastmod>
+        <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
+        <lastmod>2021-07-14T07:15:26.400Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
-        <lastmod>2021-07-14T07:04:32.112Z</lastmod>
+        <loc>http://yoursite.com/article/java-memory-model/</loc>
+        <lastmod>2021-07-14T07:05:44.576Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

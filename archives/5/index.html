@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -237,7 +237,7 @@
             操作系统之 高性能IO浅析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/96/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -246,10 +246,9 @@
             </h3>
         <div class="post-content-preview">
             IO模型分类
-
 （1）同步阻塞IO（Blocking IO）：即传统的IO模型。
 （2）同步非阻塞IO（Non-blocking IO）：默认创建的socket都是阻塞的，非阻塞IO要求socket被设置为NONBLOCK。注意这里所说的NIO并非Java的NIO（New IO）库。
-（3）IO多路复用（IO Multiplexing）：即经典的Reactor设计模式，有时也称为异步阻塞IO...
+（3）IO多路复用（IO Multiplexing）：即经典的Reactor设计模式，有时也称为异步阻塞IO，...
         </div>
     </a>
     
@@ -274,7 +273,7 @@
             操作系统之Epoll原理
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/60/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/50/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -283,14 +282,11 @@
             </h3>
         <div class="post-content-preview">
             Epoll 很重要，但是 Epoll 与 Select 的区别是什么呢?Epoll 高效的原因是什么?
-从网卡接收数据说起
-网卡接收数据的过程
-下边是一个典型的计算机结构图，计算机由 CPU、存储器(内存)与网络接口等部件组成，了解 Epoll 本质的第一步，要从硬件的角度看计算机怎样接收网络数据。
-
-下图展示了网卡接收数据的过程：
+从网卡接收数据说起网卡接收数据的过程  下边是一个典型的计算机结构图，计算机由 CPU、存储器(内存)与网络接口等部件组成，了解 Epoll 本质的第一步，要从硬件的角度看计算机怎样接收网络数据。
+  下图展示了网卡接收数据的过程：
 
 在 1 阶段，网卡收到网线传来的数据。
-经过 2 阶段的...
+经过 2 阶段...
         </div>
     </a>
     
@@ -315,7 +311,7 @@
             Java内存模型(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/37/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/71/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -323,10 +319,8 @@
                 JMM是什么
             </h3>
         <div class="post-content-preview">
-            为什么要有内存模型
-CPU缓存
-我们应该都知道，计算机在执行程序的时候，每条指令都是在CPU中执行的，而执行的时候，又免不了要和数据打交道。而计算机上面的数据，是存放在主存当中的，也就是计算机的物理内存啦。
-当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新...
+            为什么要有内存模型CPU缓存我们应该都知道，计算机在执行程序的时候，每条指令都是在CPU中执行的，而执行的时候，又免不了要和数据打交道。而计算机上面的数据，是存放在主存当中的，也就是计算机的物理内存啦。
+当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主...
         </div>
     </a>
     
@@ -355,7 +349,7 @@ CPU缓存
             TCP/IP系列(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/45/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/23/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -364,13 +358,9 @@ CPU缓存
             </h3>
         <div class="post-content-preview">
             一、 计算机网络体系结构分层
-
 七层网络模型是一个理想的模型，而TCP/IP 则是从中演变而来
-二、 TCP/IP 基础
-1.TCP/IP 模型
-
-2. TCP/IP 的具体含义
-TCP/IP 是指 TCP 和 IP 两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用 IP 进行通信时所必须用到的协议群的统称。具体来说，IP 或 ICMP、TCP 或 UDP、TE...
+二、 TCP/IP 基础1.TCP/IP 模型
+2. TCP/IP 的具体含义 TCP/IP 是指 TCP 和 IP 两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用 IP 进行通信时所必须用到的协议群的统称。具体来说，IP 或 ICMP、TCP 或 UDP、TELNE...
         </div>
     </a>
     
@@ -395,7 +385,7 @@ TCP/IP 是指 TCP 和 IP 两种协议。实际生活当中有时也确实就是�
             算法探秘系列之数据结构篇——树（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/27/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -403,19 +393,17 @@ TCP/IP 是指 TCP 和 IP 两种协议。实际生活当中有时也确实就是�
                 B+树
             </h3>
         <div class="post-content-preview">
-            概诉
-概诉 
+            概诉概诉 
 
 B+ 树的定义
-
 关于B树的阶数和度数已经在上一篇算法探秘系列之数据结构篇——树（1）
 除此之外B+树还有以下的要求。
 
-
 1）B+树包含2种类型的结点：内部结点（也称索引结点）和叶子结点。根结点本身即可以是内部结点，也可以是叶子结点。根结点的关键字个数最少可以只有1个。
 
+2）B+树与B树最大的不同是内部结点不保存数据，只用于索引，所有数据（或者说记录）都保存在叶子结点中。
 
-2）B+树与B树最大的不同是内部结点不保存数据，只用于索引，所有数据（或者说记录）都保存在叶子结点中...
+3...
         </div>
     </a>
     
@@ -444,7 +432,7 @@ B+ 树的定义
             算法探秘系列之概率随机算法(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/8/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/56/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -452,12 +440,9 @@ B+ 树的定义
                 布隆过滤器
             </h3>
         <div class="post-content-preview">
-            什么是布隆过滤器
-本质上布隆过滤器是一种数据结构，比较巧妙的概率型数据结构（probabilistic data structure），特点是高效地插入和查询，可以用来告诉你 “某样东西一定不存在或者可能存在”。
+            什么是布隆过滤器本质上布隆过滤器是一种数据结构，比较巧妙的概率型数据结构（probabilistic data structure），特点是高效地插入和查询，可以用来告诉你 “某样东西一定不存在或者可能存在”。
 相比于传统的 List、Set、Map 等数据结构，它更高效、占用空间更少，但是缺点是其返回的结果是概率性的，而不是确切的。
-实现原理
-HashMap 的问题
-讲述布隆过滤器的原理...
+实现原理HashMap 的问题讲述布隆过滤器的原理之前，...
         </div>
     </a>
     
@@ -486,7 +471,7 @@ HashMap 的问题
             算法探秘系列之数据结构篇——树（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/100/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/42/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -495,9 +480,8 @@ HashMap 的问题
             </h3>
         <div class="post-content-preview">
             注意：首先需要说明的一点是：B-树就是B树，没有所谓的B减树
-引言
-我们都知道二叉查找树的查找的时间复杂度是Ｏ(log N)，其查找效率已经足够高了，那为什么还有Ｂ树和Ｂ＋树的出现呢？难道它两的时间复杂度比二叉查找树还小吗？
-答案当然不是，Ｂ树和Ｂ＋树的出现是因为另外一个问题，那就是磁盘ＩＯ，众所周知ＩＯ操作的效率很低，那么，当在大量数据存储中，查询时我们不能一下子将所有数据加载到内存中，只...
+引言　　我们都知道二叉查找树的查找的时间复杂度是Ｏ(log N)，其查找效率已经足够高了，那为什么还有Ｂ树和Ｂ＋树的出现呢？难道它两的时间复杂度比二叉查找树还小吗？  
+　　答案当然不是，Ｂ树和Ｂ＋树的出现是因为另外一个问题，那就是磁盘ＩＯ，众所周知ＩＯ操作的效率很低，那么，当在大量数据存储中，查询时我们不能一下子将所有数据加载到...
         </div>
     </a>
     
@@ -526,7 +510,7 @@ HashMap 的问题
             分布式锁的实现 redis篇
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/23/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/78/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -534,9 +518,8 @@ HashMap 的问题
                 基于Redis的单点和基于集群的Redlock的分析
             </h3>
         <div class="post-content-preview">
-            概述
-在大多数的情况下，我们需要对一个共享资源进行写操作，在分布式的环境下，对于资源的写操作的互斥性就显得尤为重要。由于生产环境对redis有很多依赖，所以最近在分布式锁的实现上进行了一些调研。
-对于锁的安全性，一直是分布式领域不可逃避的话题，一个分布式锁的实现在网上所以下，就会发现，这些文章的思路大体相近，给出的实现算法也看似合乎逻辑，但当我们着手去实现它们的时候，却发现如果你越是仔细推敲...
+            概述在大多数的情况下，我们需要对一个共享资源进行写操作，在分布式的环境下，对于资源的写操作的互斥性就显得尤为重要。由于生产环境对redis有很多依赖，所以最近在分布式锁的实现上进行了一些调研。
+对于锁的安全性，一直是分布式领域不可逃避的话题，一个分布式锁的实现在网上所以下，就会发现，这些文章的思路大体相近，给出的实现算法也看似合乎逻辑，但当我们着手去实现它们的时候，却发现如果你越是仔细推敲，...
         </div>
     </a>
     
@@ -571,22 +554,16 @@ HashMap 的问题
                 背包问题
             </h3>
         <div class="post-content-preview">
-            背包问题
-有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
+            背包问题有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
 问题分类
-
 01背包问题  如果N个物品每个物品只能使用一次，则成为01背包问题
-完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题
-
-问题的解法
-
+完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题问题的解法
 暴力搜索解法（递归解法）
-动态规划解法
-优化后的动态规划（滚动数组，自下而上）
+动态规划解法 
+优化后的动态规划（滚动数组，自下而上）01背包问题
 
-01背包问题
 
-...
+有N件物品...
         </div>
     </a>
     
@@ -613,7 +590,7 @@ HashMap 的问题
             算法探秘系列之动态规划（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/39/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -621,32 +598,18 @@ HashMap 的问题
                 动态规划介绍
             </h3>
         <div class="post-content-preview">
-            概述
-态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。
+            概述态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。
 动态规划一般可分为
 
-
 线性动规
-
-
 区域动规
-
-
 树形动规
-
-
 背包动规四类。
-
-
 举例：
 
 线性动规：拦截导弹(最大递减数列)，合唱队形，挖地雷，建学校，剑客决斗等；
-
-
 区域动规：石子合并， 加分二叉树，统计单词个数，炮兵布阵等；
-
-
-树形动规...
+树形动规：贪吃的九头龙，二分查找树，...
         </div>
     </a>
     
@@ -914,13 +877,13 @@ HashMap 的问题
             
         
             
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
-            
-        
             
         
             

@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,137 +221,88 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="cms-垃圾回收器简介">CMS 垃圾回收器简介</span></h2>
-<p>由于上一篇博文已经详细介绍了，这里就不在赘述，有兴趣可以围观一下<a href="https://icefrozen.github.io/article/Java-garbage-collection-analysis-2/" target="_blank" rel="noopener">Java垃圾回收详解(2)<br>
-GC方式介绍</a></p>
+                <h2><span id="cms-垃圾回收器简介">CMS 垃圾回收器简介</span></h2><p>由于上一篇博文已经详细介绍了，这里就不在赘述，有兴趣可以围观一下<a href="https://icefrozen.github.io/article/Java-garbage-collection-analysis-2/" target="_blank" rel="noopener">Java垃圾回收详解(2)<br>GC方式介绍</a></p>
 <p>这里做一个简单的回顾:</p>
 <ul>
-<li>
-<p>获取最短回收停顿时间为目标的多线程并发收集器</p>
+<li><p>获取最短回收停顿时间为目标的多线程并发收集器</p>
 </li>
-<li>
-<p>cms 只会回收老年代和永久带（1.8开始为元数据区，需要设置- <code>CMSClassUnloadingEnabled</code>, <strong>不会收集年轻带</strong>；</p>
+<li><p>cms 只会回收老年代和永久带（1.8开始为元数据区，需要设置- <code>CMSClassUnloadingEnabled</code>, <strong>不会收集年轻带</strong>；</p>
 </li>
-<li>
-<p>cms 是一种预处理垃圾回收器，它不能等到old内存用尽时回收，需要在内存用尽前，完成回收操作，否则会导致并发回收失败；所以cms垃圾回收器开始执行回收操作，有一个触发阈值，默认是老年代或永久带达到<strong>92%</strong>；</p>
+<li><p>cms 是一种预处理垃圾回收器，它不能等到old内存用尽时回收，需要在内存用尽前，完成回收操作，否则会导致并发回收失败；所以cms垃圾回收器开始执行回收操作，有一个触发阈值，默认是老年代或永久带达到<strong>92%</strong>；</p>
 </li>
 </ul>
-<h2><span id="cms-过程详解">CMS 过程详解</span></h2>
-<h2><span id="cms收集器的7个阶段">CMS收集器的7个阶段：</span></h2>
-<ul>
-<li>
-<p>初始标记（CMS initial mark）</p>
+<h2><span id="cms-过程详解">CMS 过程详解</span></h2><h2><span id="cms收集器的7个阶段">CMS收集器的7个阶段：</span></h2><ul>
+<li>初始标记（CMS initial mark）  </li>
+<li>并发标记（CMS concurrent mark）  </li>
+<li>并发预清理（CMS concurrent-preclean）  </li>
+<li>并发可取消的预清理 （CMS concurrent-abortable-preclean）  </li>
+<li>重新标记（CMS remark）  </li>
+<li>并发清除（CMS concurrent sweep）  </li>
+<li><p>并发重置（CMS concurrent-reset）</p>
 </li>
-<li>
-<p>并发标记（CMS concurrent mark）</p>
-</li>
-<li>
-<p>并发预清理（CMS concurrent-preclean）</p>
-</li>
-<li>
-<p>并发可取消的预清理 （CMS concurrent-abortable-preclean）</p>
-</li>
-<li>
-<p>重新标记（CMS remark）</p>
-</li>
-<li>
-<p>并发清除（CMS concurrent sweep）</p>
-</li>
-<li>
-<p>并发重置（CMS concurrent-reset）</p>
-</li>
-<li>
-<p>流程大致如下<br>
-<img src="/article/java-cms-gc/1552636690413java-cms-gc_.png" alt></p>
+<li><p>流程大致如下<br><img src="/article/java-cms-gc/1552636690413java-cms-gc_.png" alt></p>
 </li>
 </ul>
 <ul>
-<li>具体过程如下<br>
-<img src="/article/java-cms-gc/1552636737931java-cms-gc_.png" alt></li>
+<li>具体过程如下<br><img src="/article/java-cms-gc/1552636737931java-cms-gc_.png" alt></li>
 </ul>
-<h2><span id="cms-阶段详解">CMS 阶段详解</span></h2>
-<h3><span id="初始标记idling阶段">初始标记（Idling）阶段</span></h3>
-<p>这是CMS中两次stop-the-world事件中的一次。这一步的作用是标记存活的对象，有两部分：</p>
+<h2><span id="cms-阶段详解">CMS 阶段详解</span></h2><h3><span id="初始标记idling阶段">初始标记（Idling）阶段</span></h3><p>这是CMS中两次stop-the-world事件中的一次。这一步的作用是标记存活的对象，有两部分： </p>
 <ol>
-<li>标记老年代中所有的<code>GC Roots</code>对象，如下图节点1；</li>
-<li>标记年轻代中活着的对象引用到的老年代的对象（指的是年轻带中还存活的引用类型对象，引用指向老年代中的对象）如下图节点2、3；<br>
-<img src="/article/java-cms-gc/1552640918028java-cms-gc_.png" alt></li>
+<li>标记老年代中所有的<code>GC Roots</code>对象，如下图节点1； </li>
+<li>标记年轻代中活着的对象引用到的老年代的对象（指的是年轻带中还存活的引用类型对象，引用指向老年代中的对象）如下图节点2、3；<br><img src="/article/java-cms-gc/1552640918028java-cms-gc_.png" alt></li>
 </ol>
-<p>在Java语言里，可作为<a href="https://icefrozen.github.io/article/Java-garbage-collection-analysis-3/" target="_blank" rel="noopener">GC Roots对象</a>的包括如下几种：</p>
+<p>在Java语言里，可作为<a href="https://icefrozen.github.io/article/Java-garbage-collection-analysis-3/" target="_blank" rel="noopener">GC Roots对象</a>的包括如下几种： </p>
 <ol>
-<li>虚拟机栈(栈桢中的本地变量表)中的引用的对象 ；</li>
-<li>方法区中的类静态属性引用的对象 ；</li>
-<li>方法区中的常量引用的对象 ；</li>
-<li>本地方法栈中JNI的引用的对象；</li>
+<li>虚拟机栈(栈桢中的本地变量表)中的引用的对象 ； </li>
+<li>方法区中的类静态属性引用的对象 ； </li>
+<li>方法区中的常量引用的对象 ； </li>
+<li>本地方法栈中JNI的引用的对象； </li>
 </ol>
 <p><strong><em>为了加快此阶段处理速度，减少停顿时间，可以开启初始标记并行化，<code>-XX:+CMSParallelInitialMarkEnabled</code>，同时调大并行标记的线程数，线程数不要超过cpu的核数</em></strong></p>
-<h3><span id="并发标记-initialmarking阶段">并发标记 （InitialMarking）阶段</span></h3>
-<p>从“初始标记”阶段标记的对象开始找出所有存活的对象,也就是从<code>GC_ROOTS</code> 触发，标记所有存活对象，由于第一次的结果，所以这次的标记并<strong>不需要STW</strong>。</p>
+<h3><span id="并发标记-initialmarking阶段">并发标记 （InitialMarking）阶段</span></h3><p>从“初始标记”阶段标记的对象开始找出所有存活的对象,也就是从<code>GC_ROOTS</code> 触发，标记所有存活对象，由于第一次的结果，所以这次的标记并<strong>不需要STW</strong>。</p>
 <p><strong>因为是并发运行的，在运行期间会发生新生代的对象晋升到老年代、或者是直接在老年代分配对象、或者更新老年代对象的引用关系等等，对于这些对象，都是需要进行重新标记的</strong>。</p>
-<p>否则有些对象就会被遗漏，发生漏标的情况。为了提高重新标记的效率，该阶段会把上述对象所在的Card标识为Dirty，后续只需扫描这些Dirty Card的对象，避免扫描整个老年代；<br>
-并发标记阶段只负责将引用发生改变的Card标记为Dirty状态，不负责处理；</p>
-<p>如下图所示，也就是节点1、2、3，最终找到了节点4和5。并发标记的特点是和应用程序线程同时运行。并不是老年代的所有存活对象都会被标记，因为标记的同时应用程序会改变一些对象的引用等。<br>
-<img src="/article/java-cms-gc/1552641393363java-cms-gc_.png" alt><br>
-最后将6标记为存活,如下图所示：<br>
-<img src="/article/java-cms-gc/1552641923916java-cms-gc_.png" alt></p>
+<p>否则有些对象就会被遗漏，发生漏标的情况。为了提高重新标记的效率，该阶段会把上述对象所在的Card标识为Dirty，后续只需扫描这些Dirty Card的对象，避免扫描整个老年代；<br>并发标记阶段只负责将引用发生改变的Card标记为Dirty状态，不负责处理；</p>
+<p>如下图所示，也就是节点1、2、3，最终找到了节点4和5。并发标记的特点是和应用程序线程同时运行。并不是老年代的所有存活对象都会被标记，因为标记的同时应用程序会改变一些对象的引用等。<br><img src="/article/java-cms-gc/1552641393363java-cms-gc_.png" alt><br>最后将6标记为存活,如下图所示：<br><img src="/article/java-cms-gc/1552641923916java-cms-gc_.png" alt></p>
 <ul>
 <li><strong>Card Table 是什么</strong></li>
 </ul>
 <blockquote>
 <p>HotSpot 的一项叫做卡表（Card Table）的技术。该技术将整个堆划分为一个个大小为 512 字节的卡，并且维护一个卡表，用来存储每张卡的一个标识位。这个标识位代表对应的卡是否可能存有指向新生代对象的引用。如果可能存在，那么我们就认为这张卡是脏的。在进行 Minor GC 的时候，我们便可以不用扫描整个老年代，而是在卡表中寻找脏卡，并将脏卡中的对象加入到 Minor GC 的 GC Roots 里。当完成所有脏卡的扫描之后，Java 虚拟机便会将所有脏卡的标识位清零。</p>
 </blockquote>
-<h3><span id="预清理-precleaning-阶段">预清理 （Precleaning） 阶段</span></h3>
-<p>通过参数 <code>CMSPrecleaningEnabled</code> 选择关闭该阶段，默认启用，主要做两件事情：</p>
+<h3><span id="预清理-precleaning-阶段">预清理 （Precleaning） 阶段</span></h3><p>通过参数 <code>CMSPrecleaningEnabled</code> 选择关闭该阶段，默认启用，主要做两件事情：</p>
 <ol>
-<li>
-<p>处理新生代已经发现的引用，比如在并发阶段，在Eden区中分配了一个A对象，A对象引用了一个老年代对象B（这个B之前没有被标记），在这个阶段就会标记对象B为活跃对象。</p>
+<li><p>处理新生代已经发现的引用，比如在并发阶段，在Eden区中分配了一个A对象，A对象引用了一个老年代对象B（这个B之前没有被标记），在这个阶段就会标记对象B为活跃对象。</p>
 </li>
-<li>
-<p>在并发标记阶段，如果老年代中有对象内部引用发生变化，会把所在的Card标记为Dirty，然后扫描这些dirty card</p>
+<li><p>在并发标记阶段，如果老年代中有对象内部引用发生变化，会把所在的Card标记为Dirty，然后扫描这些dirty card</p>
 </li>
 </ol>
-<h3><span id="可中断的预清理abortablepreclean阶段">可中断的预清理（AbortablePreclean）阶段</span></h3>
-<p>该阶段发生是有前提的：</p>
+<h3><span id="可中断的预清理abortablepreclean阶段">可中断的预清理（AbortablePreclean）阶段</span></h3><p>该阶段发生是有前提的：</p>
 <ul>
-<li>
-<p>CMS 由于是在老年代垃圾扫描，但是大部分的老年代对象都是被 <code>GC_ROOTS</code> 引用的，如上图的 current obj 这个对象，虽然在老年代，但是其引用还是在年轻带，并且在并发标记阶段，也有可能老年代的某些对象别重新被新生代的对象重新引用。所以在gc的时候<strong>不仅需要扫描老年代也需要扫描新生代确定 <code>GC_ROOTS</code></strong> 。</p>
+<li><p>CMS 由于是在老年代垃圾扫描，但是大部分的老年代对象都是被 <code>GC_ROOTS</code> 引用的，如上图的 current obj 这个对象，虽然在老年代，但是其引用还是在年轻带，并且在并发标记阶段，也有可能老年代的某些对象别重新被新生代的对象重新引用。所以在gc的时候<strong>不仅需要扫描老年代也需要扫描新生代确定 <code>GC_ROOTS</code></strong> 。</p>
 </li>
-<li>
-<p>全量的扫描新生代和老年代会不会很慢？肯定会,CMS 号称是停顿时间最短的GC，如此长的停顿时间肯定是不能接受的。 生代Eden区的内存使用量大于参数<code>CMSScheduleRemarkEdenSizeThreshold</code> 默认是2M，如果新生代的对象太少，就没有必要执行该阶段，直接执行重新标记阶段。</p>
+<li><p>全量的扫描新生代和老年代会不会很慢？肯定会,CMS 号称是停顿时间最短的GC，如此长的停顿时间肯定是不能接受的。 生代Eden区的内存使用量大于参数<code>CMSScheduleRemarkEdenSizeThreshold</code> 默认是2M，如果新生代的对象太少，就没有必要执行该阶段，直接执行重新标记阶段。</p>
 </li>
-<li>
-<p>如果新生代很多，超过了上述的阈值,如果在扫描新生代前进行一次Minor GC，那么在下一阶段remard的时候，新生代的对象会很少，从而节省很多时间。</p>
+<li><p>如果新生代很多，超过了上述的阈值,如果在扫描新生代前进行一次Minor GC，那么在下一阶段remard的时候，新生代的对象会很少，从而节省很多时间。</p>
 </li>
-<li>
-<p>CMS 有两个参数：</p>
+<li><p>CMS 有两个参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CMSScheduleRemarkEdenSizeThreshold</span><br><span class="line">CMSScheduleRemarkEdenPenetration</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CMSScheduleRemarkEdenSizeThreshold</span><br><span class="line">CMSScheduleRemarkEdenPenetration</span><br></pre></td></tr></table></figure>
 <p>默认值分别是2M、50%。两个参数组合起来的意思是预清理后，eden空间使用超过2M时启动可中断的并发预清理（<code>CMS-concurrent-abortable-preclean</code>），直到eden空间使用率达到50%时中断，进入remark阶段。</p>
 <ul>
-<li>
-<p>如果能在可中止的预清理阶段发生一次 Minor GC,那就万事大吉、天下太平了。 这里有一个小问题,可终止的预清理要执行多长时间来保证发生一次Minor GC?答案是没法保证。道理很简单，因为垃圾回收是JVM自动调度的,什么时候进行GC我们控制不了。但此阶段总有一个执行时间吧？是的。</p>
+<li><p>如果能在可中止的预清理阶段发生一次 Minor GC,那就万事大吉、天下太平了。 这里有一个小问题,可终止的预清理要执行多长时间来保证发生一次Minor GC?答案是没法保证。道理很简单，因为垃圾回收是JVM自动调度的,什么时候进行GC我们控制不了。但此阶段总有一个执行时间吧？是的。</p>
 </li>
-<li>
-<p>CMS提供了一个参数<code>CMSMaxAbortablePrecleanTime</code> ，默认为5S。只要到了5S，不管发没发生Minor GC，有没有到<code>CMSScheduleRemardEdenPenetration</code>都会中止此阶段，进入remark。如果在5S内还是没有执行Minor GC怎么办？CMS提供<code>CMSScavengeBeforeRemark</code>参数，使remark前强制进行一次Minor GC。</p>
+<li><p>CMS提供了一个参数<code>CMSMaxAbortablePrecleanTime</code> ，默认为5S。只要到了5S，不管发没发生Minor GC，有没有到<code>CMSScheduleRemardEdenPenetration</code>都会中止此阶段，进入remark。如果在5S内还是没有执行Minor GC怎么办？CMS提供<code>CMSScavengeBeforeRemark</code>参数，使remark前强制进行一次Minor GC。</p>
 </li>
 </ul>
 <p>这样做利弊都有。好的一面是减少了remark阶段的停顿时间;坏的一面是Minor GC后紧跟着一个remark pause。如此一来，停顿时间也比较久。</p>
-<p>我们来结合日志来看一下这个阶段<br>
-CMS日志如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">7688.150</span>: [CMS-concurrent-preclean-start]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.186</span>: [CMS-concurrent-preclean: <span class="number">0.034</span>/<span class="number">0.035</span> secs]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.186</span>: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.465</span>: [GC <span class="number">7688.465</span>: [ParNew: <span class="number">1040940</span>K-&gt;<span class="number">1464</span>K(<span class="number">1044544</span>K), <span class="number">0.0165840</span> secs] <span class="number">1343593</span>K-&gt;<span class="number">304365</span>K(<span class="number">2093120</span>K), </span><br><span class="line"></span><br><span class="line"><span class="number">0.0167509</span> secs]<span class="number">7690.093</span>: [CMS-concurrent-abortable-preclean: <span class="number">1.012</span>/<span class="number">1.907</span> secs]  <span class="number">7690.095</span>: [GC[YG occupancy: <span class="number">522484</span> K (<span class="number">1044544</span> K)]</span><br><span class="line"></span><br><span class="line"><span class="number">7690.095</span>: [Rescan (parallel) , <span class="number">0.3665541</span> secs]<span class="number">7690.462</span>: [weak refs processing, <span class="number">0.0003850</span> secs] [<span class="number">1</span> CMS-remark: <span class="number">302901</span>K(<span class="number">1048576</span>K)] <span class="number">825385</span>K(<span class="number">2093120</span>K), <span class="number">0.3670690</span> secs]</span><br></pre></td></tr></table></figure>
+<p>我们来结合日志来看一下这个阶段<br>CMS日志如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">7688.150</span>: [CMS-concurrent-preclean-start]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.186</span>: [CMS-concurrent-preclean: <span class="number">0.034</span>/<span class="number">0.035</span> secs]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.186</span>: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line"></span><br><span class="line"><span class="number">7688.465</span>: [GC <span class="number">7688.465</span>: [ParNew: <span class="number">1040940</span>K-&gt;<span class="number">1464</span>K(<span class="number">1044544</span>K), <span class="number">0.0165840</span> secs] <span class="number">1343593</span>K-&gt;<span class="number">304365</span>K(<span class="number">2093120</span>K), </span><br><span class="line"></span><br><span class="line"><span class="number">0.0167509</span> secs]<span class="number">7690.093</span>: [CMS-concurrent-abortable-preclean: <span class="number">1.012</span>/<span class="number">1.907</span> secs]  <span class="number">7690.095</span>: [GC[YG occupancy: <span class="number">522484</span> K (<span class="number">1044544</span> K)]</span><br><span class="line"></span><br><span class="line"><span class="number">7690.095</span>: [Rescan (parallel) , <span class="number">0.3665541</span> secs]<span class="number">7690.462</span>: [weak refs processing, <span class="number">0.0003850</span> secs] [<span class="number">1</span> CMS-remark: <span class="number">302901</span>K(<span class="number">1048576</span>K)] <span class="number">825385</span>K(<span class="number">2093120</span>K), <span class="number">0.3670690</span> secs]</span><br></pre></td></tr></table></figure></p>
 <p>7688.186启动了可终止的预清理，在随后的三秒内启动了Minor GC，然后进入了Remark阶段.实际上为了减少remark阶段的STW时间</p>
-<h3><span id="重新标记finalmarking">重新标记（FinalMarking）</span></h3>
-<p>这个阶段会导致第二次stop the word，该阶段的任务是完成标记整个年老代的所有的存活对象。<br>
-这个阶段，重新标记的内存范围是整个堆，包含_young_gen和_old_gen。为什么要扫描新生代呢，因为对于老年代中的对象，如果被新生代中的对象引用，那么就会被视为存活对象，即使新生代的对象已经不可达了，也会使用这些不可达的对象当做cms的“gc root”，来扫描老年代； 因此对于老年代来说，引用了老年代中对象的新生代的对象，也会被老年代视作“GC ROOTS”:当此阶段耗时较长的时候，可以加入参数<code>-XX:+CMSScavengeBeforeRemark</code>，在重新标记之前，先执行一次ygc，回收掉年轻带的对象无用的对象，并将对象放入幸存带或晋升到老年代，这样再进行年轻带扫描时，只需要扫描幸存区的对象即可，一般幸存带非常小，这大大减少了扫描时间。<br>
-由于之前的预处理阶段是与用户线程并发执行的，这时候可能年轻带的对象对老年代的引用已经发生了很多改变，这个时候，remark阶段要花很多时间处理这些改变，会导致很长stop the word，所以通常CMS尽量运行Final Remark阶段在年轻代是足够干净的时候。</p>
+<h3><span id="重新标记finalmarking">重新标记（FinalMarking）</span></h3><p>这个阶段会导致第二次stop the word，该阶段的任务是完成标记整个年老代的所有的存活对象。<br>这个阶段，重新标记的内存范围是整个堆，包含_young_gen和_old_gen。为什么要扫描新生代呢，因为对于老年代中的对象，如果被新生代中的对象引用，那么就会被视为存活对象，即使新生代的对象已经不可达了，也会使用这些不可达的对象当做cms的“gc root”，来扫描老年代； 因此对于老年代来说，引用了老年代中对象的新生代的对象，也会被老年代视作“GC ROOTS”:当此阶段耗时较长的时候，可以加入参数<code>-XX:+CMSScavengeBeforeRemark</code>，在重新标记之前，先执行一次ygc，回收掉年轻带的对象无用的对象，并将对象放入幸存带或晋升到老年代，这样再进行年轻带扫描时，只需要扫描幸存区的对象即可，一般幸存带非常小，这大大减少了扫描时间。<br>由于之前的预处理阶段是与用户线程并发执行的，这时候可能年轻带的对象对老年代的引用已经发生了很多改变，这个时候，remark阶段要花很多时间处理这些改变，会导致很长stop the word，所以通常CMS尽量运行Final Remark阶段在年轻代是足够干净的时候。</p>
 <p>另外，还可以开启并行收集：-XX:+CMSParallelRemarkEnabled</p>
-<h3><span id="并发清理-cms-concurrent-sweep">并发清理 （ CMS-concurrent-sweep ）</span></h3>
-<p>这个阶段的目的就是移除那些不用的对象，回收他们占用的空间并且为将来使用。注意这个阶段会产生新的垃圾，新的垃圾在此次GC无法清除，只能等到下次清理。这些垃圾有个专业名词：浮动垃圾。</p>
-<h3><span id="并发重置-cms-concurrent-reset">并发重置 （ CMS-concurrent-reset ）</span></h3>
-<p>这个阶段并发执行，重新设置CMS算法内部的数据结构，准备下一个CMS生命周期的使用。</p>
-<h2><span id="cms-调优">CMS 调优</span></h2>
-<h2><span id="cms-jvm-参数">CMS JVM 参数</span></h2>
+<h3><span id="并发清理-cms-concurrent-sweep">并发清理 （ CMS-concurrent-sweep ）</span></h3><p>这个阶段的目的就是移除那些不用的对象，回收他们占用的空间并且为将来使用。注意这个阶段会产生新的垃圾，新的垃圾在此次GC无法清除，只能等到下次清理。这些垃圾有个专业名词：浮动垃圾。</p>
+<h3><span id="并发重置-cms-concurrent-reset">并发重置 （ CMS-concurrent-reset ）</span></h3><p>这个阶段并发执行，重新设置CMS算法内部的数据结构，准备下一个CMS生命周期的使用。</p>
+<h2><span id="cms-调优">CMS 调优</span></h2><h2><span id="cms-jvm-参数">CMS JVM 参数</span></h2><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -425,24 +376,17 @@ CMS日志如下：</p>
 <td style="text-align:left">日志详细打印参数</td>
 </tr>
 <tr>
-<td>- -Xloggc:…/logs/gc.log</td>
+<td>- -Xloggc:../logs/gc.log</td>
 <td style="text-align:left">日志详细打印参数</td>
 </tr>
 </tbody>
 </table>
-<h2><span id="日志分析">日志分析</span></h2>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [GC (CMS Final Remark)</span><br><span class="line">  [YG occupancy: <span class="number">199103</span> K (<span class="number">306688</span> K)]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [Rescan (parallel) , <span class="number">0.0027865</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.293</span>-<span class="number">0800</span>: <span class="number">6.966</span>: [weak refs processing, <span class="number">0.0000397</span> secs]</span><br><span class="line">  2017-07-27T10:42:56.294-0800: 6.966: [class unloading, 0.0004163 secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.294</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub symbol table, <span class="number">0.0006806</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.295</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub string table, <span class="number">0.0001862</span> secs]</span><br><span class="line">  [<span class="number">1</span> CMS-remark: <span class="number">1569615</span>K(<span class="number">1756416</span>K)]</span><br><span class="line">  <span class="number">1768718</span>K(<span class="number">2063104</span>K),</span><br><span class="line"><span class="number">0.0043575</span> secs]</span><br><span class="line">[Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [GC (CMS Final Remark（最终标记阶段，标记老年代中所有存活的对象，包括在此前的并发标记过程中创建/修改的引用）)</span><br><span class="line">  [YG occupancy: <span class="number">199103</span> K（当前年轻代的使用量） (<span class="number">306688</span> K（年轻代总大小）)]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [Rescan (parallel) , <span class="number">0.0027865</span> secs]（在程序暂停时重新进行扫描，以完成存活对象的标记。此时 Rescan 是并行执行的）</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.293</span>-<span class="number">0800</span>: <span class="number">6.966</span>: [weak refs processing, <span class="number">0.0000397</span> secs]（第一个子阶段，处理弱引用）</span><br><span class="line">  2017-07-27T10:42:56.294-0800: 6.966: [class unloading, 0.0004163 secs]（第二个子阶段，卸载不使用的类）</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.294</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub symbol table, <span class="number">0.0006806</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.295</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub string table, <span class="number">0.0001862</span> secs]（最后一个子阶段，清理持有 <span class="class"><span class="keyword">class</span> 级别 <span class="title">metadata</span> 的符号表，以及内部化字符串对应的 <span class="title">string</span> <span class="title">tables</span>）</span></span><br><span class="line">  [1 CMS-remark: 1569615K(1756416K)]（此阶段完成后老年代的使用量和总容量）</span><br><span class="line">  <span class="number">1768718</span>K(<span class="number">2063104</span>K),（此阶段完成后整个堆内存的使用量和总容量）</span><br><span class="line"><span class="number">0.0043575</span> secs]</span><br><span class="line">[Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br></pre></td></tr></table></figure>
-<h2><span id="cms-gc-分析">CMS gc 分析</span></h2>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">/第一步 初始标记 这一步会停顿</span><br><span class="line">[GC (CMS Initial Mark) [<span class="number">1</span> CMS-initial-mark: <span class="number">299570</span>K(<span class="number">307200</span>K)] <span class="number">323315</span>K(<span class="number">491520</span>K), <span class="number">0.0026208</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">         vmop                    [threads: total initially_running wait_to_block]    [time: spin block sync cleanup vmop] page_trap_count</span><br><span class="line"><span class="number">0.345</span>: CMS_Initial_Mark                 [      <span class="number">10</span>          <span class="number">0</span>              <span class="number">1</span>    ]      [     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">2</span>    ]  <span class="number">0</span>   </span><br><span class="line">Total time <span class="keyword">for</span> which application threads were stopped: <span class="number">0.0028494</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="comment">//第二步 并发标记</span></span><br><span class="line">[CMS-concurrent-mark-start]</span><br><span class="line">[CMS-concurrent-mark: <span class="number">0.012</span>/<span class="number">0.012</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第三步 预清理</span></span><br><span class="line">[CMS-concurrent-preclean-start]</span><br><span class="line">[CMS-concurrent-preclean: <span class="number">0.001</span>/<span class="number">0.001</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第四步 可被终止的预清理</span></span><br><span class="line">[CMS-concurrent-abortable-preclean-start]</span><br><span class="line">[CMS-concurrent-abortable-preclean: <span class="number">0.000</span>/<span class="number">0.000</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第五步 重新标记</span></span><br><span class="line">[GC (CMS Final Remark) [YG occupancy: 72704 K (184320 K)][Rescan (parallel) , 0.0009069 secs][weak refs processing, 0.0000083 secs][class unloading, 0.0002626 secs][scrub symbol table, 0.0003789 secs][scrub string table, 0.0001326 secs][1 CMS-remark: 299570K(307200K)] 372275K(491520K), 0.0017842 secs] [Times: user=0.05 sys=0.00, real=0.00 secs] </span><br><span class="line">         vmop                    [threads: total initially_running wait_to_block]    [time: spin block sync cleanup vmop] page_trap_count</span><br><span class="line"><span class="number">0.360</span>: CMS_Final_Remark                 [      <span class="number">10</span>          <span class="number">0</span>              <span class="number">1</span>    ]      [     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span>    ]  <span class="number">0</span>   </span><br><span class="line">Total time <span class="keyword">for</span> which application threads were stopped: <span class="number">0.0018800</span> seconds</span><br><span class="line"><span class="comment">//第六步 清理</span></span><br><span class="line">[CMS-concurrent-sweep-start]</span><br><span class="line">[CMS-concurrent-sweep: <span class="number">0.007</span>/<span class="number">0.007</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第七步 重置</span></span><br><span class="line">[CMS-concurrent-reset-start]</span><br><span class="line">[CMS-concurrent-reset: <span class="number">0.002</span>/<span class="number">0.002</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br></pre></td></tr></table></figure>
+</div>
+<h2><span id="日志分析">日志分析</span></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [GC (CMS Final Remark)</span><br><span class="line">  [YG occupancy: <span class="number">199103</span> K (<span class="number">306688</span> K)]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [Rescan (parallel) , <span class="number">0.0027865</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.293</span>-<span class="number">0800</span>: <span class="number">6.966</span>: [weak refs processing, <span class="number">0.0000397</span> secs]</span><br><span class="line">  2017-07-27T10:42:56.294-0800: 6.966: [class unloading, 0.0004163 secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.294</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub symbol table, <span class="number">0.0006806</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.295</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub string table, <span class="number">0.0001862</span> secs]</span><br><span class="line">  [<span class="number">1</span> CMS-remark: <span class="number">1569615</span>K(<span class="number">1756416</span>K)]</span><br><span class="line">  <span class="number">1768718</span>K(<span class="number">2063104</span>K),</span><br><span class="line"><span class="number">0.0043575</span> secs]</span><br><span class="line">[Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [GC (CMS Final Remark（最终标记阶段，标记老年代中所有存活的对象，包括在此前的并发标记过程中创建/修改的引用）)</span><br><span class="line">  [YG occupancy: <span class="number">199103</span> K（当前年轻代的使用量） (<span class="number">306688</span> K（年轻代总大小）)]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.291</span>-<span class="number">0800</span>: <span class="number">6.963</span>: [Rescan (parallel) , <span class="number">0.0027865</span> secs]（在程序暂停时重新进行扫描，以完成存活对象的标记。此时 Rescan 是并行执行的）</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.293</span>-<span class="number">0800</span>: <span class="number">6.966</span>: [weak refs processing, <span class="number">0.0000397</span> secs]（第一个子阶段，处理弱引用）</span><br><span class="line">  2017-07-27T10:42:56.294-0800: 6.966: [class unloading, 0.0004163 secs]（第二个子阶段，卸载不使用的类）</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.294</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub symbol table, <span class="number">0.0006806</span> secs]</span><br><span class="line">  <span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span>T10:<span class="number">42</span>:<span class="number">56.295</span>-<span class="number">0800</span>: <span class="number">6.967</span>: [scrub string table, <span class="number">0.0001862</span> secs]（最后一个子阶段，清理持有 <span class="class"><span class="keyword">class</span> 级别 <span class="title">metadata</span> 的符号表，以及内部化字符串对应的 <span class="title">string</span> <span class="title">tables</span>）</span></span><br><span class="line">  [1 CMS-remark: 1569615K(1756416K)]（此阶段完成后老年代的使用量和总容量）</span><br><span class="line">  <span class="number">1768718</span>K(<span class="number">2063104</span>K),（此阶段完成后整个堆内存的使用量和总容量）</span><br><span class="line"><span class="number">0.0043575</span> secs]</span><br><span class="line">[Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br></pre></td></tr></table></figure>
+<h2><span id="cms-gc-分析">CMS gc 分析</span></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">/第一步 初始标记 这一步会停顿</span><br><span class="line">[GC (CMS Initial Mark) [<span class="number">1</span> CMS-initial-mark: <span class="number">299570</span>K(<span class="number">307200</span>K)] <span class="number">323315</span>K(<span class="number">491520</span>K), <span class="number">0.0026208</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">         vmop                    [threads: total initially_running wait_to_block]    [time: spin block sync cleanup vmop] page_trap_count</span><br><span class="line"><span class="number">0.345</span>: CMS_Initial_Mark                 [      <span class="number">10</span>          <span class="number">0</span>              <span class="number">1</span>    ]      [     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">2</span>    ]  <span class="number">0</span>   </span><br><span class="line">Total time <span class="keyword">for</span> which application threads were stopped: <span class="number">0.0028494</span> seconds</span><br><span class="line"></span><br><span class="line"><span class="comment">//第二步 并发标记</span></span><br><span class="line">[CMS-concurrent-mark-start]</span><br><span class="line">[CMS-concurrent-mark: <span class="number">0.012</span>/<span class="number">0.012</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第三步 预清理</span></span><br><span class="line">[CMS-concurrent-preclean-start]</span><br><span class="line">[CMS-concurrent-preclean: <span class="number">0.001</span>/<span class="number">0.001</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第四步 可被终止的预清理</span></span><br><span class="line">[CMS-concurrent-abortable-preclean-start]</span><br><span class="line">[CMS-concurrent-abortable-preclean: <span class="number">0.000</span>/<span class="number">0.000</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第五步 重新标记</span></span><br><span class="line">[GC (CMS Final Remark) [YG occupancy: 72704 K (184320 K)][Rescan (parallel) , 0.0009069 secs][weak refs processing, 0.0000083 secs][class unloading, 0.0002626 secs][scrub symbol table, 0.0003789 secs][scrub string table, 0.0001326 secs][1 CMS-remark: 299570K(307200K)] 372275K(491520K), 0.0017842 secs] [Times: user=0.05 sys=0.00, real=0.00 secs] </span><br><span class="line">         vmop                    [threads: total initially_running wait_to_block]    [time: spin block sync cleanup vmop] page_trap_count</span><br><span class="line"><span class="number">0.360</span>: CMS_Final_Remark                 [      <span class="number">10</span>          <span class="number">0</span>              <span class="number">1</span>    ]      [     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">0</span>     <span class="number">1</span>    ]  <span class="number">0</span>   </span><br><span class="line">Total time <span class="keyword">for</span> which application threads were stopped: <span class="number">0.0018800</span> seconds</span><br><span class="line"><span class="comment">//第六步 清理</span></span><br><span class="line">[CMS-concurrent-sweep-start]</span><br><span class="line">[CMS-concurrent-sweep: <span class="number">0.007</span>/<span class="number">0.007</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"></span><br><span class="line"><span class="comment">//第七步 重置</span></span><br><span class="line">[CMS-concurrent-reset-start]</span><br><span class="line">[CMS-concurrent-reset: <span class="number">0.002</span>/<span class="number">0.002</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br></pre></td></tr></table></figure>
 <p>CMS 的处理流程讲完了，由于篇幅有些长，分一下章节，下次会围绕CMS 的后续问题 展开一些讨论 欢迎阅读。</p>
 <hr>
-<h2><span id="参考">参考:</span></h2>
-<p><a href="http://120.52.51.16/www.cs.virginia.edu/~cs415/reading/bacon-garbage.pdf" target="_blank" rel="noopener">垃圾回收统一理论</a><br>
-<a href="http://www.math.grin.edu/~rebelsky/Courses/CS302/99S/Presentations/GC/" target="_blank" rel="noopener">Introduction to Garbage Collection</a><br>
-<a href="https://hllvm-group.iteye.com/group/topic/38223" target="_blank" rel="noopener">R大：并发垃圾收集器（CMS）为什么没有采用标记-整理算法来实现？</a><br>
-<a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为? </a><br>
-<a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为? </a><br>
-<a href="https://coldwalker.com/2019/02/gc_object_alloc_process/" target="_blank" rel="noopener">Java垃圾回收浅析(2)-GC方式介绍</a></p>
+<h2><span id="参考">参考:</span></h2><p><a href="http://120.52.51.16/www.cs.virginia.edu/~cs415/reading/bacon-garbage.pdf" target="_blank" rel="noopener">垃圾回收统一理论</a><br><a href="http://www.math.grin.edu/~rebelsky/Courses/CS302/99S/Presentations/GC/" target="_blank" rel="noopener">Introduction to Garbage Collection</a><br><a href="https://hllvm-group.iteye.com/group/topic/38223" target="_blank" rel="noopener">R大：并发垃圾收集器（CMS）为什么没有采用标记-整理算法来实现？</a><br><a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为? </a><br><a href="https://hllvm-group.iteye.com/group/topic/39402" target="_blank" rel="noopener">R大：请教Weak Reference及其在HotSpot GC中的行为? </a><br><a href="https://coldwalker.com/2019/02/gc_object_alloc_process/" target="_blank" rel="noopener">Java垃圾回收浅析(2)-GC方式介绍</a></p>
 
         
                 <hr>

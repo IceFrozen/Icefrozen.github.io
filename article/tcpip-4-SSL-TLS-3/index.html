@@ -149,14 +149,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -219,8 +219,7 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概述">概述</span></h2>
-<p>TLS 握手协议包含如下几步:</p>
+                <h2><span id="概述">概述</span></h2><p>TLS 握手协议包含如下几步:</p>
 <ul>
 <li>交换 Hello 消息, 交换随机数和支持的密码套件列表, 以协商出密码套件和对应的算法。检查会话是否可恢复</li>
 <li>交换必要的密码参数以允许 client 和 server 协商预备主密钥 premaster secret</li>
@@ -230,33 +229,24 @@
 <li>允许 client 和 server 验证它们的对端已经计算出了相同的安全参数, 而且握手过程不被攻击者篡改</li>
 </ul>
 <p>下面行文思路会按照 TLS 首次握手，会话恢复的顺序，依次对比 TLS 1.2 和 TLS 1.3 在握手上的不同，并且结合 Wireshark 抓取实际的网络包进行分析讲解。最后分析一下 TLS 1.3 新出的 0-RTT 是怎么回事。</p>
-<h2><span id="tls12握手过程">TLS1.2握手过程</span></h2>
-<h2><span id="tls12握手示意图">TLS1.2握手示意图</span></h2>
-<p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-100409.png" alt></p>
-<h2><span id="握手流程分析">握手流程分析</span></h2>
-<h3><span id="0hello_request">（0）hello_request</span></h3>
-<p>HelloRequest 消息可以在任何时间由 Server 发送。</p>
+<h2><span id="tls12握手过程">TLS1.2握手过程</span></h2><h2><span id="tls12握手示意图">TLS1.2握手示意图</span></h2><p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-100409.png" alt></p>
+<h2><span id="握手流程分析">握手流程分析</span></h2><h3><span id="0hello_request">（0）hello_request</span></h3><p>HelloRequest 消息可以在任何时间由 Server 发送。</p>
 <p>这个消息的含义: HelloRequest 是一个简单的通知，告诉 Client 应该开始重协商流程。在响应过程中，Client 应该在方便的时候发送一个 ClientHello 消息。这个消息并不是意图确定哪端是 Client 或 Server，而仅仅是发起一个新的协商。Server 不应该在 Client 发起连接后立即发送一个 HelloRequest。</p>
 <p>如果 Client当前正在协商一个会话时，HelloRequest 这个消息会被 Client忽略。如果 Client 不想重新协商一个会话，或 Client 希望响应一个 no_renegotiation alert 消息，那么也可能忽略 HelloRequest 消息。因为握手消息意图先于应用数据被传送，它希望协商会在少量记录消息被 Client 接收之前开始。如果 Server 发送了一个 HelloRequest 但没有收到一个 ClientHello 响应，它应该用一个致命错误 alert 消息关闭连接。在发送一个 HelloRequest 之后，Server 不应该重复这个请求直到随后的握手协商完成。</p>
-<h3><span id="1client-hello">（1）Client Hello</span></h3>
-<p>当一个 <code>Client</code> 第一次连接一个 <code>Server</code> 时，发送的第一条消息必须是 <code>ClientHello</code>。<code>Client</code> 也能发送一个 <code>ClientHello</code> 作为对 <code>HelloRequest</code> 的响应，或用于自身的初始化以便在一个已有连接中重新协商安全参数</p>
+<h3><span id="1client-hello">（1）Client Hello</span></h3><p>当一个 <code>Client</code> 第一次连接一个 <code>Server</code> 时，发送的第一条消息必须是 <code>ClientHello</code>。<code>Client</code> 也能发送一个 <code>ClientHello</code> 作为对 <code>HelloRequest</code> 的响应，或用于自身的初始化以便在一个已有连接中重新协商安全参数</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">   uint32 gmt_unix_time;   <span class="comment">//时间戳</span></span><br><span class="line">   opaque random_bytes[<span class="number">28</span>]; <span class="comment">//随机数</span></span><br><span class="line">&#125; Random;</span><br><span class="line">   </span><br><span class="line">struct &#123;</span><br><span class="line">   ProtocolVersion client_version;  <span class="comment">// 版本</span></span><br><span class="line">   Random random;                   <span class="comment">// 随机数</span></span><br><span class="line">   SessionID session_id;            <span class="comment">// session id</span></span><br><span class="line">   CipherSuite cipher_suites&lt;<span class="number">2</span>..<span class="number">2</span>^<span class="number">16</span>-<span class="number">2</span>&gt;;  <span class="comment">// 密码套件</span></span><br><span class="line">   <span class="comment">// 压缩算法，一般不启动</span></span><br><span class="line">   CompressionMethod compression_methods&lt;<span class="number">1</span>..<span class="number">2</span>^<span class="number">8</span>-<span class="number">1</span>&gt;;</span><br><span class="line">   <span class="comment">// Clients 可以通过在扩展域中发送数据来请求 Server 的扩展功能 后边详解</span></span><br><span class="line">   select (extensions_present) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">false</span>:</span><br><span class="line">            struct &#123;&#125;;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">true</span>:</span><br><span class="line">            Extension extensions&lt;<span class="number">0</span>..<span class="number">2</span>^<span class="number">16</span>-<span class="number">1</span>&gt;;</span><br><span class="line">   &#125;;</span><br><span class="line">&#125; ClientHello;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>Session id由服务器生成，服务器普遍采用OpenSSL，而OpenSSL基本只生成32字节的session id，如果碰到其他字节长度的Session id，切莫认为是异常client hello。</li>
 </ul>
 <p><code>随机数的作用：生成主密钥 + 避免重放攻击</code></p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-161429.png" alt></p>
-<h3><span id="2server-hello">（2）Server Hello</span></h3>
-<p>当 Server 能够找到一个可接受的算法集时，Server 发送这个消息作为对 ClientHello 消息的响应。如果不能找到这样的算法集, 它会发送一个握手失败 alert 消息作为响应。</p>
-<p>Server Hello 消息的结构是:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">   <span class="comment">// Client 在 Client hello 消息中建议的较低版本和 Server 所能支持的最高版本</span></span><br><span class="line">   ProtocolVersion server_version;</span><br><span class="line">   <span class="comment">// 服务端随机数，独立于client 随机数</span></span><br><span class="line">   Random random;</span><br><span class="line">   SessionID session_id;</span><br><span class="line">   <span class="comment">// Server 在 ClientHello.cipher_suites 中所选择的单个密码套件</span></span><br><span class="line">   CipherSuite cipher_suite;</span><br><span class="line">   CompressionMethod compression_method;</span><br><span class="line">   <span class="comment">// 扩展的列表. 需要注意的是只有由 Client 给出的扩展才能出现在 Server 的列表中</span></span><br><span class="line">   select (extensions_present) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">false</span>:</span><br><span class="line">            struct &#123;&#125;;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">true</span>:</span><br><span class="line">            Extension extensions&lt;<span class="number">0</span>..<span class="number">2</span>^<span class="number">16</span>-<span class="number">1</span>&gt;;</span><br><span class="line">   &#125;;</span><br><span class="line">&#125; ServerHello;</span><br></pre></td></tr></table></figure>
+<h3><span id="2server-hello">（2）Server Hello</span></h3><p>当 Server 能够找到一个可接受的算法集时，Server 发送这个消息作为对 ClientHello 消息的响应。如果不能找到这样的算法集, 它会发送一个握手失败 alert 消息作为响应。</p>
+<p>Server Hello 消息的结构是:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">   <span class="comment">// Client 在 Client hello 消息中建议的较低版本和 Server 所能支持的最高版本</span></span><br><span class="line">   ProtocolVersion server_version;</span><br><span class="line">   <span class="comment">// 服务端随机数，独立于client 随机数</span></span><br><span class="line">   Random random;</span><br><span class="line">   SessionID session_id;</span><br><span class="line">   <span class="comment">// Server 在 ClientHello.cipher_suites 中所选择的单个密码套件</span></span><br><span class="line">   CipherSuite cipher_suite;</span><br><span class="line">   CompressionMethod compression_method;</span><br><span class="line">   <span class="comment">// 扩展的列表. 需要注意的是只有由 Client 给出的扩展才能出现在 Server 的列表中</span></span><br><span class="line">   select (extensions_present) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">false</span>:</span><br><span class="line">            struct &#123;&#125;;</span><br><span class="line">      <span class="keyword">case</span> <span class="keyword">true</span>:</span><br><span class="line">            Extension extensions&lt;<span class="number">0</span>..<span class="number">2</span>^<span class="number">16</span>-<span class="number">1</span>&gt;;</span><br><span class="line">   &#125;;</span><br><span class="line">&#125; ServerHello;</span><br></pre></td></tr></table></figure></p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-161539.png" alt></p>
 <ul>
-<li>SessionId<br>
-如果 ClientHello.session_id 非空，Server 将在它的会话缓存中进行匹配查询。如果匹配项被找到，且 Server 愿意使用指定的会话状态建立新的连接，Server 会将与 Client 所提供的相同的值返回回去。 我会在Session重用的章节分析</li>
+<li>SessionId<br>如果 ClientHello.session_id 非空，Server 将在它的会话缓存中进行匹配查询。如果匹配项被找到，且 Server 愿意使用指定的会话状态建立新的连接，Server 会将与 Client 所提供的相同的值返回回去。 我会在Session重用的章节分析</li>
 </ul>
-<h3><span id="3server-certificate-certificate-status">（3）Server Certificate (Certificate status)</span></h3>
-<p><code>Server</code> 就必须发送一个 <code>Certificate</code>。<code>Server Certificate</code> 消息紧跟着 <code>ServerHello</code> 之后，<strong>通常他们俩者在同一个网络包中，即同一个 TLS 记录层消息中, 也有可能会紧跟着其他的</strong>。</p>
+<h3><span id="3server-certificate-certificate-status">（3）Server Certificate (Certificate status)</span></h3><p><code>Server</code> 就必须发送一个 <code>Certificate</code>。<code>Server Certificate</code> 消息紧跟着 <code>ServerHello</code> 之后，<strong>通常他们俩者在同一个网络包中，即同一个 TLS 记录层消息中, 也有可能会紧跟着其他的</strong>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">opaque ASN<span class="number">.1</span>Cert&lt;<span class="number">1</span>..<span class="number">2</span>^<span class="number">24</span>-<span class="number">1</span>&gt;;</span><br><span class="line">struct &#123;</span><br><span class="line">   ASN<span class="number">.1</span>Cert certificate_list&lt;<span class="number">0</span>..<span class="number">2</span>^<span class="number">24</span>-<span class="number">1</span>&gt;;</span><br><span class="line">&#125; Certificate;</span><br></pre></td></tr></table></figure>
 <ul>
 <li><strong>certificate_list</strong>:</li>
@@ -268,54 +258,44 @@
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-162222.png" alt></p>
 <p>如果 client hello 带了 扩展字段 ：<code>status_request</code> 则意味着请求要求服务器请求OCSP，服务器可以发送cettificate status到客户端，里面带上ocsp的信息</p>
-<p>cettificate status  ：表示该证书的请求状态</p>
+<p>cettificate status  ：表示该证书的请求状态 </p>
 <p><strong>OCSP（Online Certificate Status Protocol ）是TLS协议的扩展协议</strong>，在TLS的使用中，客户端无法判断一个还没有过期的证书是否被吊销了。因为CA在颁发了证书之后大部分情况下都是等待这个证书过期了之后的自然失效，而如果CA出于某些原因要人为的吊销某个证书就没有了办法。</p>
 <p>CA吊销这个证书肯定是有考虑的，所以客户端为了自身的安全也应该支持CA的这种需求。这个时候客户端在从服务端拿到了一个证书之后，去找服务端的接口去验证一下这个证书的是否过期这一信息。客户端由于网络有各种各样的情况，每个连接去验证国外的服务器的话就会带来完全不可控的用户体验和访问延时，并且对于CA来说也是一个不小的并发连接。所以OCSP一般会被应用到服务端，给客户端节省这部分的时间。</p>
 <p>服务端周期性的去连接CA的OCSP服务器，验证一个证书的合法性，存储在本地。当客户端与服务端进行TLS握手的时候，服务端在传送了证书链之后（certificate消息），会继续再传输一个certificate status消息，这个status消息就是服务端从CA的OCSP服务器那里获得而来的证书吊销状态信息，双方仍然是通过密码学的方式保证了客户端可以确认这个确认消息来源于CA。</p>
 <p>浏览器没有命中 OCSP 缓存。Ocsp 一般的更新周期是 7 天，firefox 的查询周期也是 7 天，也就说是 7 天中才会发生一次 ocsp 的查询。</p>
-<h3><span id="3server-key-exchange-message">（3）Server Key Exchange Message</span></h3>
-<p>这个消息会紧随在 Server 证书消息之后发送(如果是一个匿名协商的话，会紧随在 Server Hello消息之后发送)；</p>
+<h3><span id="3server-key-exchange-message">（3）Server Key Exchange Message</span></h3><p>这个消息会紧随在 Server 证书消息之后发送(如果是一个匿名协商的话，会紧随在 Server Hello消息之后发送)；</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">   <span class="comment">// 选择秘钥算法类型</span></span><br><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">   KeyExchangeAlgorithm 类型的不同，加入了不同的参数。</span></span><br><span class="line"><span class="comment">   对于匿名协商，不需要证书，所以也不需要身份验证，没有证书。</span></span><br><span class="line"><span class="comment">   DHE 开头的协商算法，Server 需要发给 Client 动态的 DH 参数 ServerDHParams 和 数字签名。这里的数字签名会包含 Client 端传过来的随机数，Server 端生成的随机数和 ServerDHParams。</span></span><br><span class="line"><span class="comment">   **/</span></span><br><span class="line">   select (KeyExchangeAlgorithm) &#123;</span><br><span class="line">      <span class="keyword">case</span> dh_anon:</span><br><span class="line">            ServerDHParams params;</span><br><span class="line">      <span class="keyword">case</span> dhe_dss:</span><br><span class="line">      <span class="keyword">case</span> dhe_rsa:</span><br><span class="line">            ServerDHParams params;</span><br><span class="line">            digitally-signed struct &#123;</span><br><span class="line">               opaque client_random[<span class="number">32</span>];</span><br><span class="line">               opaque server_random[<span class="number">32</span>];</span><br><span class="line">               ServerDHParams params;</span><br><span class="line">            &#125; signed_params;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 对于  rsa dh_dss dh_rsa 则不发送该消息</span></span><br><span class="line">      <span class="keyword">case</span> rsa:</span><br><span class="line">      <span class="keyword">case</span> dh_dss:</span><br><span class="line">      <span class="keyword">case</span> dh_rsa:</span><br><span class="line">            struct &#123;&#125; ;</span><br><span class="line">      <span class="comment">/* 消息忽略 rsa, dh_dss, 和dh_rsa */</span></span><br><span class="line">      <span class="keyword">case</span> ec_diffie_hellman:</span><br><span class="line">            ServerECDHParams    params;</span><br><span class="line">            Signature           signed_params; </span><br><span class="line">   &#125;;</span><br><span class="line">&#125; ServerKeyExchange;</span><br></pre></td></tr></table></figure>
-<p><code>ServerKeyExchange</code> 消息由 Server 发送，但仅在 Server 证书消息(如果发送了)没有包含足够的数据以允许 Client 交换一个预密钥时。这个限制对于如下的密钥交换算法是成立的:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要发送 ServerKeyExchange </span></span><br><span class="line">DHE_DSS</span><br><span class="line">DHE_RSA</span><br><span class="line">ECDHE_ECDSA       </span><br><span class="line">ECDHE_RSA</span><br></pre></td></tr></table></figure>
-<p>对于上面前 4 个密码套件，证书中是不包含这些动态的 <code>DH</code> 信息<code>(DH 参数和 DH 公钥</code>)，所以需要使用 <code>Server Key Exchange</code> 消息传递这些信息。传递的信息需要使用 Server 私钥进行签名加密。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 静态DH 算法   Server 不应该发送该消息</span></span><br><span class="line">DH_anon</span><br><span class="line">ECDH_anon  <span class="comment">//匿名的 ECDH + 无签名证书</span></span><br></pre></td></tr></table></figure>
+<p><code>ServerKeyExchange</code> 消息由 Server 发送，但仅在 Server 证书消息(如果发送了)没有包含足够的数据以允许 Client 交换一个预密钥时。这个限制对于如下的密钥交换算法是成立的:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要发送 ServerKeyExchange </span></span><br><span class="line">DHE_DSS</span><br><span class="line">DHE_RSA</span><br><span class="line">ECDHE_ECDSA       </span><br><span class="line">ECDHE_RSA</span><br></pre></td></tr></table></figure></p>
+<p>对于上面前 4 个密码套件，证书中是不包含这些动态的 <code>DH</code> 信息<code>(DH 参数和 DH 公钥</code>)，所以需要使用 <code>Server Key Exchange</code> 消息传递这些信息。传递的信息需要使用 Server 私钥进行签名加密。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 静态DH 算法   Server 不应该发送该消息</span></span><br><span class="line">DH_anon</span><br><span class="line">ECDH_anon  <span class="comment">//匿名的 ECDH + 无签名证书</span></span><br></pre></td></tr></table></figure></p>
 <p>对于上面后 2 个密码套件，是匿名协商，使用的静态的 DH/ECDH 密钥协商算法，而且它们也没有证书消息(Server Certificate 消息)，所以同样需要使用 <code>Server Key Exchange</code> 消息传递这些信息。传递的静态 DH 信息需要使用 Server 私钥进行签名加密。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不需发送消息的 ServerKeyExchange</span></span><br><span class="line">RSA</span><br><span class="line">DH_DSS</span><br><span class="line">DH_RSA</span><br></pre></td></tr></table></figure>
 <p>一般 HTTPS 都会部署这 4 种密码套件：<code>ECDHE_RSA、DHE_RSA、ECDHE_ECDSA、RSA</code>。</p>
 <ul>
-<li>静态DH和动态DH算法<br>
-DH密钥协商又可以分为<strong>静态DH和动态DH</strong>两种，</li>
+<li>静态DH和动态DH算法<br>DH密钥协商又可以分为<strong>静态DH和动态DH</strong>两种，</li>
 </ul>
 <p><strong>静态DH</strong>： 服务器端的DH参数和服务器公钥是固定的，每一次客户端请求连接得到的DH参数和公钥也都是一样的。</p>
 <p>使用静态DH方式好处是不用每次建立连接时都去重新生成参数，节省了时间，提高了性能，不过致命的缺点就是安全性问题，一旦参数泄露就麻烦了。</p>
 <p><strong>动态DH</strong>： 每次客户端和服务器端建立连接时，都会重新创建DH参数和服务器公钥，即使中间出现密钥泄露，也只是这次通信可能造成信息泄露影响，把损失大大地降低。</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-162431.png" alt></p>
-<h3><span id="4certificate-request">（4）Certificate Request</span></h3>
-<p>双向认证时，服务器会发送certificate request，表明自己想要收到客户端的证书</p>
+<h3><span id="4certificate-request">（4）Certificate Request</span></h3><p>双向认证时，服务器会发送certificate request，表明自己想要收到客户端的证书</p>
 <p>一个非匿名的 Server 可以选择性地请求一个 Client 发送的证书，如果相互选定的密码套件合适的话。如果 ServerKeyExchange 消息发送了的话，就紧跟在 ServerKeyExchange 消息的后面。如果 ServerKeyExchange 消息没有发送的话，就跟在 Server Certificate 消息后面。</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-162512.png" alt></p>
-<h3><span id="5server-hello-done">（5）Server Hello Done</span></h3>
-<p>ServerHelloDone 消息已经被 Server 发送以表明 ServerHello 及其相关消息的结束。发送这个消息之后, Server 将会等待 Client 发过来的响应。</p>
+<h3><span id="5server-hello-done">（5）Server Hello Done</span></h3><p>ServerHelloDone 消息已经被 Server 发送以表明 ServerHello 及其相关消息的结束。发送这个消息之后, Server 将会等待 Client 发过来的响应。</p>
 <p>这个消息意味着 Server 发送完了所有支持密钥交换的消息，Client 能继续它的密钥协商，证书校验等步骤。</p>
 <p>在收到 ServerHelloDone 消息之后，Client 应当验证 Server 提供的是否是有效的证书，如果有要求的话, 还需要进一步检查 Server hello 参数是否可以接受。</p>
-<h3><span id="6client-certificate">（6）Client Certificate</span></h3>
-<p>这是 Client 在收到一个 ServerHelloDone 消息后发送的第一个消息。这个消息只能在 Server 请求一个证书时发送。</p>
+<h3><span id="6client-certificate">（6）Client Certificate</span></h3><p>这是 Client 在收到一个 ServerHelloDone 消息后发送的第一个消息。这个消息只能在 Server 请求一个证书时发送。</p>
 <p>如果没有合适的证书，Client 必须发送一个不带证书的证书消息。即, certificate_list 结构体的长度是 0。如果 Client 不发送任何证书，Server 可以自行决定是否可以在不验证 Client 的情况下继续握手，或者回复一个致命 handshake_failure 警报 alert 信息。而且, 如果证书链某些方面不能接受(例如, 它没有被一个知名的可信 CA 签名)，Server 可以自行决定是否继续握手(考虑到 Client 无认证)或发送一个致命的警报 alert 信息。</p>
 <p>Client 证书的数据结构和 Server Certificate 是相同的。</p>
 <p>Client Certificate 消息的目的是传递 Client 的证书链给 Server；当验证 CertificateVerify 消息时(当 Client 的验证基于签名时)Server 会用它来验证或计算预备主密钥(对于静态的 Diffie-Hellman)。证书必须适用于已协商的密码套件的密钥交换算法, 和任何已协商的扩展.</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-162548.png" alt></p>
-<h3><span id="7-client-key-exchange-message">（7） Client Key Exchange Message</span></h3>
-<p>这个消息始终由 Client 发送。如果有 Client Certificate 消息的话，Client Key Exchange 紧跟在 Client Certificate 消息之后发送。如果不存在Client Certificate 消息的话，它必须是在 Client 收到 ServerHelloDone 后发送的第一个消息。</p>
+<h3><span id="7-client-key-exchange-message">（7） Client Key Exchange Message</span></h3><p>这个消息始终由 Client 发送。如果有 Client Certificate 消息的话，Client Key Exchange 紧跟在 Client Certificate 消息之后发送。如果不存在Client Certificate 消息的话，它必须是在 Client 收到 ServerHelloDone 后发送的第一个消息。</p>
 <p>这个消息的含义是，在这个消息中设置了预备主密钥，或者通过 RSA 加密后直接传输，或者通过传输 Diffie-Hellman 参数来允许双方协商出一致的预备主密钥。</p>
 <p>当 Client 使用一个动态的 Diffie-Hellman 指数时，这个消息就会包含 Client 的 Diffie-Hellman 公钥。如果 Client 正在发送一个包含一个静态 DH 指数(例如，它正在进行 fixed_dh Client 认证)的证书时，这个消息必须被发送但必须为空。</p>
 <p>这个消息的选项依赖于选择了哪种密钥交互方法。关于 KeyExchangeAlgorithm 的定义，见 Server Key Exchange Message 这一节。</p>
-<p>ClientKeyExchange 消息的数据结构如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123; implicit, explicit &#125; PublicValueEncoding;</span><br><span class="line">struct &#123;</span><br><span class="line">      select (PublicValueEncoding) &#123;</span><br><span class="line">         <span class="keyword">case</span> implicit: struct &#123; &#125;;</span><br><span class="line">         <span class="keyword">case</span> explicit: ECPoint ecdh_Yc;</span><br><span class="line">      &#125; ecdh_public;</span><br><span class="line">&#125; ClientECDiffieHellmanPublic;</span><br><span class="line"></span><br><span class="line">struct &#123;</span><br><span class="line">   select (KeyExchangeAlgorithm) &#123;</span><br><span class="line">      <span class="keyword">case</span> rsa:</span><br><span class="line">            EncryptedPreMasterSecret;</span><br><span class="line">      <span class="keyword">case</span> dhe_dss:</span><br><span class="line">      <span class="keyword">case</span> dhe_rsa:</span><br><span class="line">      <span class="keyword">case</span> dh_dss:</span><br><span class="line">      <span class="keyword">case</span> dh_rsa:</span><br><span class="line">      <span class="keyword">case</span> dh_anon:</span><br><span class="line">            ClientDiffieHellmanPublic;</span><br><span class="line">      <span class="keyword">case</span> ec_diffie_hellman: </span><br><span class="line">            ClientECDiffieHellmanPublic;</span><br><span class="line">   &#125; exchange_keys;</span><br><span class="line">&#125; ClientKeyExchange;</span><br></pre></td></tr></table></figure>
+<p>ClientKeyExchange 消息的数据结构如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123; implicit, explicit &#125; PublicValueEncoding;</span><br><span class="line">struct &#123;</span><br><span class="line">      select (PublicValueEncoding) &#123;</span><br><span class="line">         <span class="keyword">case</span> implicit: struct &#123; &#125;;</span><br><span class="line">         <span class="keyword">case</span> explicit: ECPoint ecdh_Yc;</span><br><span class="line">      &#125; ecdh_public;</span><br><span class="line">&#125; ClientECDiffieHellmanPublic;</span><br><span class="line"></span><br><span class="line">struct &#123;</span><br><span class="line">   select (KeyExchangeAlgorithm) &#123;</span><br><span class="line">      <span class="keyword">case</span> rsa:</span><br><span class="line">            EncryptedPreMasterSecret;</span><br><span class="line">      <span class="keyword">case</span> dhe_dss:</span><br><span class="line">      <span class="keyword">case</span> dhe_rsa:</span><br><span class="line">      <span class="keyword">case</span> dh_dss:</span><br><span class="line">      <span class="keyword">case</span> dh_rsa:</span><br><span class="line">      <span class="keyword">case</span> dh_anon:</span><br><span class="line">            ClientDiffieHellmanPublic;</span><br><span class="line">      <span class="keyword">case</span> ec_diffie_hellman: </span><br><span class="line">            ClientECDiffieHellmanPublic;</span><br><span class="line">   &#125; exchange_keys;</span><br><span class="line">&#125; ClientKeyExchange;</span><br></pre></td></tr></table></figure></p>
 <p>从 exchange_keys 的 case 中可以看到主要分为 3 种处理方式：EncryptedPreMasterSecret(RSA、ClientDiffieHellmanPublic(DH)、ClientECDiffieHellmanPublic(ECD)。</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-162746.png" alt></p>
-<h3><span id="8-certificate-verify">（8） Certificate verify</span></h3>
-<p>发送这个类型的握手需要2个前提条件</p>
+<h3><span id="8-certificate-verify">（8） Certificate verify</span></h3><p>发送这个类型的握手需要2个前提条件</p>
 <ul>
 <li>（1）：服务器端请求了客户端证书</li>
 <li>（2）：客户端发送了非0长的证书</li>
@@ -324,62 +304,43 @@ DH密钥协商又可以分为<strong>静态DH和动态DH</strong>两种，</li>
 <p>这里 <code>handshake_messages</code> 是指发送或接收到的所有握手消息，从 <code>client hello</code> 开始到但不包括本消息，包含握手消息的类型和长度域。</p>
 <p>需要注意的是这要求两端要么缓存消息，要么计算用所有可用的 <code>hash</code> 算法计算运行时的 <code>hash</code> 值直到计算 <code>CertificateVerify</code> 的 hash 值为止。</p>
 <p>在签名中使用的 <code>hash</code> 和签名算法必须是 <code>CertificateRequest</code> 消息中 <code>supported_signature_algorithms</code> 字段所列出的算法中的一种。</p>
-<h3><span id="9-change-cipher">（9） Change cipher</span></h3>
-<p>这是一个无关紧要的数据。在TLS1.3中就被废弃了(可以发送、也可以不发送)。<br>
-需要注意的是，该数据本身不被计算握手摘要，因为它的type不是Handshake。<br>
-发送改报文表示自己后续的发送数据会被新秘钥加密。</p>
-<h3><span id="10-encrypted-handshake-message">（10） Encrypted handshake message</span></h3>
-<p>这个报文的目的就是告诉对端自己在整个握手过程中收到了什么数据，发送了什么数据。来保证中间没人篡改报文。<br>
-其次，这个报文作用就是确认秘钥的正确性。因为Encrypted handshake message是使用对称秘钥进行加密的第一个报文，如果这个报文加解密校验成功，那么就说明对称秘钥是正确的。</p>
-<p>具体 这个 Encrypted handshake message 怎么计算，就是把当前（准备发送Encrypted handshake message）前，自己收到的数据和发送的数据进行一次简单运算（hash+加密，详细见下文）。</p>
+<h3><span id="9-change-cipher">（9） Change cipher</span></h3><p>这是一个无关紧要的数据。在TLS1.3中就被废弃了(可以发送、也可以不发送)。<br>需要注意的是，该数据本身不被计算握手摘要，因为它的type不是Handshake。<br>发送改报文表示自己后续的发送数据会被新秘钥加密。</p>
+<h3><span id="10-encrypted-handshake-message">（10） Encrypted handshake message</span></h3><p>这个报文的目的就是告诉对端自己在整个握手过程中收到了什么数据，发送了什么数据。来保证中间没人篡改报文。<br>其次，这个报文作用就是确认秘钥的正确性。因为Encrypted handshake message是使用对称秘钥进行加密的第一个报文，如果这个报文加解密校验成功，那么就说明对称秘钥是正确的。</p>
+<p>具体 这个 Encrypted handshake message 怎么计算，就是把当前（准备发送Encrypted handshake message）前，自己收到的数据和发送的数据进行一次简单运算（hash+加密，详细见下文）。</p>
 <blockquote>
-<p>如果中间有人篡改了报文，比如，把客户端的client hello中的提供的加密套件改成了 一个弱秘钥算法，那么对于server而言，收到的client hello 和 客户端实际发送的是不同的，假设server收到的叫做client_hello_bad，这样，server 在计算Encrypted handshake message时，因为使用了client_hello_bad，计算完成之后，会发送给客户端，客户端为了确定握手数据是否被篡改，也需要模拟server端计算这个Encrypted handshake message，显然 客户端 计算 Encrypted handshake message 用的client hello 不是client_hello_bad，这样，客户端计算出来的，就和 服务端发过来的不同了，验证自然失败。</p>
-</blockquote>
-<blockquote>
-<p>其次，某端要验证 Encrypted handshake message，必然需要先解密 Encrypted handshake message（因为他是用共享秘钥加密的），如果验证失败，也可能是 两端秘钥协商不成功。但是不管怎么样，无论是秘钥协商不成功还是数据被人篡改，都需要断开连接，即让握手失败。</p>
+<p>如果中间有人篡改了报文，比如，把客户端的client hello中的提供的加密套件改成了 一个弱秘钥算法，那么对于server而言，收到的client hello 和 客户端实际发送的是不同的，假设server收到的叫做client_hello_bad，这样，server 在计算Encrypted handshake message时，因为使用了client_hello_bad，计算完成之后，会发送给客户端，客户端为了确定握手数据是否被篡改，也需要模拟server端计算这个Encrypted handshake message，显然 客户端 计算 Encrypted handshake message 用的client hello 不是client_hello_bad，这样，客户端计算出来的，就和 服务端发过来的不同了，验证自然失败。</p>
+<p>其次，某端要验证 Encrypted handshake message，必然需要先解密 Encrypted handshake message（因为他是用共享秘钥加密的），如果验证失败，也可能是 两端秘钥协商不成功。但是不管怎么样，无论是秘钥协商不成功还是数据被人篡改，都需要断开连接，即让握手失败。</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">      opaque verify_data[verify_data_length];</span><br><span class="line">   &#125; Finished;</span><br><span class="line">   <span class="comment">// PRF 密码套件中的摘要算法</span></span><br><span class="line">   verify_data = </span><br><span class="line">      PRF(master_secret, finished_label, Hash(handshake_messages))</span><br><span class="line">         [<span class="number">0</span>..verify_data_length-<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
 <p>加密过程</p>
 <ul>
-<li>finished_label: client finished / server finished</li>
+<li>finished_label: client finished / server finished </li>
 <li>handshake_messages：handshake_messages 的值包括了从 ClientHello 开始一直到（但不包括）Finished 消息的所有握手消息</li>
 <li>master_secret： 主密钥 对称秘钥</li>
 </ul>
 <p>计算完摘要后（md_result + Hash(handshake_messages)），按这种格式：“client finished”+ md_result，作为prf的输入。PRF的输出指定为12字节。12字节的数据前填充4字节message头部信息，就可以送入对称加密流程进行加密了。</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-163533.png" alt></p>
-<p>解密后的：<br>
-<img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-163555.png" alt></p>
-<h2><span id="密码套件">密码套件</span></h2>
-<p>Client 所支持的密码套件列表 格式如下:</p>
+<p>解密后的：<br><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-163555.png" alt></p>
+<h2><span id="密码套件">密码套件</span></h2><p>Client 所支持的密码套件列表 格式如下:</p>
 <p><code>TLS(协议)_ECDHE(秘钥交换协议)_RSA(签名算法)_WITH_AES_256_CBC(对称加密算法)_SHA（消息认证码）</code></p>
 <p>密钥协商算法是 ECDHE，身份验证算法是 ECDSA，加密模式是 AES_256_GCM，由于 GCM 是属于 AEAD 加密模式，所以整个密码套件无须另外的 HMAC，SHA384 指的是 PRF 算法。</p>
-<h2><span id="密钥生成规则">密钥生成规则</span></h2>
-<p>在 TLS 1.2 中，有 3 种密钥：<strong>预备主密钥、主密钥和会话密钥(密钥块)</strong>，这几个密钥都是有联系的。</p>
+<h2><span id="密钥生成规则">密钥生成规则</span></h2><p>在 TLS 1.2 中，有 3 种密钥：<strong>预备主密钥、主密钥和会话密钥(密钥块)</strong>，这几个密钥都是有联系的。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">struct &#123;</span><br><span class="line">      uint32 gmt_unix_time;</span><br><span class="line">      opaque random_bytes[<span class="number">28</span>];</span><br><span class="line">   &#125; Random;</span><br><span class="line">   </span><br><span class="line">struct &#123;</span><br><span class="line">      ProtocolVersion client_version;</span><br><span class="line">      opaque random[<span class="number">46</span>];</span><br><span class="line">   &#125; PreMasterSecret;  </span><br><span class="line"></span><br><span class="line">struct &#123;</span><br><span class="line">      uint8 major;</span><br><span class="line">      uint8 minor;</span><br><span class="line">   &#125; ProtocolVersion;</span><br></pre></td></tr></table></figure>
 <ul>
-<li>RSA 算法生成预备主密钥<br>
-C对于 RSA 握手协商算法来说，Client 会生成的一个 48 字节的预备主密钥，client 收到 ServerHelloDone 消息以后，拿到 Server 的公钥和 random 会生成预备主密钥 (Premaster)，计算出来的预备主密钥会经过 RSA/ECDSA 算法加密，并通过 ClientKeyExchange 消息发送给 Server。Server 用私钥来解密。</li>
+<li>RSA 算法生成预备主密钥<br>C对于 RSA 握手协商算法来说，Client 会生成的一个 48 字节的预备主密钥，client 收到 ServerHelloDone 消息以后，拿到 Server 的公钥和 random 会生成预备主密钥 (Premaster)，计算出来的预备主密钥会经过 RSA/ECDSA 算法加密，并通过 ClientKeyExchange 消息发送给 Server。Server 用私钥来解密。</li>
 </ul>
 <ul>
-<li>
-<p>(EC)DHE生成预备主密钥<br>
-对于 (EC)DHE 来说，预备主密钥是双方通过椭圆曲线算法生成的，双方各自生成临时公私钥对，保留私钥，将公钥发给对方，然后就可以用自己的私钥以及对方的公钥通过椭圆曲线算法来生成预备主密钥，预备主密钥长度取决于 DH/ECDH 算法公钥。预备主密钥长度是 48 字节或者 X 字节。</p>
+<li><p>(EC)DHE生成预备主密钥<br>对于 (EC)DHE 来说，预备主密钥是双方通过椭圆曲线算法生成的，双方各自生成临时公私钥对，保留私钥，将公钥发给对方，然后就可以用自己的私钥以及对方的公钥通过椭圆曲线算法来生成预备主密钥，预备主密钥长度取决于 DH/ECDH 算法公钥。预备主密钥长度是 48 字节或者 X 字节。</p>
 </li>
-<li>
-<p>主密钥<br>
-是由<code>预备主密钥</code>、<code>ClientHello random</code>和 <code>ServerHello random</code>通过 PRF 函数生成的。主密钥长度是 48 字节。可以看出，只要我们知道预备主密钥或者主密钥便可以解密抓包数据，所以 TLS 1.2 中抓包解密调试只需要一个主密钥即可，SSLKEYLOG 就是将主密钥导出来，在 Wireshark 里面导入就可以解密相应的抓包数据。</p>
+<li><p>主密钥<br>是由<code>预备主密钥</code>、<code>ClientHello random</code>和 <code>ServerHello random</code>通过 PRF 函数生成的。主密钥长度是 48 字节。可以看出，只要我们知道预备主密钥或者主密钥便可以解密抓包数据，所以 TLS 1.2 中抓包解密调试只需要一个主密钥即可，SSLKEYLOG 就是将主密钥导出来，在 Wireshark 里面导入就可以解密相应的抓包数据。</p>
 </li>
-<li>
-<p>会话密钥(密钥块)<br>
-是由主密钥、SecurityParameters.server_random 和 SecurityParameters.client_random 数通过 PRF 函数来生成，会话密钥里面包含对称加密密钥、消息认证和 CBC 模式的初始化向量，对于非 CBC 模式的加密算法来说，就没有用到这个初始化向量。</p>
+<li><p>会话密钥(密钥块)<br>是由主密钥、SecurityParameters.server_random 和 SecurityParameters.client_random 数通过 PRF 函数来生成，会话密钥里面包含对称加密密钥、消息认证和 CBC 模式的初始化向量，对于非 CBC 模式的加密算法来说，就没有用到这个初始化向量。</p>
 </li>
 </ul>
 <p>Session ID 缓存和 Session Ticket 里面保存的也是主密钥，而不是会话密钥，这样每次会话复用的时候再用双方的随机数和主密钥导出会话密钥，从而实现每次加密通信的会话密钥不一样，即使一个会话的主密钥泄露了或者被破解了也不会影响到另一个会话。</p>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-1598323150644.png" alt></p>
-<h2><span id="会话复用握手过程">会话复用握手过程</span></h2>
-<p>Client 和 Server 只要一关闭连接，短时间内再次访问 HTTPS 网站的时候又需要重新连接。新的连接会造成网络延迟，并消耗双方的计算能力。有没有办法能复用之前的 TLS 连接呢？办法是有的，这就涉及到了 TLS 会话复用机制。</p>
-<h3><span id="session信息">Session信息</span></h3>
-<p>Session 是服务器为每一个client 保存的会话上下文，一般用于恢复会话使用。</p>
+<h2><span id="会话复用握手过程">会话复用握手过程</span></h2><p>Client 和 Server 只要一关闭连接，短时间内再次访问 HTTPS 网站的时候又需要重新连接。新的连接会造成网络延迟，并消耗双方的计算能力。有没有办法能复用之前的 TLS 连接呢？办法是有的，这就涉及到了 TLS 会话复用机制。</p>
+<h3><span id="session信息">Session信息</span></h3><p>Session 是服务器为每一个client 保存的会话上下文，一般用于恢复会话使用。</p>
 <p>Session 主要保存以下几个配置</p>
 <ul>
 <li>会话标识符(session identifier): 每个会话的唯一标识符</li>
@@ -388,47 +349,38 @@ C对于 RSA 握手协商算法来说，Client 会生成的一个 48 字节的预
 <li>密码套件(cipher spec): Client 和 Server 协商共同协商出来的密码套件</li>
 <li>主密钥(master secret):</li>
 </ul>
-<h3><span id="sessionid-方式">SessionId 方式</span></h3>
-<ul>
+<h3><span id="sessionid-方式">SessionId 方式</span></h3><ul>
 <li>流程</li>
 </ul>
 <p>对于已经建立的SSL会话，使用session id为key（session id来自第一次请求的server hello中的session id字段），主密钥为value组成一对键值，保存在本地，服务器和客户端都保存一份。</p>
-<p>当第二次握手时，客户端若想使用会话复用</p>
+<p>  当第二次握手时，客户端若想使用会话复用</p>
 <ul>
-<li>
-<p>client 则发起的client hello中session id会置上对应的值。</p>
+<li><p>client 则发起的client hello中session id会置上对应的值。</p>
 </li>
-<li>
-<p>服务器收到这个client hello，解析session id，查找本地是否有该session id，如果有，判断当前的加密套件和上个会话的加密套件是否一致，一致则允许使用会话复用，于是自己的server hello 中session id也置上和client hello中一样的值。</p>
+<li><p>服务器收到这个client hello，解析session id，查找本地是否有该session id，如果有，判断当前的加密套件和上个会话的加密套件是否一致，一致则允许使用会话复用，于是自己的server hello 中session id也置上和client hello中一样的值。</p>
 </li>
-<li>
-<p>双方互发 ChangeCipherSpec + Finished 消息恢复通讯</p>
+<li><p>双方互发 ChangeCipherSpec + Finished 消息恢复通讯</p>
 </li>
 </ul>
-<p>基于 Session ID 会话恢复的流程如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Client                                                Server</span><br><span class="line"></span><br><span class="line">ClientHello                   --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                          [ChangeCipherSpec]</span><br><span class="line">                              &lt;--------             Finished</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                      --------&gt;</span><br><span class="line">Application Data              &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
+<p>基于 Session ID 会话恢复的流程如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Client                                                Server</span><br><span class="line"></span><br><span class="line">ClientHello                   --------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                                          [ChangeCipherSpec]</span><br><span class="line">                              &lt;--------             Finished</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                      --------&gt;</span><br><span class="line">Application Data              &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>
-<p>优点</p>
+<li><p>优点</p>
 <ul>
 <li>减少网络延迟，握手耗时从 2-RTT -&gt; 1-RTT</li>
 <li>减少了 Client 和 Server 端的负载，减少了加密运算的 CPU 资源消耗</li>
 </ul>
 </li>
-<li>
-<p>缺点</p>
+<li><p>缺点</p>
 <ul>
 <li>Server 存储会话信息，限制了 Server 的扩展能力。</li>
 <li>分布式系统中，如果只是简单的在 Server 的内存中存储 Session Cache，那么多台机器的数据同步也是一个问题。</li>
 </ul>
 </li>
 </ul>
-<h3><span id="session-ticket-的会话恢复">Session Ticket 的会话恢复</span></h3>
-<p>用来替代 <code>Session ID</code> 会话恢复的方案是使用会话票证（<code>Session ticket</code>）。使用这种方式，除了所有的状态都保存在客户端（与 HTTP Cookie 的原理类似）之外，其消息流与服务器会话缓存是一样的。</p>
+<h3><span id="session-ticket-的会话恢复">Session Ticket 的会话恢复</span></h3><p>用来替代 <code>Session ID</code> 会话恢复的方案是使用会话票证（<code>Session ticket</code>）。使用这种方式，除了所有的状态都保存在客户端（与 HTTP Cookie 的原理类似）之外，其消息流与服务器会话缓存是一样的。</p>
 <p>其思想是服务器取出它的所有会话数据（状态）并进行加密 (密钥只有服务器知道)，再以票证的方式发回客户端。在接下来的连接中，客户端恢复会话时在 <code>ClientHello</code> 的扩展字段 <code>session_ticket</code> 中携带加密信息将票证提交回服务器，由服务器检查票证的完整性，解密其内容，再使用其中的信息恢复会话。</p>
 <ul>
-<li><strong>(1). 获取 SessionTicket</strong><br>
-Client 在进行一次完整握手以后才能获取到 SessionTicket。</li>
+<li><strong>(1). 获取 SessionTicket</strong><br>Client 在进行一次完整握手以后才能获取到 SessionTicket。</li>
 </ul>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Client                                               Server</span><br><span class="line"></span><br><span class="line">ClientHello</span><br><span class="line">(empty SessionTicket extension)--------&gt;</span><br><span class="line">                                                ServerHello</span><br><span class="line">                           (empty SessionTicket extension)</span><br><span class="line">                                             Certificate*</span><br><span class="line">                                       ServerKeyExchange*</span><br><span class="line">                                       CertificateRequest*</span><br><span class="line">                           &lt;--------      ServerHelloDone</span><br><span class="line">Certificate*</span><br><span class="line">ClientKeyExchange</span><br><span class="line">CertificateVerify*</span><br><span class="line">[ChangeCipherSpec]</span><br><span class="line">Finished                     --------&gt;</span><br><span class="line">                                          NewSessionTicket</span><br><span class="line">                                       [ChangeCipherSpec]</span><br><span class="line">                           &lt;--------             Finished</span><br><span class="line">Application Data             &lt;-------&gt;     Application Data</span><br></pre></td></tr></table></figure>
 <ul>
@@ -440,59 +392,35 @@ Client 在进行一次完整握手以后才能获取到 SessionTicket。</li>
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-104839.png" alt></p>
 <ul>
-<li>
-<p>3：客户端收到这个session ticket，就把当前的master key和这个ticket组成一对键值保存起来。服务器无需保存任何会话信息，客户端也无需知道session ticket具体表示什么。</p>
+<li><p>3：客户端收到这个session ticket，就把当前的master key和这个ticket组成一对键值保存起来。服务器无需保存任何会话信息，客户端也无需知道session ticket具体表示什么。</p>
 </li>
-<li>
-<p>4：当客户端尝试会话复用时，会在client hello的拓展中加上session ticket，然后服务器收到session ticket，回去进行解密、解码能相关操作，来恢复会话信息。如果能够恢复会话信息，那么久提取会话信息的主密钥进行后续的操作。</p>
+<li><p>4：当客户端尝试会话复用时，会在client hello的拓展中加上session ticket，然后服务器收到session ticket，回去进行解密、解码能相关操作，来恢复会话信息。如果能够恢复会话信息，那么久提取会话信息的主密钥进行后续的操作。</p>
 </li>
 </ul>
 <ul>
-<li>(2). <strong>基于 SessionTicket 的会话恢复</strong><br>
-当 Client 本地获取了 SessionTicket 以后，下次想要进行简短握手，就可以使用这个 SessionTicket 了。</li>
+<li>(2). <strong>基于 SessionTicket 的会话恢复</strong><br>当 Client 本地获取了 SessionTicket 以后，下次想要进行简短握手，就可以使用这个 SessionTicket 了。<br>```C<br>Client                                                Server</li>
 </ul>
-<pre><code class="language-C">Client                                                Server
-
-ClientHello
-(SessionTicket extension)     --------&gt;
-                                                ServerHello
-                              (empty SessionTicket extension)
-                                          NewSessionTicket
-                                          [ChangeCipherSpec]
-                              &lt;--------             Finished
-[ChangeCipherSpec]
-Finished                      --------&gt;
-Application Data              &lt;-------&gt;     Application Data
-</code></pre>
+<p>ClientHello<br>(SessionTicket extension)     ————&gt;<br>                                                ServerHello<br>                              (empty SessionTicket extension)<br>                                          NewSessionTicket<br>                                          [ChangeCipherSpec]<br>                              &lt;————             Finished<br>[ChangeCipherSpec]<br>Finished                      ————&gt;<br>Application Data              &lt;———-&gt;     Application Data<br>``` </p>
 <ul>
 <li>客户端第二次发起请求，根据目的ip port查找，查找master key和session ticket，然后把session ticket加在client hello中的拓展中。同时也需要session id。</li>
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-105050.png" alt></p>
 <ul>
-<li>
-<p>如果 Server 支持 SessionTicket 会话恢复，则会在 ServerHello 中回复一个空的 SessionTicket 扩展。Server 将会话信息进行加密保护，生成一个新的 ticket，通过 NewSessionTicket 子消息发给 Client。发送完</p>
+<li><p>如果 Server 支持 SessionTicket 会话恢复，则会在 ServerHello 中回复一个空的 SessionTicket 扩展。Server 将会话信息进行加密保护，生成一个新的 ticket，通过 NewSessionTicket 子消息发给 Client。发送完 </p>
 </li>
-<li>
-<p>NewSessionTicket 消息以后，紧跟着发送 ChangeCipherSpec 和 Finished 消息。Client 收到上述消息以后，回应 ChangeCipherSpec 和 Finished 消息，会话恢复成功。</p>
+<li><p>NewSessionTicket 消息以后，紧跟着发送 ChangeCipherSpec 和 Finished 消息。Client 收到上述消息以后，回应 ChangeCipherSpec 和 Finished 消息，会话恢复成功。</p>
 </li>
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-3/tcpip-4-SSL-TLS-3-105102.png" alt></p>
-<h2><span id="tls-常见的攻击举例">TLS 常见的攻击举例</span></h2>
-<h3><span id="heartbleed心脏出血">Heartbleed（心脏出血）</span></h3>
-<h3><span id="replay-attacks重放攻击">Replay Attacks（重放攻击）</span></h3>
-<h3><span id="降级攻击freaklogjam-和-curveswap">降级攻击(FREAK，LogJam 和 CurveSwap)</span></h3>
-<p>降级攻击一般包括两种：</p>
+<h2><span id="tls-常见的攻击举例">TLS 常见的攻击举例</span></h2><h3><span id="heartbleed心脏出血">Heartbleed（心脏出血）</span></h3><h3><span id="replay-attacks重放攻击">Replay Attacks（重放攻击）</span></h3><h3><span id="降级攻击freaklogjam-和-curveswap">降级攻击(FREAK，LogJam 和 CurveSwap)</span></h3><p>降级攻击一般包括两种：</p>
 <ul>
-<li>加密套件降级攻击 (cipher suite rollback)</li>
+<li>加密套件降级攻击 (cipher suite rollback) </li>
 <li>协议降级攻击（version roll back）。</li>
 </ul>
-<p>降级攻击的原理就是攻击者伪造或者修改 client hello 消息，使得客户端和服务器之间使用比较弱的加密套件或者协议完成通信。<br>
-为了应对降级攻击，现在 server 端和浏览器之间都实现了 SCSV 功能，原理参考 <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00%E3%80%82" target="_blank" rel="noopener">https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00。</a><br>
-一句话解释就是如果客户端想要降级，必须发送 TLS_SCSV 的信号，服务器如果看到 TLS_SCSV，就不会接受比服务端最高协议版本低的协议。</p>
-<h3><span id="重新协商攻击">重新协商攻击</span></h3>
-<p>重新协商（tls renegotiation）分为两种：</p>
+<p>降级攻击的原理就是攻击者伪造或者修改 client hello 消息，使得客户端和服务器之间使用比较弱的加密套件或者协议完成通信。<br>为了应对降级攻击，现在 server 端和浏览器之间都实现了 SCSV 功能，原理参考 <a href="https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00。" target="_blank" rel="noopener">https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00。</a><br>一句话解释就是如果客户端想要降级，必须发送 TLS_SCSV 的信号，服务器如果看到 TLS_SCSV，就不会接受比服务端最高协议版本低的协议。</p>
+<h3><span id="重新协商攻击">重新协商攻击</span></h3><p>重新协商（tls renegotiation）分为两种：</p>
 <ul>
-<li>加密套件重协商 (cipher suite renegotiation)</li>
+<li>加密套件重协商 (cipher suite renegotiation) </li>
 <li>协议重协商（protocol renegotiation）。</li>
 </ul>
 <p>重新协商会有两个隐患：</p>
@@ -500,14 +428,11 @@ Application Data              &lt;-------&gt;     Application Data
 <li>重协商后使用弱的安全算法。这样的后果就是传输内容很容易泄露。</li>
 <li>重协商过程中不断发起完全握手请求，触发服务端进行高强度计算并引发服务拒绝。 对于重协商，最直接的保护手段就是禁止客户端主动重协商，当然出于特殊场景的需求，应该允许服务端主动发起重协商。</li>
 </ul>
-<h2><span id="参考">参考</span></h2>
-<ul>
-<li><a href="https://blog.csdn.net/justinzengTM/article/details/104054056" target="_blank" rel="noopener">总结HTTPS握手层和加密层</a></li>
-</ul>
-<blockquote>
-<p>本文大部分来自 以下内容的 节选</p>
+<h2><span id="参考">参考</span></h2><ul>
+<li><a href="https://blog.csdn.net/justinzengTM/article/details/104054056" target="_blank" rel="noopener">总结HTTPS握手层和加密层</a><blockquote>
+<p> 本文大部分来自 以下内容的 节选</p>
 </blockquote>
-<ul>
+</li>
 <li><a href="https://halfrost.com/https_tls1-2_handshake/" target="_blank" rel="noopener">HTTPS 温故知新（三） —— 直观感受 TLS 握手流程(上)</a></li>
 </ul>
 

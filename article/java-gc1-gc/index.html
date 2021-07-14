@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,42 +221,30 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="g1-概要">G1 概要</span></h2>
-<h3><span id="g1-的特点">G1 的特点</span></h3>
-<h4><span id="garbage-first">Garbage First</span></h4>
-<p>G1的设计原则是&quot;首先收集尽可能多的垃圾(Garbage First)&quot;。因此，G1并不会等内存耗尽(串行、并行)或者快耗尽(CMS)的时候开始垃圾收集，而是在内部采用了启发式算法，在老年代找出具有高收集收益的分区进行收集。同时G1可以根据用户设置的暂停时间目标自动调整年轻代和总堆大小，暂停目标越短年轻代空间越小、总空间就越大；</p>
-<h4><span id="空间整理">空间整理</span></h4>
-<p>G1采用内存分区(Region)的思路，将内存划分为一个个相等大小的内存分区，回收时则以分区为单位进行回收，存活的对象复制到另一个空闲分区中。由于都是以相等大小的分区为单位进行操作，因此G1天然就是一种压缩方案(局部压缩)；</p>
-<h4><span id="动态扩展空间">动态扩展空间</span></h4>
-<p>G1虽然也是分代收集器，但整个内存分区不存在物理上的年轻代与老年代的区别，也不需要完全独立的survivor(to space)堆做复制准备。G1只有逻辑上的分代概念，或者说每个分区都可能随G1的运行在不同代之间前后切换；</p>
-<h4><span id="局部回收">局部回收</span></h4>
-<p>G1的收集都是STW的，但年轻代和老年代的收集界限比较模糊，采用了混合(mixed)收集的方式。即每次收集既可能只收集年轻代分区(年轻代收集)，也可能在收集年轻代的同时，包含部分老年代分区(混合收集)，这样即使堆内存很大时，也可以限制收集范围，从而降低停顿。</p>
-<h3><span id="g1-内存模型">G1 内存模型</span></h3>
-<h4><span id="region-分区">Region (分区)</span></h4>
-<p><img src="/article/java-gc1-gc/1556095002973java-gc1-gc_.png" alt></p>
+                <h2><span id="g1-概要">G1 概要</span></h2><h3><span id="g1-的特点">G1 的特点</span></h3><h4><span id="garbage-first">Garbage First</span></h4><p> G1的设计原则是”首先收集尽可能多的垃圾(Garbage First)”。因此，G1并不会等内存耗尽(串行、并行)或者快耗尽(CMS)的时候开始垃圾收集，而是在内部采用了启发式算法，在老年代找出具有高收集收益的分区进行收集。同时G1可以根据用户设置的暂停时间目标自动调整年轻代和总堆大小，暂停目标越短年轻代空间越小、总空间就越大；</p>
+<h4><span id="空间整理">空间整理</span></h4><p>G1采用内存分区(Region)的思路，将内存划分为一个个相等大小的内存分区，回收时则以分区为单位进行回收，存活的对象复制到另一个空闲分区中。由于都是以相等大小的分区为单位进行操作，因此G1天然就是一种压缩方案(局部压缩)；</p>
+<h4><span id="动态扩展空间">动态扩展空间</span></h4><p>G1虽然也是分代收集器，但整个内存分区不存在物理上的年轻代与老年代的区别，也不需要完全独立的survivor(to space)堆做复制准备。G1只有逻辑上的分代概念，或者说每个分区都可能随G1的运行在不同代之间前后切换；</p>
+<h4><span id="局部回收">局部回收</span></h4><p>G1的收集都是STW的，但年轻代和老年代的收集界限比较模糊，采用了混合(mixed)收集的方式。即每次收集既可能只收集年轻代分区(年轻代收集)，也可能在收集年轻代的同时，包含部分老年代分区(混合收集)，这样即使堆内存很大时，也可以限制收集范围，从而降低停顿。</p>
+<h3><span id="g1-内存模型">G1 内存模型</span></h3><h4><span id="region-分区">Region (分区)</span></h4><p><img src="/article/java-gc1-gc/1556095002973java-gc1-gc_.png" alt></p>
 <p>G1采用了分区(Region)的思路，将整个堆空间分成若干个大小相等的内存区域，每次分配对象空间将逐段地使用内存。因此，在堆的使用上，G1并不要求对象的存储一定是物理上连续的，只要逻辑上连续即可；每个分区也不会确定地为某个代服务，可以按需在年轻代和老年代之间切换。启动时可以通过参数<code>-XX:G1HeapRegionSize=n</code>可指定分区大小(1MB~32MB，且必须是2的幂)，默认将整堆划分为2048个分区。</p>
 <p>每个Region被标记了E、S、O和H，说明每个Region在运行时都充当了一种角色，其中H是以往算法中没有的，它代表Humongous，这表示这些Region存储的是巨型对象（humongous object，H-obj），当新建对象大小超过Region大小一半时，直接在新的一个或多个连续Region中分配，并标记为H。</p>
-<h4><span id="card-table">Card Table</span></h4>
-<p>为了支持高频率的新生代的回收，虚拟机使用一种叫做卡表（Card Table）的数据结构，卡表作为一个比特位的集合，每一个比特位可以用来表示某一区域中的所有对象是否持有新生代对象的引用。</p>
+<h4><span id="card-table">Card Table</span></h4><p>为了支持高频率的新生代的回收，虚拟机使用一种叫做卡表（Card Table）的数据结构，卡表作为一个比特位的集合，每一个比特位可以用来表示某一区域中的所有对象是否持有新生代对象的引用。</p>
 <p>在每个Region内部又被分成了若干个大小为512 Byte卡片(Card Page)，标识堆内存最小可用粒度所有分区的卡片将会记录在全局卡片表(Global Card Table)中，分配的对象会占用物理上连续的若干个卡片，当查找对分区内对象的引用时便可通过记录卡片来查找该引用对象(见RSet)。每次对内存的回收，都是对指定分区的卡片进行处理。</p>
 <p>基于卡表（Card Table）的设计，通常将堆空间划分为一系列2次幂大小的卡页（Card Page）。</p>
 <p>首先，计算对象引用所在卡页的卡表索引号。将地址右移9位，相当于用地址除以512（2的9次方）。可以这么理解，假设卡表卡页的起始地址为0，那么卡表项0、1、2对应的卡页起始地址分别为0、512、1024（卡表项索引号乘以卡页512字节）。</p>
 <p>其次，通过卡表索引号，设置对应卡标识为dirty。</p>
 <p><img src="/article/java-gc1-gc/1556097761564java-gc1-gc_.png" alt></p>
-<h4><span id="remember-set-rset">Remember Set (RSet)</span></h4>
-<p>我们知道判断对象是否存活需要从GC ROOTS结点出发，从GC ROOTS结点可达的对象就是存活的。在YGC时，老年代中的对象是不回收的，也就意味着GC ROOTS里面应包含了老年代中的对象。但扫描整个老年代会很耗费时间，势必影响整个GC的性能！。所以在CMS中使用了Card Table的结构，里面记录了老年代对象到新生代引用。Card Table的结构是一个连续的byte[]数组，扫描Card Table的时间比扫描整个老年代的代价要小很多！</p>
+<h4><span id="remember-set-rset">Remember Set (RSet)</span></h4><p>我们知道判断对象是否存活需要从GC ROOTS结点出发，从GC ROOTS结点可达的对象就是存活的。在YGC时，老年代中的对象是不回收的，也就意味着GC ROOTS里面应包含了老年代中的对象。但扫描整个老年代会很耗费时间，势必影响整个GC的性能！。所以在CMS中使用了Card Table的结构，里面记录了老年代对象到新生代引用。Card Table的结构是一个连续的byte[]数组，扫描Card Table的时间比扫描整个老年代的代价要小很多！</p>
 <p>G1也参照了这个思路，不过采用了一种新的数据结构 Remembered Set 简称Rset。RSet记录了其他Region中的对象引用本Region中对象的关系，属于points-into结构（谁引用了我的对象）。而Card Table则是一种points-out（我引用了谁的对象）的结构，每个Card 覆盖一定范围的Heap（一般为512Bytes）。G1的RSet是在Card Table的基础上实现的：每个Region会记录下别的Region有指向自己的指针，并标记这些指针分别在哪些Card的范围内。 这个RSet其实是一个Hash Table，Key是别的Region的起始地址，Value是一个集合，里面的元素是Card Table的Index。每个Region都有一个对应的Rset。</p>
 <p><img src="/article/java-gc1-gc/1556095318179java-gc1-gc_.png" alt></p>
-<h4><span id="per-region-table">Per Region Table</span></h4>
-<p>RSet在内部使用Per Region Table(PRT)记录分区的引用情况。由于RSet的记录要占用分区的空间，如果一个分区非常&quot;受欢迎&quot;，那么RSet占用的空间会上升，从而降低分区的可用空间。G1应对这个问题采用了改变RSet的密度的方式，在PRT中将会以三种模式记录引用：</p>
+<h4><span id="per-region-table">Per Region Table</span></h4><p>RSet在内部使用Per Region Table(PRT)记录分区的引用情况。由于RSet的记录要占用分区的空间，如果一个分区非常”受欢迎”，那么RSet占用的空间会上升，从而降低分区的可用空间。G1应对这个问题采用了改变RSet的密度的方式，在PRT中将会以三种模式记录引用：</p>
 <ul>
 <li>稀少：直接记录引用对象的卡片索引</li>
 <li>细粒度：记录引用对象的分区索引</li>
 <li>粗粒度：只记录引用情况，每个分区对应一个比特位</li>
 </ul>
 <p>由上可知，粗粒度的PRT只是记录了引用数量，需要通过整堆扫描才能找出所有引用，因此扫描速度也是最慢的。</p>
-<h4><span id="humongous-region-大对象区间">Humongous Region (大对象区间)</span></h4>
-<p>正因为无论是 Young Generation 还是 Old Generation，在 GC 的时候都会有 object 拷贝。Young Generation 一方面是将 object 从 Eden 拷贝到 Survivor ，另一方面是拷贝晋升的 object 到 Old 区。这种拷贝过程对特别大的 object 来说就很不经济。</p>
+<h4><span id="humongous-region-大对象区间">Humongous Region (大对象区间)</span></h4><p>正因为无论是 Young Generation 还是 Old Generation，在 GC 的时候都会有 object 拷贝。Young Generation 一方面是将 object 从 Eden 拷贝到 Survivor ，另一方面是拷贝晋升的 object 到 Old 区。这种拷贝过程对特别大的 object 来说就很不经济。</p>
 <p>G1 中 Region 大小最小是 1MB，最大是 32MB。具体多大会根据 Heap 大小做设置，它是尽力去保证整个 Heap 被划分为大约 2048 个 Region。比如如果 Heap 有 16G，算下来 16G / 2048 = 8MB 即一个 Region 大概是 8MB。当然 2048 个 Region 也不是绝对的，如果 Heap 特别大或者特别小，Region 总数是可以超过或小于 2048。Region 总数也能通过参数精确设置 <code>-XX:G1HeapRegionSize=n</code>。</p>
 <p>回到 Humongous Object，G1 中内存占用超过当前单个 Region 50% 的 Object 就叫 Humongous Object，G1 对他们有单独的处理。</p>
 <p>Humongous Object 分配时会根据这个 object 大小，在 available regions 中找足够放下这个 object 的连续的数个 region，专门分配给这个 Humongous object 使用。如果找不到这么个连续的 region，G1 会直接使用 fail-safe 的 FGC 来清理并 compact heap。</p>
@@ -266,52 +254,37 @@
 <p>回到 Humongous Object，G1 中内存占用超过当前单个 Region 50% 的 Object 就叫 Humongous Object，G1 对他们有单独的处理。</p>
 <p>Humongous Object 分配时会根据这个 object 大小，在 available regions 中找足够放下这个 object 的连续的数个 region，专门分配给这个 Humongous object 使用。如果找不到这么个连续的 region，G1 会直接使用 fail-safe 的 FGC 来清理并 compact heap。</p>
 <p>理解这里不先进行 YGC 或 OGC 的原因是 YGC 和 OGC 很多过程都是 concurrent 的，这个时候 Humongous Object 无法分配内存，无法让应用线程继续运行，必须执行完全的 STW 收集一次内存才行。</p>
-<h2><span id="g1-回收过程">G1 回收过程</span></h2>
-<h3><span id="g1-收集的四个过程">G1 收集的四个过程</span></h3>
-<ol>
+<h2><span id="g1-回收过程">G1 回收过程</span></h2><h3><span id="g1-收集的四个过程">G1 收集的四个过程</span></h3><ol>
 <li>年轻代收集</li>
 <li>并发收集，和应用线程同时执行</li>
 <li>混合式垃圾收集</li>
 <li>必要时的 Full GC</li>
 </ol>
-<h4><span id="young-gc年轻代收集">Young GC（年轻代收集）</span></h4>
-<p>年轻代是由Eden和Survivor两个区间组成的，那么当Eden区间无法在分配空间时，Young GC被触发了。GC需要把所有的存活对象从Eden区间移动到Survivor区间(拷贝算法),原有Survivor分区存活的对象，将根据任期阈值(tenuring threshold)分别晋升到PLAB中,从而晋级到新的survivor分区和老年代分区。而原有的年轻代分区将被整体回收掉，被放入空闲队列当中去</p>
+<h4><span id="young-gc年轻代收集">Young GC（年轻代收集）</span></h4><p>年轻代是由Eden和Survivor两个区间组成的，那么当Eden区间无法在分配空间时，Young GC被触发了。GC需要把所有的存活对象从Eden区间移动到Survivor区间(拷贝算法),原有Survivor分区存活的对象，将根据任期阈值(tenuring threshold)分别晋升到PLAB中,从而晋级到新的survivor分区和老年代分区。而原有的年轻代分区将被整体回收掉，被放入空闲队列当中去</p>
 <p>在每一次年轻代回收暂停期间，G1 GC计算当前年轻代大小需要扩展或者压缩的总量，例如增加或者删除空闲区间、统计RSet大小、当前最大可用年轻代、当前最小可用年轻代、设置停顿目标等。因此，我们可以认为这个过程在回收停顿结束后是一个重新调整年轻代的过程。可以通过<code>-XX:+PrintGCDetails</code>选项的运行来查看具体数据。</p>
 <p>同时，年轻代收集还负责维护对象的年龄(存活次数)，辅助判断老化(tenuring)对象晋升的时候是到Survivor分区还是到老年代分区。年轻代收集首先先将晋升对象尺寸总和、对象年龄信息维护到年龄表中，再根据年龄表、Survivor尺寸、Survivor填充容量<code>-XX:TargetSurvivorRatio</code>(默认50%)、最大任期阈值<code>-XX:MaxTenuringThreshold</code>(默认15)，计算出一个恰当的任期阈值，凡是超过任期阈值的对象都会被晋升到老年代。</p>
-<h4><span id="concurrent-mark-start-并发收集阶段">concurrent-mark-start （并发收集阶段）</span></h4>
-<p>这个阶段将会为混合收集周期识别垃圾最多的老年代分区。整个周期完成根标记、识别所有(可能)存活对象，并计算每个分区的活跃度，从而确定GC效率等级。</p>
+<h4><span id="concurrent-mark-start-并发收集阶段">concurrent-mark-start （并发收集阶段）</span></h4><p>这个阶段将会为混合收集周期识别垃圾最多的老年代分区。整个周期完成根标记、识别所有(可能)存活对象，并计算每个分区的活跃度，从而确定GC效率等级。</p>
 <ul>
-<li>
-<p>并发标记触发条件</p>
+<li><p>并发标记触发条件</p>
 <ul>
 <li>整个堆的使用率达到了阈值 （IHOP：<code>InitiatingHeapOccupancyPercent</code>).</li>
 <li>晋升空间（old regions）达到阈值（<code>G1ReservePercent</code>）</li>
 <li>大对象的分配</li>
 </ul>
 </li>
-<li>
-<p>并发标记的过程</p>
+<li><p>并发标记的过程</p>
 <ul>
-<li>
-<p>Initial Mark 初始标记</p>
-<p>负责标记所有能被直接可达的根对象(原生栈对象、全局对象、JNI对象)，根是对象图的起点，因此初始标记需要STW。<br>
-事实上，当达到IHOP阈值时，G1并不会立即发起并发标记周期，而是等待下一次年轻代收集，利用年轻代收集的STW时间段，完成初始标记，这种方式称为借道(Piggybacking)。在初始标记暂停中，分区的NTAMS都被设置到分区顶部Top，初始标记是并发执行，直到所有的分区处理完。</p>
+<li><p>Initial Mark 初始标记</p>
+<p>负责标记所有能被直接可达的根对象(原生栈对象、全局对象、JNI对象)，根是对象图的起点，因此初始标记需要STW。<br>事实上，当达到IHOP阈值时，G1并不会立即发起并发标记周期，而是等待下一次年轻代收集，利用年轻代收集的STW时间段，完成初始标记，这种方式称为借道(Piggybacking)。在初始标记暂停中，分区的NTAMS都被设置到分区顶部Top，初始标记是并发执行，直到所有的分区处理完。</p>
 </li>
-<li>
-<p>Root Region Scanning 根区域扫描<br>
-在初始标记暂停结束后，年轻代收集也完成的对象复制到Survivor的工作，应用线程开始活跃起来。此时为了保证标记算法的正确性，所有新复制到Survivor分区的对象，都需要被扫描并标记成根，这个过程称为根分区扫描(Root Region Scanning)，同时扫描的Suvivor分区也被称为根分区(Root Region)。根分区扫描必须在下一次年轻代垃圾收集启动前完成(并发标记的过程中，可能会被若干次年轻代垃圾收集打断)，因为每次GC会产生新的存活对象集合。</p>
+<li><p>Root Region Scanning 根区域扫描<br>在初始标记暂停结束后，年轻代收集也完成的对象复制到Survivor的工作，应用线程开始活跃起来。此时为了保证标记算法的正确性，所有新复制到Survivor分区的对象，都需要被扫描并标记成根，这个过程称为根分区扫描(Root Region Scanning)，同时扫描的Suvivor分区也被称为根分区(Root Region)。根分区扫描必须在下一次年轻代垃圾收集启动前完成(并发标记的过程中，可能会被若干次年轻代垃圾收集打断)，因为每次GC会产生新的存活对象集合。</p>
 </li>
-<li>
-<p>Concurrent Marking 并发标记<br>
-并发标记依赖于 <a href>STAB</a><br>
-在初始标记暂停结束后，年轻代收集也完成的对象复制到Survivor的工作，应用线程开始活跃起来。此时为了保证标记算法的正确性，所有新复制到Survivor分区的对象，都需要被扫描并标记成根，这个过程称为根分区扫描(Root Region Scanning)，同时扫描的Suvivor分区也被称为根分区(Root Region)。根分区扫描必须在下一次年轻代垃圾收集启动前完成(并发标记的过程中，可能会被若干次年轻代垃圾收集打断)，因为每次GC会产生新的存活对象集合。</p>
+<li><p>Concurrent Marking 并发标记<br>并发标记依赖于 <a href>STAB</a><br>在初始标记暂停结束后，年轻代收集也完成的对象复制到Survivor的工作，应用线程开始活跃起来。此时为了保证标记算法的正确性，所有新复制到Survivor分区的对象，都需要被扫描并标记成根，这个过程称为根分区扫描(Root Region Scanning)，同时扫描的Suvivor分区也被称为根分区(Root Region)。根分区扫描必须在下一次年轻代垃圾收集启动前完成(并发标记的过程中，可能会被若干次年轻代垃圾收集打断)，因为每次GC会产生新的存活对象集合。</p>
 </li>
-<li>
-<p>重新标记（remark eq final mark）</p>
+<li><p>重新标记（remark eq final mark）</p>
 <p>重新标记(Remark)是最后一个标记阶段。在该阶段中，G1需要一个暂停的时间，去处理剩下的SATB日志缓冲区和所有更新，找出所有未被访问的存活对象，同时安全完成存活数据计算。这个阶段也是并行执行的，通过参数<code>-XX:ParallelGCThread</code>可设置GC暂停时可用的GC线程数。同时，引用处理也是重新标记阶段的一部分，所有重度使用引用对象(弱引用、软引用、虚引用、最终引用)的应用都会在引用处理上产生开销。</p>
 </li>
-<li>
-<p>清理阶段（clean up）</p>
+<li><p>清理阶段（clean up）</p>
 <p>紧挨着重新标记阶段的清除(Clean)阶段也是STW的。清理阶段真正回收的内存很小，截止到这个阶段,G1垃圾收集器主要是标记处哪些老年代分区可以回收，将老年代按照它们的存活度（liveness）从小到大排列。Previous/Next标记位图、以及PTAMS/NTAMS，都会在清除阶段交换角色。清除阶段主要执行以下操作：</p>
 <p>1、RSet梳理，启发式算法会根据活跃度和RSet尺寸对分区定义不同等级，同时RSet数理也有助于发现无用的引用。参数<code>-XX:+PrintAdaptiveSizePolicy</code>可以开启打印启发式算法决策细节；</p>
 <p>2、整理堆分区，为混合收集周期识别回收收益高(基于释放空间和暂停目标)的老年代分区集合；</p>
@@ -324,25 +297,16 @@
 <p>在MIXGC中的Cset是选定所有young gen里的region，外加根据global concurrent marking统计得出收集收益高的若干old gen region。</p>
 <p>在YGC中的Cset是选定所有young gen里的region。通过控制young gen的region个数来控制young GC的开销。</p>
 <p>YGC与MIXGC都是采用多线程复制清除，整个过程会STW。 G1的低延迟原理在于其回收的区域变得精确并且范围变小了。</p>
-<h4><span id="mixed-gc">Mixed GC</span></h4>
-<ul>
-<li>Mixed GC 何时触发<br>
-remark 阶段完毕后，G1 就完成了对整个 heap 的标记，能知道整个 heap 中有哪些 object 是 live 的。在接下来的几次 YGC 中，会从待收集的所有 Region 中依次选出 GC 效率最高的 Region 组成本次回收的 CSet，来执行 GC，也即 Mixed GC. “GC 效率最高” 一般是有两个指标，一个是 Region 内 live object 多少，live object 占空间最少的 Region，GC 效率越高。即 Garbage 越多的 Region，GC 效率越高。这也是 Garbage First 的由来。 下图是一个mixed gc 的时序图</li>
+<h4><span id="mixed-gc">Mixed GC</span></h4><ul>
+<li>Mixed GC 何时触发<br>remark 阶段完毕后，G1 就完成了对整个 heap 的标记，能知道整个 heap 中有哪些 object 是 live 的。在接下来的几次 YGC 中，会从待收集的所有 Region 中依次选出 GC 效率最高的 Region 组成本次回收的 CSet，来执行 GC，也即 Mixed GC. “GC 效率最高” 一般是有两个指标，一个是 Region 内 live object 多少，live object 占空间最少的 Region，GC 效率越高。即 Garbage 越多的 Region，GC 效率越高。这也是 Garbage First 的由来。 下图是一个mixed gc 的时序图</li>
 </ul>
 <p><img src="/article/java-gc1-gc/1557030961130java-gc1-gc_.png" alt></p>
-<h4><span id="full-gc">FULL GC</span></h4>
-<p>转移失败的担保机制 Full GC</p>
+<h4><span id="full-gc">FULL GC</span></h4><p>转移失败的担保机制 Full GC</p>
 <p>转移失败(Evacuation Failure)是指当G1无法在堆空间中申请新的分区时，G1便会触发担保机制，执行一次STW式的、单线程的Full GC。Full GC会对整堆做标记清除和压缩，最后将只包含纯粹的存活对象。参数-XX:G1ReservePercent(默认10%)可以保留空间，来应对晋升模式下的异常情况，最大占用整堆50%，更大也无意义。</p>
 <p>G1在以下场景中会触发Full GC，同时会在日志中记录to-space-exhausted以及Evacuation Failure：</p>
-<p>从年轻代分区拷贝存活对象时，无法找到可用的空闲分区<br>
-从老年代分区转移存活对象时，无法找到可用的空闲分区<br>
-分配巨型对象时在老年代无法找到足够的连续分区<br>
-由于G1的应用场合往往堆内存都比较大，所以Full GC的收集代价非常昂贵，应该避免Full GC的发生。</p>
-<h2><span id="参考">参考:</span></h2>
-<p><a href="http://www.importnew.com/27793.html" target="_blank" rel="noopener">http://www.importnew.com/27793.html</a><br>
-<a href="https://zhuanlan.zhihu.com/p/52841787" target="_blank" rel="noopener">G1 收集器原理理解与分析</a></p>
-<p>G1读书笔记<br>
-g1 的四个阶段</p>
+<p>从年轻代分区拷贝存活对象时，无法找到可用的空闲分区<br>从老年代分区转移存活对象时，无法找到可用的空闲分区<br>分配巨型对象时在老年代无法找到足够的连续分区<br>由于G1的应用场合往往堆内存都比较大，所以Full GC的收集代价非常昂贵，应该避免Full GC的发生。</p>
+<h2><span id="参考">参考:</span></h2><p><a href="http://www.importnew.com/27793.html" target="_blank" rel="noopener">http://www.importnew.com/27793.html</a><br><a href="https://zhuanlan.zhihu.com/p/52841787" target="_blank" rel="noopener">G1 收集器原理理解与分析</a></p>
+<p>G1读书笔记<br>g1 的四个阶段</p>
 
         
                 <hr>
