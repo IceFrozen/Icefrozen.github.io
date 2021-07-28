@@ -8,16 +8,24 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
-        <lastmod>2021-07-14T07:24:08.898Z</lastmod>
+        <loc>http://yoursite.com/article/java-volatile/</loc>
+        <lastmod>2021-07-28T11:52:29.201Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-memory-model/</loc>
-        <lastmod>2021-07-14T07:05:44.576Z</lastmod>
+        <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
+        <lastmod>2021-07-23T07:58:29.312Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-AQS/</loc>
+        <lastmod>2021-07-21T09:58:16.742Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -25,119 +33,7 @@
 
     <url>
         <loc>http://yoursite.com/article/why-memory-barriers-1/</loc>
-        <lastmod>2021-06-29T03:00:35.243Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/keepalived-1/</loc>
-        <lastmod>2021-05-14T09:32:46.142Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/spring-framework-0/</loc>
-        <lastmod>2021-04-16T08:50:48.562Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-concurrence-3/</loc>
-        <lastmod>2021-03-22T08:28:32.015Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/Net-wrok-DNS-2/</loc>
-        <lastmod>2021-02-03T02:54:12.595Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/lvs-3/</loc>
-        <lastmod>2021-01-31T07:25:31.823Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/lvs-2/</loc>
-        <lastmod>2021-01-18T03:00:47.525Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/lvs-1/</loc>
-        <lastmod>2021-01-16T11:19:55.529Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/Net-wrok-DNS-1/</loc>
-        <lastmod>2021-01-11T02:36:26.537Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/distributed-redis-advanced/</loc>
-        <lastmod>2020-12-14T05:36:37.401Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/openerating-learning-vfs-2/</loc>
-        <lastmod>2020-11-17T05:54:52.916Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/openerating-learning-vfs-1/</loc>
-        <lastmod>2020-09-30T09:06:18.033Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/bytecode-analysis-2-instance/</loc>
-        <lastmod>2020-08-28T05:17:49.873Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/bytecode-analysis/</loc>
-        <lastmod>2020-08-27T01:40:37.344Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-synchronized/</loc>
-        <lastmod>2020-08-26T03:46:38.912Z</lastmod>
+        <lastmod>2021-07-16T05:39:16.845Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -145,7 +41,135 @@
 
     <url>
         <loc>http://yoursite.com/article/tcpip-4-SSL-TLS-3/</loc>
-        <lastmod>2020-08-25T02:50:36.467Z</lastmod>
+        <lastmod>2021-07-16T05:39:16.841Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/spring-framework-0/</loc>
+        <lastmod>2021-07-16T05:39:16.834Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/retry-2-spring-retry/</loc>
+        <lastmod>2021-07-16T05:39:16.831Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/openerating-learning-vfs-2/</loc>
+        <lastmod>2021-07-16T05:39:16.814Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/openerating-learning-vfs-1/</loc>
+        <lastmod>2021-07-16T05:39:16.783Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/lvs-3/</loc>
+        <lastmod>2021-07-16T05:39:16.755Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/lvs-2/</loc>
+        <lastmod>2021-07-16T05:39:16.717Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/lvs-1/</loc>
+        <lastmod>2021-07-16T05:39:16.667Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/keepalived-1/</loc>
+        <lastmod>2021-07-16T05:39:16.654Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-synchronized/</loc>
+        <lastmod>2021-07-16T05:39:16.647Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-memory-model/</loc>
+        <lastmod>2021-07-16T05:39:16.646Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-concurrence-3/</loc>
+        <lastmod>2021-07-16T05:39:16.635Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/distributed-redis-advanced/</loc>
+        <lastmod>2021-07-16T05:39:16.553Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/bytecode-analysis/</loc>
+        <lastmod>2021-07-16T05:39:16.525Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/bytecode-analysis-2-instance/</loc>
+        <lastmod>2021-07-16T05:39:16.520Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/Net-wrok-DNS-2/</loc>
+        <lastmod>2021-07-16T05:39:16.513Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/Net-wrok-DNS-1/</loc>
+        <lastmod>2021-07-16T05:39:16.500Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -194,14 +218,6 @@
     <url>
         <loc>http://yoursite.com/article/tcpip-4-SSL-TLS-2/</loc>
         <lastmod>2020-08-10T03:11:48.130Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/retry-2-spring-retry/</loc>
-        <lastmod>2020-08-10T03:11:48.126Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -408,14 +424,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-AQS/</loc>
-        <lastmod>2020-08-10T03:11:47.943Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://yoursite.com/article/forbid-foreach-add-or-move/</loc>
         <lastmod>2020-08-10T03:11:47.929Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -464,7 +472,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -472,7 +480,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

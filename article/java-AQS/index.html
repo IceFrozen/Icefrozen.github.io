@@ -226,7 +226,7 @@
 <ul>
 <li>AQS 思维导图</li>
 </ul>
-<p><img src="http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-10-31/61115865.jpg" alt></p>
+<p><img src="/article/java-AQS/java-AQS-1626861196646.png" alt></p>
 <h2><span id="aos详解">AOS详解</span></h2>
 <h2><span id="什么是aqs">什么是AQS</span></h2>
 <p>AQS的全称为（AbstractQueuedSynchronizer),是一个用来构建锁和同步器的框架，使用AQS能简单且高效地构造出应用广泛的大量的同步器</p>
@@ -255,8 +255,8 @@
 <h2><span id="abstractqueuedsynchronizer-分析">AbstractQueuedSynchronizer 分析</span></h2>
 <p><code>AbstractQueuedSynchronizer</code> 类图如下<br>
 <img src="/article/java-AQS/AQS.jpg" alt></p>
-<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/Java%20%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E5%A4%87%EF%BC%9A%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BB%93/CLH.png" alt></p>
 <p>AQS使用一个int成员变量来表示同步状态，通过内置的FIFO队列来完成获取资源线程的排队工作。AQS使用CAS对该同步状态进行原子操作实现对其值的修改。</p>
+<p><img src="/article/java-AQS/java-AQS-1626861344579.png" alt></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractQueuedSynchronizer</span> <span class="keyword">extends</span> <span class="title">AbstractOwnableSynchronizer</span> <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;<span class="comment">/*... */</span>&#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> Node head;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> Node tail;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> state;<span class="comment">//同步状态</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    状态信息通过protected类型的getState，setState，compareAndSetState进行操作返回同步状态的当前值</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getState</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> state;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 设置同步状态的值</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setState</span><span class="params">(<span class="keyword">int</span> newState)</span> </span>&#123;</span><br><span class="line">        state = newState;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//原子地（CAS操作）将同步状态值设置为给定值update如果当前同步状态的值等于expect（期望值）</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSetState</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, stateOffset, expect, update);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>AQS使用一个int成员变量来表示同步状态，通过内置的FIFO队列来完成获取资源线程的排队工作。AQS使用CAS对该同步状态进行原子操作实现对其值的修改。</p>
 <h2><span id="sync的实现公平锁和非公平锁">Sync的实现公平锁和非公平锁</span></h2>
@@ -348,9 +348,9 @@
 <li><a href="https://www.jianshu.com/p/279baac48960" target="_blank" rel="noopener">java AQS的实现原理</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/27134110" target="_blank" rel="noopener">深入学习java同步器AQS</a></li>
 <li><a href="https://www.cnblogs.com/waterystone/p/4920797.html" target="_blank" rel="noopener">Java并发之AQS详解</a></li>
-<li><a href="http://codingdict.com/blog/article/2019/4/26/934.html" target="_blank" rel="noopener">http://codingdict.com/blog/article/2019/4/26/934.html</a></li>
-<li><a href="https://juejin.im/entry/5ae02a7c6fb9a07ac76e7b70" target="_blank" rel="noopener">https://juejin.im/entry/5ae02a7c6fb9a07ac76e7b70</a></li>
-<li><a href="https://blog.csdn.net/Viscu/article/details/86192135" target="_blank" rel="noopener">https://blog.csdn.net/Viscu/article/details/86192135</a></li>
+<li><a href="http://codingdict.com/blog/article/2019/4/26/934.html" target="_blank" rel="noopener">Java 多线程 AQS</a></li>
+<li><a href="https://juejin.im/entry/5ae02a7c6fb9a07ac76e7b70" target="_blank" rel="noopener">【死磕Java并发】—–J.U.C之AQS（一篇就够了）</a></li>
+<li><a href="https://blog.csdn.net/Viscu/article/details/86192135" target="_blank" rel="noopener">JDK源码系列 AbstractQueuedSynchronizer源码剖析</a></li>
 </ul>
 
         
