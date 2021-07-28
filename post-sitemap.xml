@@ -472,7 +472,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -480,7 +480,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-redis-data-structure-object/</loc>
+        <loc>http://yoursite.com/article/distributed-redis-data-structure-sds-link/</loc>
         <lastmod>2020-08-10T03:11:47.873Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -536,7 +536,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -544,7 +544,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
