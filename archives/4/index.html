@@ -91,7 +91,7 @@
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
                     <div class="site-heading">
-                        <h1>西木凌萧</h1>
+                        <h1>木西笔记</h1>
                         <!--<hr class="small">-->
                         <span class="subheading">个人博客</span>
                     </div>
@@ -116,7 +116,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">西木凌萧</a>
+            <a class="navbar-brand" href="/">木西笔记</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -232,12 +232,52 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-thrift-2/">
+        <h2 class="post-title">
+            Thrift框架详解（二）
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/42/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                Thrift IDL 详解
+            </h3>
+        <div class="post-content-preview">
+            概诉
+前一章节，我们基本入门，了解了 Thrift 的基本用法，这一节继续来分析 Thrift IDL的内容。
+Thrift 采用IDL（Interface Definition Language）来定义通用的服务接口，然后通过 Thrift 提供的编译器，可以将服务接口编译成不同语言编写的代码，通过这个方式来实现跨语言的功能。
+IDL定义的规范
+IDL 结构规范
+123Document  ...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2020-03-01
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Thrift" title="Thrift">Thrift</a>
+            
+              <a href="/tags/#RPC" title="RPC">RPC</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/java-thrift-1/">
         <h2 class="post-title">
             Thrift框架详解（一）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/99/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -275,19 +315,18 @@ Thr...
             JAVA多线程之AQS分析(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/32/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
         <h3 class="post-subtitle-my">
-                ReentrantReadWriteLock读写锁源码分析
+                ReentrantReadWriteLock 读写锁源码分析
             </h3>
         <div class="post-content-preview">
             基础
-所谓读写锁，是对访问资源共享锁和排斥锁，一般的重入性语义为 如果对资源加了写锁，其他线程无法再获得写锁与读锁，但是持有写锁的线程，可以对资源加读锁（锁降级）；如果一个线程对资源加了读锁，其他线程可以继续加读锁。
+所谓读写锁，是对访问资源共享锁和排斥锁，一般的重入性语义为：如果对资源加了写锁，其他线程无法再获得写锁与读锁，但是持有写锁的线程，可以对资源加读锁（锁降级）；如果一个线程对资源加了读锁，其他线程可以继续加读锁。本文主要分析JDK(1.8+)JCU包中读写锁接口(ReadWriteLock)的重要实现类ReentrantReadWriteLock的细节，来阐述AQS的应用。
 样例
-我们来看一段例子
-1234567891011121314151617181920212223242526272829303132333435363738394041424...
+我们来...
         </div>
     </a>
     
@@ -316,7 +355,7 @@ Thr...
             数据库原理篇（3）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/84/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -351,10 +390,10 @@ InnoDB的行级锁：
 
     <a href="/article/distributed-transaction-1/">
         <h2 class="post-title">
-            分布式事务详解（1）
+            事务详解（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/56/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -362,16 +401,11 @@ InnoDB的行级锁：
                 事务概述
             </h3>
         <div class="post-content-preview">
-            分布式事务概述
+            概要
+文本主要讨论一些事务，第一章节将会对事务的一些常规知识进行一个总结，这些知识使我们所熟知的。在数据详解章节中，我会对这些事务的一些潜在问题做一个详细说明，本文会参照一些比较著名的论文以以及个人理解来表述，对事务的隔离级别来展开的深度分析。
+事务概述
 什么是事务
-事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。
-事务的四大特性ACID
-
-
-原子性（Atomicity）: 事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。
-
-
-一致性（Consistenc...
+事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作...
         </div>
     </a>
     
@@ -400,7 +434,7 @@ InnoDB的行级锁：
             数据库原理篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/73/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/77/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -489,7 +523,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             数据库原理篇(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/70/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/50/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -533,7 +567,7 @@ Kafka 是一个分布式的基于发布/订阅模式的消息队列(Message Queu
             TCP/IP系列(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/51/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/68/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -584,7 +618,7 @@ TCP状态图
             JAVA多线程之深入分析synchronized原理和锁膨胀过程
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/97/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/14/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -611,45 +645,6 @@ synchronized 优化历史
         <p class="post-meta" style="margin: 10px 0;">
             Posted by Jason Lee on
             2019-08-16
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
-            
-              <a href="/tags/#JVM" title="JVM">JVM</a>
-            
-              <a href="/tags/#多线程" title="多线程">多线程</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/Java-AQS2/">
-        <h2 class="post-title">
-            JAVA多线程之AQS分析(2)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/24/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                CountDownLatch的分析来解读AQS的共享功能。
-            </h3>
-        <div class="post-content-preview">
-            AQS 共享功能的实现
-CountDownLatch 的用法
-CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具类，常被用在多线程环境下，它在初始时需要指定一个计数器的大小，然后可被多个线程并发的实现减 1 操作，并在计数器为 0 后调用 await 方法的线程被唤醒，从而实现多线程间的协作。它在多线程环境下的基本使用方式...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-07-23
         </p>
         <div class="tags">
             
@@ -769,6 +764,10 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
     <ul>
       
         <li>
+          <a href="/article/attempt/">开源重试组件Attempt</a>
+        </li>
+      
+        <li>
           <a href="/article/java-volatile/">Java并发编程之volatile关键字</a>
         </li>
       
@@ -784,10 +783,6 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
           <a href="/article/keepalived-1/">KeepAlived 详解</a>
         </li>
       
-        <li>
-          <a href="/article/spring-framework-0/">Spring Framework 源码分析（1）</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -796,7 +791,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -832,6 +827,8 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
         
             
             <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
+            
+        
             
         
             
@@ -1007,7 +1004,7 @@ CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Jason Lee 2021 
+                    Copyright &copy; Jason Lee 2022 
                     <br>
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>

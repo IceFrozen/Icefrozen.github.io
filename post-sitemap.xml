@@ -8,8 +8,32 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-volatile/</loc>
-        <lastmod>2021-07-28T11:52:29.201Z</lastmod>
+        <loc>http://yoursite.com/article/attempt/</loc>
+        <lastmod>2022-01-21T05:21:29.513Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/distributed-transaction-1/</loc>
+        <lastmod>2022-01-14T06:15:39.804Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-AQS3-read-write-lock/</loc>
+        <lastmod>2021-12-01T04:29:25.240Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/distributed-redis-lock/</loc>
+        <lastmod>2021-09-14T04:03:48.599Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -17,7 +41,23 @@
 
     <url>
         <loc>http://yoursite.com/article/java-memory-model-complier-reordering/</loc>
-        <lastmod>2021-07-23T07:58:29.312Z</lastmod>
+        <lastmod>2021-08-02T06:17:06.797Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/spikability-applications-ability-to/</loc>
+        <lastmod>2021-08-01T23:21:51.616Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-volatile/</loc>
+        <lastmod>2021-07-29T08:24:15.426Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -202,14 +242,6 @@
     <url>
         <loc>http://yoursite.com/article/tcpip-4-SSL-TLS/</loc>
         <lastmod>2020-08-10T03:11:48.159Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/spikability-applications-ability-to/</loc>
-        <lastmod>2020-08-10T03:11:48.130Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -416,14 +448,6 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/java-AQS3-read-write-lock/</loc>
-        <lastmod>2020-08-10T03:11:47.948Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://yoursite.com/article/forbid-foreach-add-or-move/</loc>
         <lastmod>2020-08-10T03:11:47.929Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -442,22 +466,6 @@
     <url>
         <loc>http://yoursite.com/article/distributed-transaction-innodb/</loc>
         <lastmod>2020-08-10T03:11:47.896Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/distributed-transaction-1/</loc>
-        <lastmod>2020-08-10T03:11:47.895Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/distributed-redis-lock/</loc>
-        <lastmod>2020-08-10T03:11:47.888Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -536,7 +544,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -544,7 +552,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

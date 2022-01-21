@@ -126,7 +126,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">西木凌萧</a>
+            <a class="navbar-brand" href="/">木西笔记</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -352,6 +352,11 @@
 <p>如果是volatile变量，在属性修改完成后就会执行<code>lock addl $0×0,(%rsp);</code>。<br>
 <strong>所以lock指令有两个含义，1、是形成流水行内存屏障，是的流水线执行顺序执行，2、是的MESI协议中的其他cpu缓存失效，并且将值写入内存，</strong>，这样volatile 其他cpu读取的时候就会直接从内存当中加载，而不是使用自己的缓存。</p>
 <h3><span id="cppinterpreter-解释下的">CppInterpreter 解释下的</span></h3>
+<p>hotspot解释器模块(hotspot\src\share\vm\interpreter)有两个实现：</p>
+<ul>
+<li>C++解释器 = bytecodeInterpreter* + cppInterpreter*</li>
+<li>模板解释器 = templateTable* + templateInterpreter*</li>
+</ul>
 <p>模板解释器我们看完了，下面我们来看一下C++ 解释器的实现。代码位于<code>hotspot/src/share/vm/interpreter/bytecodeInterpreter.cpp</code></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">CASE(_getfield):</span><br><span class="line">CASE(_getstatic):</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//... 略</span></span><br><span class="line">        TosState tos_type = cache-&gt;flag_state();</span><br><span class="line">        <span class="keyword">int</span> field_offset = cache-&gt;f2_as_index();</span><br><span class="line">        <span class="keyword">if</span> (cache-&gt;is_volatile()) &#123;</span><br><span class="line">            <span class="comment">//... 略  并没有加屏障处理</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// .........</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">CASE(_putfield):</span><br><span class="line">CASE(_putstatic):</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">int</span> field_offset = cache-&gt;f2_as_index();</span><br><span class="line">    <span class="keyword">if</span> (cache-&gt;is_volatile()) &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        OrderAccess::storeload();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">        <span class="comment">//略</span></span><br></pre></td></tr></table></figure>
 <p>可以看到，在执行完操作之后，bytecodeInterpreter 增加了<code>OrderAccess::storeload()</code> 屏障，代码如下</p>
@@ -399,6 +404,10 @@ add 方法下：</p>
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/attempt/" data-toggle="tooltip" data-placement="top" title="开源重试组件Attempt">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
@@ -600,7 +609,7 @@ add 方法下：</p>
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Jason Lee 2021 
+                    Copyright &copy; Jason Lee 2022 
                     <br>
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>

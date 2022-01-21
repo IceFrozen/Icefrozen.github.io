@@ -17,7 +17,7 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          分布式事务详解（1） - 西木 | Blog
+          事务详解（1） - 西木 | Blog
         
     </title>
 
@@ -100,7 +100,7 @@
                               <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
                             
                         </div>
-                        <h1>分布式事务详解（1）</h1>
+                        <h1>事务详解（1）</h1>
                         <h2 class="subheading">事务概述</h2>
                         <span class="meta">
                             Posted by Jason Lee on
@@ -128,7 +128,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">西木凌萧</a>
+            <a class="navbar-brand" href="/">木西笔记</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -221,7 +221,9 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="分布式事务概述">分布式事务概述</span></h2>
+                <h2><span id="概要">概要</span></h2>
+<p>文本主要讨论一些事务，第一章节将会对事务的一些常规知识进行一个总结，这些知识使我们所熟知的。在数据详解章节中，我会对这些事务的一些潜在问题做一个详细说明，本文会参照一些比较著名的论文以以及个人理解来表述，对事务的隔离级别来展开的深度分析。</p>
+<h2><span id="事务概述">事务概述</span></h2>
 <h2><span id="什么是事务">什么是事务</span></h2>
 <p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
 <h2><span id="事务的四大特性acid">事务的四大特性ACID</span></h2>
@@ -406,7 +408,7 @@
 </tr>
 </tbody>
 </table>
-<h3><span id="4丢失更新">【4】丢失更新</span></h3>
+<h3><span id="4丢失更新脏写">【4】丢失更新(脏写)</span></h3>
 <ul>
 <li>第一类更新丢失【回滚覆盖】</li>
 </ul>
@@ -553,6 +555,212 @@
 </ul>
 </li>
 </ul>
+<h2><span id="事务的隔离级别">事务的隔离级别</span></h2>
+<p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识，接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
+<h2><span id="事务的标准">事务的标准</span></h2>
+<p>最早的 ANSI SQL-92 提出了至今为止仍然是应用最广的隔离级别定义，读提交、可重复读、可序列化。但是 「A Critique of ANSI SQL Isolation Levels」这篇文章指出了 ANSI SQL-92 的缺陷，并对其做出了补充。「Generalized Isolation Level Definitions」这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。</p>
+<h3><span id="ansi-sql-92-对phantom的定义">ANSI SQL-92 对Phantom的定义</span></h3>
+<p>先来看ANSI SQL-92 标准中的可能导致三种数据出现的问题</p>
+<blockquote>
+<ol>
+<li>P1 (“Dirty read”): SQL-transaction T1 modifies a row. SQL-<br>
+transaction T2 then reads that row before T1 performs a COMMIT.<br>
+If T1 then performs a ROLLBACK, T2 will have read a row that was<br>
+never committed and that may thus be considered to have never<br>
+existed.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>P2 (“Non-repeatable read”): SQL-transaction T1 reads a row. SQL-<br>
+transaction T2 then modifies or deletes that row and performs<br>
+a COMMIT. If T1 then attempts to reread the row, it may receive<br>
+the modified value or discover that the row has been deleted.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3">
+<li>P3 (“Phantom”): SQL-transaction T1 reads the set of rows N<br>
+that satisfy some . SQL-transaction T2 then<br>
+executes SQL-statements that generate one or more rows that<br>
+satisfy the used by SQL-transaction T1. If<br>
+SQL-transaction T1 then repeats the initial read with the same<br>
+, it obtains a different collection of rows.</li>
+</ol>
+</blockquote>
+<p>这一冗长的打算不容易理解，我们用公式化来理解。</p>
+<p>而P1则对应这脏读， P2 对应的不可重复读， P3对应的就是幻读了，而为了解决这个问题，ANSI SQL-92 标准中按照这三种现象的容忍程度不同，定义出了4个不同的隔离级别，其中P1、P2、P3都不能出现的隔离级别即为最高的隔离级别Serializable：</p>
+<p>ANSI SQL-92 提出了最经典的隔离级别定义，包括读</p>
+<ul>
+<li>未提交（Read Uncommitted）</li>
+<li>读提交（Read Committed）</li>
+<li>可重复读（Repeatable Read）</li>
+<li>可序列化（Serializable）</li>
+</ul>
+<p>对于三种异常的容忍程度如下：</p>
+<table>
+<thead>
+<tr>
+<th>Dirty Read</th>
+<th>Non-repeatable Read</th>
+<th>Phantom Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read Uncommitted</td>
+<td>Possible</td>
+<td>Possible</td>
+</tr>
+<tr>
+<td>Read Committed</td>
+<td>Not Possible</td>
+<td>Possible</td>
+</tr>
+<tr>
+<td>Repeatable Read</td>
+<td>Not Possible</td>
+<td>Not Possible</td>
+</tr>
+<tr>
+<td>Serializable</td>
+<td>Not Possible</td>
+<td>Not Possible</td>
+</tr>
+</tbody>
+</table>
+<p>ANSI隔离级别试图定义出一套实现无关的隔离级别，但这个尝试失败了，这一次失败的尝试，可以说是业界隔离级别实现的混乱之源…</p>
+<h2><span id="重新定义异常现象">重新定义异常现象</span></h2>
+<p>根据上述几种异常现象定义隔离级别，可谓十分不严谨，Jim Gray大名鼎鼎的论文A Critique of ANSI SQL Isolation Levels（后文简称Critique）就对此做了批判。</p>
+<ul>
+<li>Serializable化定义不明确。</li>
+</ul>
+<p>禁止了P1/P2/P3的事务，即满足了Serializable级别。但是在ANSI标准中又明确描述Serializable级别为“多个并发事务执行的效果与某种串行化执行的效果等价”。显然这两者是矛盾的，禁止P1/P2/P3的事务，不一定能满足“等价于某种串行执行”。所以Critique将ANSI定义的禁止了P1/P2/P3的隔离级别称为Anomaly Serializable。</p>
+<blockquote>
+<p>多个并发事务执行的效果与某种串行化执行的效果等价的理论叫做可串行化理论，是数据库知识体系中的一个重要内容，从这里看出，标准中定义的Serializable 并非串行执行，而是经过调度之后的串行化调度。关于这里的只是，本文不在展开。</p>
+</blockquote>
+<p>在异常现象中，P1 - P3 是来自于 ANSI SQL-92 的异常现象，因为 ANSI SQL-92 只有语言上的描述，没有准确的定义这些异常，所以这篇文章对其做了两种解释，用 P (Phenomenon) 表明可能发生异常的现象，用 A (Anomaly) 表示已经发生的异常。因为 P 只是代表可能发生异常，所以也被称为扩大解释（broad interpretation），而 A 则称为严格解释（strict interpretation）。</p>
+<h3><span id="p1和p1的严格解释a1脏读">P1和P1的严格解释A1（脏读）</span></h3>
+<p>Dirty Read 的严格解释是需要一个成功提交的事务读取到一个不会提交的事务的写入内容。<br>
+设定 x 初始值为0。 定义两个事务TxN1 和 TxN2。 w为读取数据，r为写入数据。</p>
+<ul>
+<li>宽泛解释P1</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>TxN1</th>
+<th>TxN2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>w(w,1)</td>
+</tr>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>TnN1 未提交就已经读到了 TxN2写入的值，即发生了P1的脏读。</p>
+<ul>
+<li>严格解释A1</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>TxN1</th>
+<th>TxN2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>w(w,1)</td>
+</tr>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td>abort</td>
+</tr>
+</tbody>
+</table>
+<p>TnN1 提交之后就已经读到了 TxN2写入的值，即发生了A1的脏读。可以看到，扩展解释和严格解释的区别在于读到想x值是否发生在事务的成功提交之后。</p>
+<p>只所以有这两种解释，是因为严格解释更准确，从数据模型来讲，</p>
+<h3><span id="p2和p2的严格解释a2不可重复读">P2和P2的严格解释A2（不可重复读）</span></h3>
+<ul>
+<li>宽泛解释P2</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>TxN1</th>
+<th>TxN2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>w(w,2)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>事务读了x之后，如果读事务还没提交，TnN2事务写这个 x 成功了就可能出现异常，换句话说，TxN1的r读取x应该阻塞主TxN2的写入x的请求。否则，TxN1后续读取的x就变成了2。<br>
+加入后续的操作，在两次读取之间利用x进行一些计算，就会出现前后不一致的情况。</p>
+<blockquote>
+<p>这里讨论的是异常情况，不考虑多版本等实现，这里只认为x写入就写入了。</p>
+</blockquote>
+<ul>
+<li>严格解释A2</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>TxN1</th>
+<th>TxN2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>w(w,2)</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>r(x,2)</td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2><span id="再谈事务的隔离级别">再谈事务的隔离级别</span></h2>
 <h2><span id="mvcc">MVCC</span></h2>
 <pre><code>请参见下一篇
 </code></pre>
@@ -643,7 +851,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">分布式事务概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">事务的四大特性ACID</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">事务并发的问题</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">【4】丢失更新</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.6.</span> <span class="toc-nav-text">数据库的隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">MVCC</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概要</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">事务概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">事务的四大特性ACID</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">事务并发的问题</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.5.</span> <span class="toc-nav-text">【4】丢失更新(脏写)</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.6.</span> <span class="toc-nav-text">数据库的隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">事务的隔离级别</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">事务的标准</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.1.</span> <span class="toc-nav-text">ANSI SQL-92 对Phantom的定义</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">重新定义异常现象</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.1.</span> <span class="toc-nav-text">P1和P1的严格解释A1（脏读）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">8.2.</span> <span class="toc-nav-text">P2和P2的严格解释A2（不可重复读）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">再谈事务的隔离级别</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">MVCC</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">参考</span></a></li></ol>
         
         </div>
       </aside>
@@ -779,7 +987,7 @@
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Jason Lee 2021 
+                    Copyright &copy; Jason Lee 2022 
                     <br>
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>

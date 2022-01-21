@@ -91,7 +91,7 @@
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
                     <div class="site-heading">
-                        <h1>西木凌萧</h1>
+                        <h1>木西笔记</h1>
                         <!--<hr class="small">-->
                         <span class="subheading">个人博客</span>
                     </div>
@@ -116,7 +116,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">西木凌萧</a>
+            <a class="navbar-brand" href="/">木西笔记</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -232,12 +232,51 @@
 
 <div class="post-preview">
 
+    <a href="/article/Java-AQS2/">
+        <h2 class="post-title">
+            JAVA多线程之AQS分析(2)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/25/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                CountDownLatch的分析来解读AQS的共享功能。
+            </h3>
+        <div class="post-content-preview">
+            AQS 共享功能的实现
+CountDownLatch 的用法
+CountDownLatch，CountDownLatch 为 java.util.concurrent包下的计数器工具类，常被用在多线程环境下，它在初始时需要指定一个计数器的大小，然后可被多个线程并发的实现减 1 操作，并在计数器为 0 后调用 await 方法的线程被唤醒，从而实现多线程间的协作。它在多线程环境下的基本使用方式...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-07-23
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
+            
+              <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#多线程" title="多线程">多线程</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/java-lock-show/">
         <h2 class="post-title">
             JAVA多线程篇之锁的介绍
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/21/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -291,7 +330,7 @@
             操作系统之 高性能IO浅析
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/54/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/77/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -328,7 +367,7 @@
             操作系统之Epoll原理
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -369,7 +408,7 @@
             Java内存模型(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/98/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/17/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -409,7 +448,7 @@ CPU缓存
             TCP/IP系列(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/12/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/98/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -449,7 +488,7 @@ TCP/IP 是指 TCP 和 IP 两种协议。实际生活当中有时也确实就是�
             算法探秘系列之数据结构篇——树（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/74/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/3/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -498,7 +537,7 @@ B+ 树的定义
             算法探秘系列之概率随机算法(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/39/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/8/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -540,7 +579,7 @@ HashMap 的问题
             算法探秘系列之数据结构篇——树（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/12/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/5/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -577,10 +616,10 @@ HashMap 的问题
 
     <a href="/article/distributed-redis-lock/">
         <h2 class="post-title">
-            分布式锁的实现 redis篇
+            Redis系列之分布式锁实现
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -603,56 +642,6 @@ HashMap 的问题
               <a href="/tags/#分布式" title="分布式">分布式</a>
             
               <a href="/tags/#Redis" title="Redis">Redis</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/knapsack-problem/">
-        <h2 class="post-title">
-            算法探秘系列之动态规划（2）
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/87/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                背包问题
-            </h3>
-        <div class="post-content-preview">
-            背包问题
-有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
-问题分类
-
-01背包问题  如果N个物品每个物品只能使用一次，则成为01背包问题
-完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题
-
-问题的解法
-
-暴力搜索解法（递归解法）
-动态规划解法
-优化后的动态规划（滚动数组，自下而上）
-
-01背包问题
-
-...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-05-30
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#算法" title="算法">算法</a>
-            
-              <a href="/tags/#动态规划" title="动态规划">动态规划</a>
             
         </div>
     
@@ -764,6 +753,10 @@ HashMap 的问题
     <ul>
       
         <li>
+          <a href="/article/attempt/">开源重试组件Attempt</a>
+        </li>
+      
+        <li>
           <a href="/article/java-volatile/">Java并发编程之volatile关键字</a>
         </li>
       
@@ -779,10 +772,6 @@ HashMap 的问题
           <a href="/article/keepalived-1/">KeepAlived 详解</a>
         </li>
       
-        <li>
-          <a href="/article/spring-framework-0/">Spring Framework 源码分析（1）</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -791,7 +780,7 @@ HashMap 的问题
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -827,6 +816,8 @@ HashMap 的问题
         
             
             <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
+            
+        
             
         
             
@@ -1002,7 +993,7 @@ HashMap 的问题
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Jason Lee 2021 
+                    Copyright &copy; Jason Lee 2022 
                     <br>
                     <span style="display: inline-block; margin: 0 5px;">
                         <i class="fa fa-heart"></i>

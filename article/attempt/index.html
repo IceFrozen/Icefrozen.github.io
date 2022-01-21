@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          开源重试组件Attempt - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/attempt/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>开源重试组件Attempt</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2022-01-20
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="开源">开源</span></h2>
+<p>想做开源软件很久了，奈何一直没有启动起来。一来是没有契机，二来也没有想法。2020年由于一些变故，我从某团离职后来到了新公司。负责一个To B业务, 由于并发量和我以前负责的项目没法比，同时又是个to B的项目，因此<br>
+省去了火急火燎的去处理线上问题的时间。因此，更多的时间我拿来思考和总结。</p>
+<p>同时也参加了软件架构师的培训中。虽然各大互联网企业对软考证书似乎并不care，但是我的目的不仅仅如此，是想通过宏观、系统的学习，重新将这个架构行业最精髓的理论知识重新拾起来（大学光顾着玩了）。</p>
+<p>思考有时候让人着迷。将思考融入设计，然后付诸实现，这是意见多么让人兴奋的事情。每每看到有优秀的开源组件问世，我都会无比的激动。看着这些莫名又有点兴奋的代码，放佛同作者进行探讨，那一刻，我们不仅仅是程序员，还是一个设计师，一个先驱者。</p>
+<p>技术真的能改变世界。怀着对技术崇敬和感恩之心，我步履蹒跚的追逐先驱们的身影，愿我辈豪杰辈出，生生不息。</p>
+<h2><span id="想法">想法</span></h2>
+<p>Attempt是一个很小的重试组件，与市面上的一些成熟的轮子相比也许不值得一体，但是由于是0-1的开阔，因此对本人的意义非凡。其他的就不扯淡了，作为第一个我的开源组件和本木西笔记的第一个技术推送，下面就Attempt的一些功能和设计做一个简要的说明。</p>
+<p>本文就不对 <strong>Attempt</strong> 组件做详细的剖析，感兴趣的可以去clone下代码阅读，也欢迎 start 和 discuss。</p>
+<h2><span id="attempt简介">Attempt简介</span></h2>
+<p><strong>Attempt</strong> 是对标 <strong>SpringRetry</strong> 和 <strong>GuavaRetry</strong> 轮子的一个轻量的不能在轻量的组件。通过<strong>Attempt</strong> 你可以轻易将一个方法调用变成一个具有异常重试的调用。同时<strong>Attempt</strong> 支持带有重试的轮询策略，让你的轮询任务更加的稳定。</p>
+<h2><span id="quick-start">Quick Start</span></h2>
+<h3><span id="增加依赖">增加依赖</span></h3>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.icefrozen<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>Attempt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3><span id="代理方式构建重试">代理方式构建重试</span></h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">queryUser</span> <span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">        count ++;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"queryUser error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        UserService userService = <span class="keyword">new</span> UserService();</span><br><span class="line">        AttemptBuilder.Retry&lt;UserService&gt; userRetry = <span class="keyword">new</span> AttemptBuilder.Retry&lt;UserService&gt;(userService);</span><br><span class="line">        UserService userServiceAttempt = userRetry.build();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            User user = userServiceAttempt.queryUser(<span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">            System.out.println(e.getMessage());     <span class="comment">// queryUser 发生异常</span></span><br><span class="line">            <span class="comment">// 注意这里拿到是 userService原始对象</span></span><br><span class="line">            System.out.println(userService.count);      <span class="comment">//原始方法已经调用3</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，当我们执行 <strong>userServiceAttempt</strong> 代理类的时候，遇到异常会自动重试三次。 如果三次还是失败，则将异常抛出。 因此count为3。</p>
+<p><strong>AttemptBuilder</strong> 可以使得对象中的成员方法有重试的行为，那么我们如何对静态方法赋予重试的功能呢？ 或者说，我重试某一类方法或者一个静态类如何做呢？</p>
+<h3><span id="使用匿名函数构建静态方法重试">使用匿名函数构建静态方法重试</span></h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> staticCount = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> User <span class="title">queryUserStatic</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        staticCount ++;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"queryUser error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        UserService userService = <span class="keyword">new</span> UserService();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            AttemptBuilder.retry(</span><br><span class="line">                () -&gt; UserService.queryUserStatic())</span><br><span class="line">                .exec();  <span class="comment">//  count = 3</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (RuntimeException e) &#123;</span><br><span class="line">           <span class="comment">// ... staticCount &gt; 3 之后，抛出异常</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="轮询策略">轮询策略</span></h3>
+<p>假设有这么一个场景，你上传了一个任务，服务方并不支持异步回调或者消息队列的方式通知你任务否执行完毕，那么你需要一个轮询策略，用于知道该任务的情况。为了稳定性，你需要满足一下几个特点：</p>
+<ul>
+<li>
+<p>如果查询进度的过程中失败了，那么需要为了让任务进行下去，必须要进行一个重试，比如说遇到了超时。</p>
+</li>
+<li>
+<p>如果超时3（重试最大次数暂定为3次）次，那么直接报错，返回失败。</p>
+</li>
+<li>
+<p>如果超时没有超过3次（重试最大次数暂定为3次）在重试期间，网络恢复了，那么要要清除重试3次的历史，否则下次遇到超时的时候就会失败。</p>
+</li>
+</ul>
+<p><img src="/article/attempt/attempt-1642672860843.png" alt></p>
+<p>根据上面的场景<strong>Attempt</strong>可以很容易构建出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 任务服务</span></span><br><span class="line">TaskService taskService = <span class="keyword">new</span> TaskService()</span><br><span class="line"></span><br><span class="line">AttemptBuilder.Polling&lt;TaskService&gt; taskServicePollBuilder = <span class="keyword">new</span> AttemptBuilder.Polling&lt;&gt;(taskService);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设定轮询停止条件</span></span><br><span class="line">TaskService taskServicePoll = taskServicePollBuilder.endPoint(context -&gt; &#123;</span><br><span class="line">    <span class="comment">// 获取上一次结果</span></span><br><span class="line">    AttemptResult result = context.getLastResult();</span><br><span class="line">    <span class="keyword">if</span> (result.isSuccess()) &#123;</span><br><span class="line">        Integer progress = result.getRetValue(Integer<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="keyword">return</span> progress == <span class="number">100</span>;      <span class="comment">//  progress &lt; 100 poll continue</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 设置轮询最大次数 和异常类型</span></span><br><span class="line">.maxPollCount(<span class="number">100</span>)    </span><br><span class="line">.registerExceptionRetryTime(Exception<span class="class">.<span class="keyword">class</span>, 3)</span></span><br><span class="line"><span class="class">.<span class="title">build</span>()</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行调用    </span></span><br><span class="line">Integer integer = taskServicePoll.queryProgress();</span><br></pre></td></tr></table></figure>
+<h2><span id="attempt架构">Attempt架构</span></h2>
+<p><strong>Attempt</strong> 设计初衷就是想摒弃大段大段的繁琐依赖，将重试性能压榨到极致，因此 <strong>Attempt</strong> 并没有引入过多的依赖，能手写的尽量不去依赖，设计能简单的就尽量不去复杂问题。简单的设计也必将会单来更为可靠的性能。</p>
+<h3><span id="轻量级">轻量级</span></h3>
+<p><strong>Attempt</strong> 实际依赖一共有以下三个：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;cglib.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;commons-lang3.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果你想用 retry 功能，又不想引入 Spring 和Guava这个庞大的体系，Attempt是一个不错的选择。</p>
+<h3><span id="可扩展">可扩展</span></h3>
+<p>Attempt，但是层次清晰，预留了足够的扩展可能。Attempt总体架构如下图：</p>
+<p><img src="/article/attempt/attempt-1642679803558.png" alt></p>
+<ul>
+<li>AttemptInvoker</li>
+</ul>
+<p><strong>AttemptInvoker</strong> 用于执行一些静态方法，其中包括一个 <strong>ThrowSafetyFunctionInvoke</strong> 用于不会让人恶心的异常，当我们使用lamda表达式去重试一些静态变量的时候，可以帮我们捕获异常。</p>
+<p><strong>ThrowSafetyFunctionInvoke</strong> 就是一个扩展了 <figure class="highlight plain"><figcaption><span>注解的类。并且捕捉了**Exception**</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```java</span><br><span class="line">@FunctionalInterface</span><br><span class="line">public interface ThrowSafetyFunctionInvokerSupplier&lt;T&gt; extends ThrowSafetyFunctionInvoker&lt;T&gt; &#123;</span><br><span class="line">    T get() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StaticMethodThrowExceptionBean</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">throwException</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        count++;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"StaticMethodThrowExceptionBean's throwException"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 你可以这样写 </span></span><br><span class="line">AttemptBuilder.retry(StaticMethodThrowExceptionBean::throwException).exec();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 而不是恶心cat exception</span></span><br><span class="line">AttemptBuilder.retry(()-&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        StaticMethodThrowExceptionBean.throwException);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;&#125;</span><br><span class="line">&#125;).exec();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Attempt</li>
+</ul>
+<p><strong>AttemptInvoker</strong> 下封装了<strong>Attempt</strong>, 在代理方式构建方法中，<strong>Attempt</strong> 保存着我们的原始对象和构建对象。同时封装了 <strong>AttemptExecutor</strong> 执行器。</p>
+<ul>
+<li>AttemptExecutor</li>
+</ul>
+<p>执行器是执行 Attempt 主要方法，其本质是一个切面函数，将用户的调用方法进行动态拦截。策略如下图：</p>
+<p><img src="/article/attempt/attempt-1642680270333.png" alt></p>
+<ul>
+<li>Executor首先调用start 方法，之后询问策略是否结束，策略会根据context山下文找到调用的历史和约束，例如次数，异常次数等。</li>
+<li>如果此次调用满足继续，则进行真正方法调用。在调用真正方法的时候，无论是否异常，均会封装成一个 <strong>AttemptResult</strong> 对象并记录。</li>
+<li>当策略判定此次调用结束之后，会进行状态的清理，和异常的抛出。如果我们置顶不抛出异常，则会返回一个默认的值</li>
+</ul>
+<p><strong>AttemptExecutor</strong> 是具体的执行策略，也是切面方法。<strong>AttemptExecutor</strong>中有三大组件。</p>
+<ul>
+<li>
+<p>Stategy (Attempt策略)</p>
+<p>stategy 是具体的重试策略，他是一个接口，用于实现各种Attempt策略，目前Attempt默认提供两种Attempt策略，分笔试 Retry 和 Polling 两种策略。 Polling 是基于Retry 策略的扩展，是带有重试的轮询策略。 Retry 就是我们的主要策略。 接口如下：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AttemptStrategy</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1、是否结束</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isEnd</span><span class="params">(AttemptContext context)</span></span>;</span><br><span class="line">    <span class="comment">// 一次调用声明周期结束后 true 进入循环，false 返回</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">back</span><span class="params">(AttemptResult record, AttemptContext context)</span></span>;</span><br><span class="line">    <span class="comment">// 策略名称</span></span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">// 获取属性集合</span></span><br><span class="line">    BaseAttemptPropertyViewer&lt;? extends BaseAttemptPropertyViewer&lt;?&gt;&gt; properties();</span><br><span class="line">    <span class="comment">// 获取状态</span></span><br><span class="line">    <span class="function">AttemptStatus <span class="title">status</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">// 设置状态</span></span><br><span class="line">    <span class="function">AttemptStatus <span class="title">status</span><span class="params">(AttemptStatus status)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>当调用结束之后，如果调用失败，将要进入回退中，所谓回退，就是调用之后休息多久再次调用，<strong>Attempt</strong> 提供了一下几种回退策略</p>
+<ul>
+<li>NoBackOffPolicy 空回退，不进行任何回退，立刻下次重试。</li>
+<li>FixedSleepingBackOffPolicy 睡眠固定毫秒数的重试</li>
+<li>RangeDescSleepingBackOffPolicy 睡眠时间按照范围递减的策略</li>
+<li>SleepingBackOffPolicy 一般睡眠回退策略，提供了初始值，递减参数和最大值。</li>
+</ul>
+<p>具体是实现细节，这里不再展开。</p>
+<ul>
+<li>Context (Attempt上下文)</li>
+</ul>
+<p>Context 上下文记录这本次重试的历史，包括耗时，次数，异常次数等。他提供接口如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AttemptContext</span> </span>&#123;</span><br><span class="line">    <span class="function">AttemptResult <span class="title">getLastResult</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">record</span><span class="params">(AttemptResult record)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">record</span><span class="params">(Class&lt;? extends Throwable&gt; e)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">reset</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">clean</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">AttemptResult <span class="title">getResult</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getExecuteCount</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getExceptionCount</span><span class="params">(Throwable t)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">int</span> <span class="title">getExceptionCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getExceptionCount(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">List&lt;AttemptResult&gt; <span class="title">getResults</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于每次重试，<strong>Attempt</strong> 会拦截调用结果或者捕获异常，并封装成一个 <strong>AttemptResult</strong> 加入到一个容器中。</p>
+<p>在 <strong>AttemptContext</strong> 的具体实现中 <strong>ResultContext</strong> 类中，增加了 AttemptResultContainer 容器，用于记录每次调用的 <strong>AttemptResult</strong> 结果。 当然，我们可以给<strong>AttemptResultContainer</strong> 一个很大的值，这就以为我们可以保存更多的 中间结果, 除非你知道你自己在做什么，否则这是不推荐的。</p>
+<p>此外，<strong>AttemptContext</strong> 还要提供重试次数，调用次数，异常情况等诸多统计信息，供给 <strong>AttemptStrategy</strong> 使用，用于判断此次 <strong>AttemptExecutor</strong> 是否可以继续执行。</p>
+<ul>
+<li>Listener (监听器)</li>
+</ul>
+<p><strong>Listener</strong> 贯穿于整个 <strong>Attempt</strong> 的生命周期，包括 <strong>InvokeListener</strong> 和 <strong>ExecutorListener</strong> 两种类型，分别是环绕代理方法和Executor 的这个声明周期，提供一些扩展。比如Timeout 机制，就是在Listener里面扩展的。</p>
+<blockquote>
+<p>Timeout机制目前是不完善的，如果目标方法sleep了，那么将无法报出超时异常，这一点在后续的版本中会优化。</p>
+</blockquote>
+<h3><span id="性能高">性能高</span></h3>
+<p>既然是对标 <strong>Attempt</strong> 是对标 <strong>SpringRetry</strong> 和 <strong>GuavaRetry</strong>， 难免需要进行对比。我采用的JMH的方法测试三者之间的性能。</p>
+<p>在遇到异常重试300次的情况下，数据如下：</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Mode</th>
+<th>Cnt</th>
+<th>Score</th>
+<th>Error</th>
+<th>Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AttemptVsSpringRetry.testAttempt</td>
+<td>avgt</td>
+<td>10</td>
+<td>165.921 ±</td>
+<td>26.558</td>
+<td>ns/op</td>
+</tr>
+<tr>
+<td>AttemptVsSpringRetry.testGuavaRetry</td>
+<td>avgt</td>
+<td>10</td>
+<td>909259.747 ±</td>
+<td>323278.426</td>
+<td>ns/op</td>
+</tr>
+<tr>
+<td>AttemptVsSpringRetry.testSpringRetry</td>
+<td>avgt</td>
+<td>10</td>
+<td>50681.819 ±</td>
+<td>2848.606</td>
+<td>ns/op</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/article/attempt/attempt-1642680745774.png" alt></p>
+<h2><span id="公众号">公众号</span></h2>
+<p>我的公众号成立了，欢迎大家点赞关注。</p>
+<p><img src="/article/attempt/attempt-1642680846066.png" alt></p>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/java-volatile/" data-toggle="tooltip" data-placement="top" title="Java并发编程之volatile关键字">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">开源</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">想法</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Attempt简介</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Quick Start</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">增加依赖</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">代理方式构建重试</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">使用匿名函数构建静态方法重试</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">轮询策略</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Attempt架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">轻量级</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">可扩展</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">性能高</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">公众号</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2022 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>
