@@ -424,18 +424,12 @@
 <h2><span id="隔离级别概念的提出">隔离级别概念的提出</span></h2>
 <p>我们首先从定义出发，事务管理包括原子性、一致性、隔离性和持久性四个方面，即ACID。所有数据库专著都会给出这个四个特性的定义，本文我们引用了Jim Gray对其的定义。在上一节中，我们给出的事务四个特性并不严谨，这里我们给出事务ACID的严谨说法：</p>
 <p>Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
-<blockquote>
-<p><strong>Atomicity</strong>: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</p>
-</blockquote>
-<blockquote>
-<p><strong>Consistency</strong>: The transaction preserves the integrity of stored information.</p>
-</blockquote>
-<blockquote>
-<p><strong>Isolation</strong>: Concurrently executing transactions see the stored information as if they were running serially (one after another).</p>
-</blockquote>
-<blockquote>
-<p><strong>Durability</strong>: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</p>
-</blockquote>
+<ul>
+<li><strong>Atomicity</strong>: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</li>
+<li><strong>Consistency</strong>: The transaction preserves the integrity of stored information.</li>
+<li><strong>Isolation</strong>: Concurrently executing transactions see the stored information as if they were running serially (one after another).</li>
+<li><strong>Durability</strong>: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</li>
+</ul>
 <p>在上述隔离性（Isolation）的定义中，我们可以发现其目标是使并发事务的执行效果与串行一致，但在具体技术实现上往往需要在<strong>并发能力</strong>和<strong>串行化效果</strong>之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（<strong>Phenomenon</strong>）。通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同事也伴随着并发能力的下降，两者负相关。</p>
 <blockquote>
 <p>如何使得两个使并发事务的执行效果与串行一致这就涉及到我们的后续的要将的串行化理论，同时会引出2PL和S2PL锁，串行化视图等理论。这里先不展开。</p>
@@ -693,8 +687,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <li>A3: r1[P]…w2[y in P]…c2…r1[P]…c1</li>
 </ul>
 <p>A3 的定义强调Txn2 提交后 r1 再去查询谓词，得到结果集不符合才算是幻读。这样是有问题的，下看面的例子：</p>
-<p>//tt是员工表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from tt;</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| name     | department |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| zhangsan | developer  |</span><br><span class="line">| lisi     | developer  |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">//tt_count是各部门人数统计表</span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> tt_count;</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| department | number |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| developer  |      2 |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//tt是员工表</span><br><span class="line">mysql&gt; select * from tt;</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| name     | department |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| zhangsan | developer  |</span><br><span class="line">| lisi     | developer  |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">//tt_count是各部门人数统计表</span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> tt_count;</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| department | number |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| developer  |      2 |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 <p>查询序列</p>
 <table>
 <thead>
@@ -709,7 +702,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <td></td>
 </tr>
 <tr>
-<td>select name from tt where department = ‘developer’ )[zhangsan,lisi</td>
+<td>select name from tt where department = ‘developer’ )[zhangsan,lisi ]</td>
 <td></td>
 </tr>
 <tr>
@@ -729,11 +722,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <td>commit</td>
 </tr>
 <tr>
-<td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,2,3,4]</td>
-<td></td>
-</tr>
-<tr>
-<td>select number from tt_count where department = ‘developer’ )[ 3]</td>
+<td>select number from tt_count where department = ‘developer’ )[3 ]</td>
 <td></td>
 </tr>
 <tr>
@@ -742,7 +731,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 </tbody>
 </table>
-<p>上述的例子当中，Txn1 并没有去查询所谓的谓词，但是依然出现了tt_count表中的 developer 的number = 3, 因此，按照A3的定义来说是有问题的，如果我们用P3广义的来解释，只要 insert tt(name, department) values(‘wangwu’,‘developer’) 这条语句成功，那就算是幻读了。这样是可以解释通的。</p>
+<p>上述的例子当中，Txn1 并没有去查询所谓的谓词，但是依然出现了tt_count表中的 <code>developer 的number = 3</code>, 因此，按照A3的定义来说是有问题的，如果我们用P3广义的来解释，只要 <code>insert tt(name, department) values('wangwu','developer')</code> 这条语句成功，那就算是幻读了。这样是可以解释通的。</p>
 <p>这也是 P3 定义的由来，只要事务2对事务1的谓词范围进行了写入（写入成功），不管后面事务1做什么查询，都算是幻读。</p>
 <p>幻读的另外一个例子：</p>
 <table>
