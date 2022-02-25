@@ -8,16 +8,16 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/distributed-transaction-1/</loc>
-        <lastmod>2022-01-26T07:53:40.367Z</lastmod>
+        <loc>http://yoursite.com/article/attempt/</loc>
+        <lastmod>2022-02-25T09:00:41.952Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/attempt/</loc>
-        <lastmod>2022-01-21T05:21:29.513Z</lastmod>
+        <loc>http://yoursite.com/article/distributed-transaction-1/</loc>
+        <lastmod>2022-02-25T08:56:15.580Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -544,7 +544,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -552,7 +552,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

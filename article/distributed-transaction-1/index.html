@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -222,7 +222,7 @@
                 post-container">
 
                 <h2><span id="概要">概要</span></h2>
-<p>文本主要讨论一些事务，第一章节将会对事务的一些常规知识进行一个总结，这些知识使我们所熟知的。在数据详解章节中，我会对这些事务的一些潜在问题做一个详细说明，本文会参照一些比较著名的论文以以及个人理解来表述，对事务的隔离级别来展开的深度分析。</p>
+<p>本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。</p>
 <h2><span id="事务概述">事务概述</span></h2>
 <h1><span id="什么是事务">什么是事务</span></h1>
 <p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
@@ -231,7 +231,6 @@
 <p>事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。</p>
 <h2><span id="一致性consistency"><strong>一致性（Consistency）</strong> :</span></h2>
 <p>一致性是指事务必须使数据库从一个一致性状态变成另一个一致性状态，也就是事务执行前后必须处于一致性状态。</p>
-<p>以转账为例，假设用户A和B两者的钱加起来是5000，那么不管A和B之间如何转账，转多少次，事务结束后两个用户的钱加起来应该还得是5000，这就是事务的一致性。</p>
 <h2><span id="隔离性isolation"><strong>隔离性（Isolation）</strong>:</span></h2>
 <p>一个事务所做的修改在最终提交以前，对其他事务是不可见，当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其它的事务操作所干扰，多个并发事务之间要相互隔离。</p>
 <h2><span id="持久性durability"><strong>持久性（Durability)</strong>：</span></h2>
@@ -405,78 +404,130 @@
 <h2><span id="数据库的隔离级别">数据库的隔离级别</span></h2>
 <p>为了解决多个事务并发会引发的问题，进行并发控制。数据库系统提供了四种事务隔离级别供用户选择。</p>
 <h3><span id="read-uncommitted-读未提交"><strong>Read Uncommitted 读未提交</strong>：</span></h3>
-<p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。具体课件脏读的原因。</p>
+<p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。</p>
 <h3><span id="read-committed-读已提交"><strong>Read Committed 读已提交</strong>：</span></h3>
-<p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。见不可重复读的例子。</p>
+<p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。</p>
 <h3><span id="repeatable-read-重复读"><strong>Repeatable Read 重复读</strong></span></h3>
-<p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务.<br>
-但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
+<p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务。但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
 <h3><span id="serializable-可串行化"><strong>Serializable 可串行化</strong>：</span></h3>
 <p>所有的增删改查串行执行。(这里强调可串行化，而非真生意义上的串行化。读写操作是并发的，但是其效果等价于串行化执行，因此这里用可串行化来表述)</p>
-<hr>
-<h2><span id="再谈事务">再谈事务</span></h2>
-<p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识。你可能意识到，上一节的只是事实上来说并不完全，因为似乎少了某些异常情况。例如说，丢失更新等。事实上，你的感觉并没有错，因为确实在异常中有很多不尽如人意的地方，这都取决于这套标准的制定。接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
-<h1><span id="事务的标准">事务的标准</span></h1>
-<p>我们知道，这些知识在任何一部MySql教程中都有不少的介绍。即便如此，这些隔离级别其实并不是由MySql指定的，而是由一个组织名叫<strong>ANSI</strong>的组织制定的。</p>
+<h2><span id="隔离级别的本质">隔离级别的本质</span></h2>
+<p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识。你可能意识到，上一节的只是事实上来说并不完全，因为似乎少了某些异常情况。例如说，丢失更新等。<br>
+事实上，你的感觉并没有错，因为确实在异常中有很多不尽如人意的地方，这都取决于这套标准的制定。接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
+<h2><span id="标准的提出">标准的提出</span></h2>
+<p>我们知道，这些知识在任何一部MySql教程中都有不少的介绍。即便如此，这些隔离级别其实并不是由MySql定制的，而是由一个组织名叫ANSI的组织制定的。</p>
 <blockquote>
 <p>ANSI：美国国家标准学会（AMERICAN NATIONAL STANDARDS INSTITUTE: ANSI）成立于1918年。当时，美国的许多企业和专业技术团体，已开始了标准化工作，但因彼此间没有协调，存在不少矛盾和问题。为了进一步提高效率，数百个科技学会、协会组织和团体，均认为有必要成立一个专门的标准化机构，并制订统一的通用标准。</p>
 </blockquote>
-<h2><span id="隔离级别概念的提出">隔离级别概念的提出</span></h2>
-<p>我们首先从定义出发，事务管理包括原子性、一致性、隔离性和持久性四个方面，即ACID。所有数据库专著都会给出这个四个特性的定义，本文我们引用了Jim Gray对其的定义。在上一节中，我们给出的事务四个特性并不严谨，这里我们给出事务ACID的严谨说法：</p>
-<p>Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
+<p>要了解隔离级别的标准，我们必须要知道隔离级别的本质，也即是说我们为什么要设定隔离级别。</p>
+<h2><span id="隔离级别的本质">隔离级别的本质</span></h2>
+<p>在第一章节中，我们给出的事务四个特性ACID并不严谨，本文我们引用了数据库领域的大神Jim Gray对其的定义,Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
 <ul>
-<li><strong>Atomicity</strong>: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</li>
-<li><strong>Consistency</strong>: The transaction preserves the integrity of stored information.</li>
-<li><strong>Isolation</strong>: Concurrently executing transactions see the stored information as if they were running serially (one after another).</li>
-<li><strong>Durability</strong>: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</li>
+<li>
+<p>Atomicity: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</p>
+</li>
+<li>
+<p>Consistency: The transaction preserves the integrity of stored information.</p>
+</li>
+<li>
+<p>Isolation: Concurrently executing transactions see the stored information as if they were running<br>
+erially (one after another).</p>
+</li>
+<li>
+<p>Durability: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</p>
+</li>
 </ul>
-<p>在上述隔离性（Isolation）的定义中，我们可以发现其目标是使并发事务的执行效果与串行一致，但在具体技术实现上往往需要在<strong>并发能力</strong>和<strong>串行化效果</strong>之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（<strong>Phenomenon</strong>）。通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同事也伴随着并发能力的下降，两者负相关。</p>
+<p>在上述隔离性（Isolation）的定义中，我们可以发现其目标是使并发事务的执行效果与串行一致。并从一致性（Consistency）定义中知道，事务是需要将数据状态从一个变成另一个状态。假设我们有数据x = 1，经过若干事务之后，我们需要让x = x’。</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758703747.png" alt></p>
+<p>注意事务的顺序，当顺序确定之后，对于事务对数据的改变就是原子性的。也就是说事务2不可以在事务1前面更改数据状态，必须从事务A1结束后的状态开始执行。<br>
+但我们知道，事务中会包含对数据的Read操作和Wirte操作。Read操作不会影响数据的状态，但是Wirte则会影响数据的状态。<br>
+我们假设x的初始值是x = 1,事务A由（Read(x), Wirte(x, x =2), Read(x), Wirte(x, x =1) 的操作序列组成。那么对x的状态变化如下图：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758868868.png" alt></p>
+<p>假如，此时有个事务2，序列为(Read(x), Wirte(x,x + 1)),状态为下图：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758966889.png" alt></p>
+<p>假设我们事务执行的顺序为[事务A, 事务B],则会出现这样一个串行化的序列：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759042722.png" alt></p>
+<p>这里的某种调度就是 Read 和Wirte 的排序方式。<br>
+​但是事实是，现代操作系统中，多核cpu已经普及，为了提高事务执行的效率，不同的事务操作可能会分配到不同的核心。但是这样做，就有可能破坏事务的一致性。因为事务的执行顺序不能随心所欲，必须要串行化执行，那怎么样才能利用多核cpu让事务并发执行且满足事务的串行化效果呢？答案就是串行化理论。</p>
+<p>串行化调度和可串行化理论：</p>
 <blockquote>
-<p>如何使得两个使并发事务的执行效果与串行一致这就涉及到我们的后续的要将的串行化理论，同时会引出2PL和S2PL锁，串行化视图等理论。这里先不展开。</p>
+<p>为了提高数据库的执行效率，显然我们需要并发的执行各个事务，如果存在调度S，对于数据库的任何状态，其执行结果完全等价于另一个串行调度S’，称这样的调度S为可串行化调度（serializable schedule）。</p>
 </blockquote>
-<h2><span id="隔离级别标准的提出">隔离级别标准的提出</span></h2>
-<p>ANSI SQL 标准的第一版发布于 1986 年，之后又陆续发布了多个主版本和修订版本，最新的修订版是 SQL-2019。不过，其最新的主版本仍然是 1992 年发布的 SQL-92，在这个版本中，ANSI组织总结了这些<strong>Phenomenon</strong>，并给出了平衡的结果，这就是ANSI SQL-92 表中中的隔离级别：</p>
+<blockquote>
+<p>对比串行调度，等价的可串行化调度可就多了（比如：最终等价，视图等价冲突等价），并发度大幅提升，但我们又该如何实现并发控制才能校验出一个调度是可串行化的？总不能先按串行调度执行，再对比结果吧？我们需要一个更加易于验证的条件，并且保证满足这个条件的调度是一定是可串行化的，这就是可串行化理论。</p>
+</blockquote>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759263475.png" alt></p>
+<p>​根据观察，我们只要让事务B的每个操作起始状态和串行化的起始状态保持一致，其他的时间阻塞等待就可以实现串行化的效果。例如：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759339734.png" alt></p>
+<p>因为事务B在串行执行的时候，第一个Read操作的起始状态为Ax=1，那么，我将这个操作提前到事务A相同的区间开始，事务B Wirte操作起始状态不满足的情况下阻塞等待。这样一来，我们就可以通过一个并行调度来降低事务A + 事务B的总执行时间。因此，我们称这个调度是可串行化调度。</p>
+<p>串行化的理论很复杂，包括：两阶段锁协议（2PL）, 独占/共享锁（Lock）, 视图等价（view equivalence），冲突等价（conflict equivalence）,History 等等概念和复杂的数学公式，以及可串行化的条件和证明。很多数据库中的实现都会有这个理论的影子，由于太过复杂，这里我们不在展开。这里提出这个概念，是想告诉读者，事务的并发控制的解决方案，是经过一系列的科学的理论证明的，不是一拍脑门就决定的。本文系列文章尽量用可以理解的方式告诉读者这个理论的原理。</p>
+<p>回到主题，事实上，大多时候我们无法控制事务B的开始时间（随机出现的）。​但是我们可以通过阻塞或者其他合理调度来提高效率。有时候，提高了效率却又会出现错误状态。​</p>
+<p>事务B的起始时间可能在事务A区间的任何时候，如果不进行阻塞那么就会破坏事务的一致性要求。例如下图，x最后等于3：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760135914.png" alt></p>
+<p>我们称这种破坏一致性的现象成为异常现象（Phenomenon）<br>
+​<br>
+所以，可串行化但在具体技术实现上往往需要在并发能力和串行化效果之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（Phenomenon）。</p>
+<p>通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降，两者负相关。</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760232142.png" alt></p>
+<h2><span id="隔离级别起源">隔离级别起源</span></h2>
+<p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务要保证串行化效果的前提下均衡性能和一致性要求的均衡结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个理解的起源。</p>
+<h1><span id="隔离级别标准的提出">隔离级别标准的提出</span></h1>
+<p>首先，我们对比MysqlInnoDB引擎中的提供的四中隔离级别来入手。Mysql InnoDB引擎提供了四中隔离级别，分别是：</p>
 <ul>
-<li>1）READ UNCOMMITTED；</li>
-<li>2）READ COMMITTED；</li>
-<li>3）REPEATABLE READ；</li>
-<li>4）SERIALIZABLE。</li>
+<li>1）READ UNCOMMITTED (读未提交)；</li>
+<li>2）READ COMMITTED （读已提交）；</li>
+<li>3）REPEATABLE READ （可重复度）；</li>
+<li>4）SERIALIZABLE （串行化执行）。</li>
 </ul>
+<p>这些知识在任何一部MySql教程中都有不少的介绍。这个标准是如何来的呢？ 事实上这些隔离级别其实并不是由MySql指定的，而是由一个组织名叫<strong>ANSI</strong>的组织制定的<strong>SQL-92</strong>标准。</p>
+<p><strong>ANSI SQL-92</strong> 标准的第一版发布于 1986 年，之后又陆续发布了多个主版本和修订版本，最新的修订版是 SQL-2019。不过，其最新的主版本仍然是 1992 年发布的 SQL-92，在这个版本中，ANSI组织总结了各种并发情况下可能出现的异常现象（<strong>Phenomenon</strong>），并给出了平衡的结果，这就是在上文提到的隔离级别，</p>
 <p>这些隔离级别都是基于经典的序列化理论和是否允许三种 <strong>Phenomenon</strong> 定义（中文翻译就是我们熟知的脏读，不可重复度和幻读，注意这里是异常现象，并不是隔离级别）。这些现象有：</p>
 <ul>
-<li>(P1) Dirty Read</li>
-<li>(P2) Non-Repeatable Read</li>
-<li>(P3) Phantom</li>
+<li>(P1) Dirty Read （脏读）</li>
+<li>(P2) Non-Repeatable Read （不可重复度）</li>
+<li>(P3) Phantom （幻读）</li>
 </ul>
-<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt></p>
-<p>(可以暂时认为P=A)</p>
-<p>但是<strong>ANSI SQL-92</strong> 并没有对这些 <strong>Phenomenon</strong> 这一术语给出清晰的定义，只是说<strong>Phenomenon</strong>是由一系列动作组成，当事务并发执行的时候，而这些动作组合最终导致某种<strong>违背串行化执行的效果</strong>的结果。</p>
-<p>作为标准，本应该由各大数据库厂商遵循并解决，单遗憾的是，在实际实现中出现的<strong>Phenomenon</strong> 远多于<strong>ANSI</strong>定义的现象（<strong>Phenomena</strong>），那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>ANSI SQL-92</strong>的标准也开始被质疑。即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
+<p>因此，根据对这些异常现象的容忍程度，给出了如下表格：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt><br>
+(可以暂时认为P=A)</p>
+<h1><span id="被质疑sql-92标准">被质疑SQL-92标准</span></h1>
+<h2><span id="标准的缺陷">标准的缺陷</span></h2>
+<p><strong>ANSI SQL-92</strong> 标准的出是想构建一个与实现无关，全面，理论话的标准，单是这个想法失败了。虽然针对于上述的三种异常现象<strong>ANSI SQL-92</strong> 给出了明确的定义。并且以这三种异常现象的有无来定义隔离级别。这显然是有些问题的。</p>
+<ul>
+<li>原因1：<strong>ANSI SQL-92</strong> 对这些 <strong>Phenomenon</strong>给出的定义不够清晰和全面。</li>
+</ul>
+<p>作为标准，本应该由各大数据库厂商遵循并解决，单遗憾的是，在实际实现中出现的<strong>Phenomenon</strong> 远多于<strong>ANSI</strong>定义的现象（<strong>Phenomena</strong>），那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>ANSI SQL-92</strong>的标准也开始被质疑。</p>
+<p>即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
 <blockquote>
 <p>如果想知道各大 RDBMS 厂商对事务隔离机制的实现的情况将参见:<a href="https://github.com/ept/hermitage" target="_blank" rel="noopener">https://github.com/ept/hermitage</a></p>
 </blockquote>
-<blockquote>
-<p>MySQL 的 <strong>REPEATABLE READ</strong> 因為 SQL-92 的定義不清楚，所以大概知道這邊本來就有爭議，比較意外的反倒是 Oracle 裡面的 SERIALIZABLE 實際上是 Snapshot Isolation，沒有辦法達到 SQL-92 裡面最高等級的 Isolation Level。</p>
-</blockquote>
-<p>随后一片著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章指出了 <strong>ANSI SQL-92</strong>的缺陷，并对其做出了补充。现在好多书籍，都是以这个论文提出的概念来讲解事务的。在<strong>Critique</strong>的基础上，隔离级别的发展便慢慢走向多元化。</p>
-<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析事务，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了事务的隔离级别。</p>
-<h2><span id="ansi-sql-92-问题">ANSI SQL-92 问题</span></h2>
-<p><strong>「Critique」</strong> 论文中，对<strong>ANSI SQL-92</strong>的隔离级别标准做了批判，具体来说有一下几方面：</p>
 <ul>
 <li>
-<p><em>对于</em><em>Phenomenon</em><em>定义的模糊性</em>：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；</p>
+<p>原因2：<strong>ANSI SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据状态可以有多个版本的情况，也因此少了一些针对多版本下的隔离级别的定义。</p>
 </li>
 <li>
-<p>对于<strong>Phenomenon</strong>总结的不全面性。</p>
-<p>ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，从最严格的 <strong>Serializable（由2PL实现）<strong>开始减少锁的数量、种类，放宽 <strong>release lock</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的</strong>Phenomenon</strong>必定有所缺失。</p>
+<p>原因3： <strong>ANSI SQL-92</strong> 是根据现象的容忍程度来定义标准，这显然是不符合理论的。</p>
 </li>
 </ul>
+<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。</p>
+<p>比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
+<h2><span id="标准的批判">标准的批判</span></h2>
+<p>由于这个标准的各种不足，随后一片著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）在<strong>Critique</strong>的基础上补全标准后，各大数据库厂商纷纷跟进，也因此隔离级别的发展便慢慢走向多元化。</p>
+<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析事务，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了事务的隔离级别。这也是我们第一篇文章的理论依据。至此，各级离别的争论才慢慢平息了下来。</p>
+<p>但是，隔离级别的本质没有变化，性能和一致性的权衡。导致了各个数据库厂商的同名隔离级别跟没有做到标准规定那样。比如，MySQL 的 <strong>REPEATABLE READ</strong> 无法避免丢失更新（P4），(A5)读写偏序的问题（这两异常现象随后介绍），MVCC的实现也无法完全避免幻读（P3）异常等。也正因为如此，Mysql InnoDB的<strong>REPEATABLE READ</strong>被人狠狠的吐槽。</p>
+<h2><span id="标准的修订之路">标准的修订之路</span></h2>
+<p>接下来，我将用大量的篇幅介绍 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>  这篇著名的论文，带你体会严谨的学术态度和数学建模的魅力所在。</p>
+<p><strong>「Critique」</strong> 论文中，对<strong>ANSI SQL-92</strong>的隔离级别标准做了批判，具体来说有一下几方面：</p>
+<ul>
+<li><em>对于</em><em>Phenomenon</em><em>定义的模糊性</em>：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；</li>
+<li>对于<strong>Phenomenon</strong>总结的不全面性。</li>
+</ul>
+<p>ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，从最严格的 <strong>Serializable（由2PL实现）<strong>开始减少锁的数量、种类，放宽 <strong>release lock</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的</strong>Phenomenon</strong>必定有所缺失。</p>
 <p>因此，<strong>「Critique」</strong> 文中对ANSI SQL-92的三种异常现象由原来的（P1,P2,P3）重新将其编号为A1/A2/A3）同时用公式来重新定义了A1,A2,A3并命名为新的（P1,P2,P3），又从中引引申出了P0现象。分析并增加了两种锁实现中的可能异常（P4C和P4）和两种多版本并发控制实现中可能出现的异常（A5A和A5B），最后将所有这些异常组合在一起，并增加了隔离级别标准<strong>Cursor Stability</strong>和 <strong>Snapshot</strong>。</p>
 <p>接下来，我会深度分析 <strong>ANSI SQL-92</strong>，以及 <strong>「Critique」</strong> 中对其的补充修订。</p>
-<h1><span id="重新定义隔离级别">重新定义隔离级别</span></h1>
+<h1><span id="对sql-92标准中的异常定义规范化">对SQL-92标准中的异常定义规范化</span></h1>
 <h2><span id="ansi-sql-92-对phantom的重新定义">ANSI SQL-92 对Phantom的重新定义</span></h2>
-<p>再次强调，ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，不存在多版本的情况。</p>
-<p>Phantom 就是会出现异常的操作序列所导致的现象。先来看<strong>ANSI SQL-92</strong> 标准中的可能导致三种数据出现的问题：</p>
+<p>再次强调，ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，不存在多版本的情况。先来看<strong>ANSI SQL-92</strong> 标准中的可能导致三种数据出现的问题：</p>
 <blockquote>
 <ol>
 <li>P1 (“Dirty read”): SQL-transaction T1 modifies a row. SQL-<br>
@@ -508,8 +559,13 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p>为了能更清晰的表述事务之间的操作关系，我们将操作简化为 w(write)， r(read) ，每个操作的数字w1,r2代表执行操作的事务，例如  r1代表事务1读， w2代表事务2写。紧跟着操作的中括号[]的内容代表当前操作所涉及的资源，例如 w1[x] 代表事务1写入了资源x， r2[P] 代表事务2读取了满足谓词P的资源。最后，使用  c(commit) 和 a (abort) 来表示提交与回滚。</p>
 <p>因此我们就可以用一连串的操作来表示一段操作历史：</p>
 <blockquote>
-<p>w1[x] … r2[x]…(a1 and c2 in any order): 可以表述事务w2先写x，之后事务1读x，最后事务 1 回滚或事务 2 提交。</p>
+<p>w1[x] … r2[x]…(a1 and c2 in any order): 可以按照顺序表述：</p>
 </blockquote>
+<ul>
+<li>事务1执行w1[x]操作，</li>
+<li>事务2执行r2[x]操作：</li>
+<li>最后事务1回滚或事务2提交，且操作顺序无要求。</li>
+</ul>
 <p>因此，上述的P1-P3的定义为：</p>
 <ul>
 <li>P1: Dirty Read：w1[x] … r2[x] … (a1 and c2 in any order)</li>
@@ -565,7 +621,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </table>
 <p>可以看到，无论Txn1是否提交或者回滚，在某段时间范围内，不论Txn2是否提交或者回滚，读取到x + y ！= 100。因此，对于P1的定义过于严格。</p>
 <h2><span id="重新定义p1-p2-p3">重新定义P1、P2、P3</span></h2>
-<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以**「Critique」**对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。</p>
+<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。</p>
 <p>我举个栗子就明白了。<strong>ANSI SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。</p>
 <p>因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后，不就好了？ 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
 <ul>
@@ -978,7 +1034,7 @@ been read — the write could be an insert, update, or delete.</p>
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概要</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">事务概述</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">事务的四大特性ACID</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">原子性（Atomicity）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">一致性（Consistency） :</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">隔离性（Isolation）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">持久性（Durability)：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">事务并发的问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">数据库的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Read Uncommitted 读未提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Read Committed 读已提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Repeatable Read 重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">Serializable 可串行化：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">再谈事务</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">事务的标准</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">隔离级别概念的提出</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">隔离级别标准的提出</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">ANSI SQL-92 问题</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">重新定义隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">ANSI SQL-92 对Phantom的重新定义</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">重新定义P1、P2、P3</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">P3（幻读的坑）的补充</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.0.1.</span> <span class="toc-nav-text">增加P0</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">重新定义隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概要</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">事务概述</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">事务的四大特性ACID</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">原子性（Atomicity）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">一致性（Consistency） :</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">隔离性（Isolation）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">持久性（Durability)：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">事务并发的问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">数据库的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Read Uncommitted 读未提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Read Committed 读已提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Repeatable Read 重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">Serializable 可串行化：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">隔离级别的本质</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">标准的提出</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">隔离级别的本质</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">隔离级别起源</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">隔离级别标准的提出</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">被质疑SQL-92标准</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">标准的缺陷</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">标准的批判</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">标准的修订之路</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">对SQL-92标准中的异常定义规范化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">ANSI SQL-92 对Phantom的重新定义</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">重新定义P1、P2、P3</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">P3（幻读的坑）的补充</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.0.1.</span> <span class="toc-nav-text">增加P0</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">重新定义隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">参考</span></a></li></ol>
         
         </div>
       </aside>

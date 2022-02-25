@@ -145,14 +145,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -226,6 +226,7 @@
 <p>本文就不对 <strong>Attempt</strong> 组件做详细的剖析，感兴趣的可以去clone下代码阅读，也欢迎 start 和 discuss。</p>
 <h2><span id="attempt简介">Attempt简介</span></h2>
 <p><strong>Attempt</strong> 是对标 <strong>SpringRetry</strong> 和 <strong>GuavaRetry</strong> 轮子的一个轻量的不能在轻量的组件。通过<strong>Attempt</strong> 你可以轻易将一个方法调用变成一个具有异常重试的调用。同时<strong>Attempt</strong> 支持带有重试的轮询策略，让你的轮询任务更加的稳定。</p>
+<p><img src="/article/attempt/attempt-1645779632873.png" alt></p>
 <h2><span id="quick-start">Quick Start</span></h2>
 <h3><span id="增加依赖">增加依赖</span></h3>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.icefrozen<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>Attempt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.1.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
