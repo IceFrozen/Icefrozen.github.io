@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -470,9 +470,9 @@ erially (one after another).</p>
 <p>通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降，两者负相关。</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760232142.png" alt></p>
 <h2><span id="隔离级别起源">隔离级别起源</span></h2>
-<p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务要保证串行化效果的前提下均衡性能和一致性要求的均衡结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个理解的起源。</p>
+<p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务要保证串行化效果的前提下均衡性能和一致性要求的结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个理解的起源。</p>
 <h1><span id="隔离级别标准的提出">隔离级别标准的提出</span></h1>
-<p>首先，我们对比MysqlInnoDB引擎中的提供的四中隔离级别来入手。Mysql InnoDB引擎提供了四中隔离级别，分别是：</p>
+<p>首先，我们对比MysqlInnoDB引擎中的提供的四个隔离级别来入手。分别是：</p>
 <ul>
 <li>1）READ UNCOMMITTED (读未提交)；</li>
 <li>2）READ COMMITTED （读已提交）；</li>
@@ -480,8 +480,8 @@ erially (one after another).</p>
 <li>4）SERIALIZABLE （串行化执行）。</li>
 </ul>
 <p>这些知识在任何一部MySql教程中都有不少的介绍。这个标准是如何来的呢？ 事实上这些隔离级别其实并不是由MySql指定的，而是由一个组织名叫<strong>ANSI</strong>的组织制定的<strong>SQL-92</strong>标准。</p>
-<p><strong>ANSI SQL-92</strong> 标准的第一版发布于 1986 年，之后又陆续发布了多个主版本和修订版本，最新的修订版是 SQL-2019。不过，其最新的主版本仍然是 1992 年发布的 SQL-92，在这个版本中，ANSI组织总结了各种并发情况下可能出现的异常现象（<strong>Phenomenon</strong>），并给出了平衡的结果，这就是在上文提到的隔离级别，</p>
-<p>这些隔离级别都是基于经典的序列化理论和是否允许三种 <strong>Phenomenon</strong> 定义（中文翻译就是我们熟知的脏读，不可重复度和幻读，注意这里是异常现象，并不是隔离级别）。这些现象有：</p>
+<p><strong>ANSI SQL-92</strong> 标准的第一版发布于 1986 年，之后又陆续发布了多个主版本和修订版本。不过，其影响最广泛的版本仍然是1992年发布的<strong>SQL-92</strong>，在这个版本中，<strong>ANSI</strong>组织总结了各种并发情况下可能出现的异常现象（<strong>Phenomenon</strong>），并给出了平衡的结果，并根据这些异常现象的容忍程度，这就是在上文提到的隔离级别。</p>
+<p>这些隔离级别都是基于经典的序列化理论和是否允许三种异常现象（<strong>Phenomenon</strong>）（中文翻译就是我们熟知的脏读，不可重复度和幻读，注意这里是异常现象，并不是隔离级别）。这些现象有：</p>
 <ul>
 <li>(P1) Dirty Read （脏读）</li>
 <li>(P2) Non-Repeatable Read （不可重复度）</li>
@@ -494,36 +494,34 @@ erially (one after another).</p>
 <h2><span id="标准的缺陷">标准的缺陷</span></h2>
 <p><strong>ANSI SQL-92</strong> 标准的出是想构建一个与实现无关，全面，理论话的标准，单是这个想法失败了。虽然针对于上述的三种异常现象<strong>ANSI SQL-92</strong> 给出了明确的定义。并且以这三种异常现象的有无来定义隔离级别。这显然是有些问题的。</p>
 <ul>
-<li>原因1：<strong>ANSI SQL-92</strong> 对这些 <strong>Phenomenon</strong>给出的定义不够清晰和全面。</li>
+<li>原因1：<strong>ANSI SQL-92</strong> 对这些异常现象给出的定义不够清晰和全面。</li>
 </ul>
-<p>作为标准，本应该由各大数据库厂商遵循并解决，单遗憾的是，在实际实现中出现的<strong>Phenomenon</strong> 远多于<strong>ANSI</strong>定义的现象（<strong>Phenomena</strong>），那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>ANSI SQL-92</strong>的标准也开始被质疑。</p>
-<p>即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
-<blockquote>
-<p>如果想知道各大 RDBMS 厂商对事务隔离机制的实现的情况将参见:<a href="https://github.com/ept/hermitage" target="_blank" rel="noopener">https://github.com/ept/hermitage</a></p>
-</blockquote>
+<p>作为标准，本应该由各大数据库厂商遵循并实现，但遗憾的是，在实际在实现过程中出现的异常现象远多于<strong>QL-92</strong>定义的现象，那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>SQL-92</strong>的标准也开始被质疑。</p>
 <ul>
 <li>
-<p>原因2：<strong>ANSI SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据状态可以有多个版本的情况，也因此少了一些针对多版本下的隔离级别的定义。</p>
+<p>原因2：<strong>SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据可以有多个版本的情况。</p>
 </li>
 <li>
 <p>原因3： <strong>ANSI SQL-92</strong> 是根据现象的容忍程度来定义标准，这显然是不符合理论的。</p>
 </li>
 </ul>
-<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。</p>
-<p>比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
+<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。<br>
+比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
+<p>即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
+<blockquote>
+<p>如果想知道各大 RDBMS 厂商对事务隔离机制的实现的情况将参见:<a href="https://github.com/ept/hermitage" target="_blank" rel="noopener">https://github.com/ept/hermitage</a></p>
+</blockquote>
 <h2><span id="标准的批判">标准的批判</span></h2>
-<p>由于这个标准的各种不足，随后一片著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）在<strong>Critique</strong>的基础上补全标准后，各大数据库厂商纷纷跟进，也因此隔离级别的发展便慢慢走向多元化。</p>
-<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析事务，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了事务的隔离级别。这也是我们第一篇文章的理论依据。至此，各级离别的争论才慢慢平息了下来。</p>
-<p>但是，隔离级别的本质没有变化，性能和一致性的权衡。导致了各个数据库厂商的同名隔离级别跟没有做到标准规定那样。比如，MySQL 的 <strong>REPEATABLE READ</strong> 无法避免丢失更新（P4），(A5)读写偏序的问题（这两异常现象随后介绍），MVCC的实现也无法完全避免幻读（P3）异常等。也正因为如此，Mysql InnoDB的<strong>REPEATABLE READ</strong>被人狠狠的吐槽。</p>
+<p>由于这个标准的各种不足，随后一篇著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）但是并没有从本质上解决隔离级别定义的​局限性。</p>
+<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了科学的隔离级别的定义标准。这也是我们第一篇文章的理论依据。至此，隔离级别的争论才慢慢平息了下来。</p>
+<p>但是，隔离级别的本质没有变化，还是性能和正确性之间的权衡。随着隔离级别多元化的理论发展下，各个数据库厂商的同名隔离级实现也大相径庭，没有做到标准规定那样。比如，MySQL 的 <strong>REPEATABLE READ</strong> 无法避免丢失更新（P4），(A5)读写偏序的问题（这两异常现象随后介绍），MVCC的实现也无法完全避免幻读（P3）异常等。也正因为如此，Mysql InnoDB的<strong>REPEATABLE READ</strong>被人狠狠的吐槽。</p>
 <h2><span id="标准的修订之路">标准的修订之路</span></h2>
 <p>接下来，我将用大量的篇幅介绍 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>  这篇著名的论文，带你体会严谨的学术态度和数学建模的魅力所在。</p>
-<p><strong>「Critique」</strong> 论文中，对<strong>ANSI SQL-92</strong>的隔离级别标准做了批判，具体来说有一下几方面：</p>
-<ul>
-<li><em>对于</em><em>Phenomenon</em><em>定义的模糊性</em>：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；</li>
-<li>对于<strong>Phenomenon</strong>总结的不全面性。</li>
-</ul>
-<p>ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，从最严格的 <strong>Serializable（由2PL实现）<strong>开始减少锁的数量、种类，放宽 <strong>release lock</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的</strong>Phenomenon</strong>必定有所缺失。</p>
-<p>因此，<strong>「Critique」</strong> 文中对ANSI SQL-92的三种异常现象由原来的（P1,P2,P3）重新将其编号为A1/A2/A3）同时用公式来重新定义了A1,A2,A3并命名为新的（P1,P2,P3），又从中引引申出了P0现象。分析并增加了两种锁实现中的可能异常（P4C和P4）和两种多版本并发控制实现中可能出现的异常（A5A和A5B），最后将所有这些异常组合在一起，并增加了隔离级别标准<strong>Cursor Stability</strong>和 <strong>Snapshot</strong>。</p>
+<p><strong>「Critique」</strong> 论文中，对<strong>SQL-92</strong>的隔离级别标准做了批判</p>
+<p>第一，**异常现象（Phenomenon）**定义的模糊性：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；<br>
+第二、**异常现象（Phenomenon）**总结的不全面性。</p>
+<p>ANSI当初制定标准时，依据的是<strong>single version（单版本）</strong> 和**Lock schedule（锁调度）**的思路，从最严格的 **Serializable（由2PL实现）**开始减少锁的数量、种类，放宽 <strong>release lock（释放锁）</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的异常现象必定有所缺失。</p>
+<p>因此，<strong>「Critique」</strong> 文中对<strong>SQL-92</strong>的三种异常现象由原来的（P1,P2,P3）重新将其编号为（A1/A2/A3）同时用公式来重新定义了A1,A2,A3并命名为新的（P1,P2,P3），又从中引申出了P0现象。并增加了两种锁实现中的可能异常（P4C和P4）和两种多版本并发控制实现中可能出现的异常（A5A和A5B），最后将所有这些异常组合在一起，并增加了两种隔离级别：<strong>Cursor Stability</strong>和 <strong>Snapshot</strong>。</p>
 <p>接下来，我会深度分析 <strong>ANSI SQL-92</strong>，以及 <strong>「Critique」</strong> 中对其的补充修订。</p>
 <h1><span id="对sql-92标准中的异常定义规范化">对SQL-92标准中的异常定义规范化</span></h1>
 <h2><span id="ansi-sql-92-对phantom的重新定义">ANSI SQL-92 对Phantom的重新定义</span></h2>
@@ -574,10 +572,6 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </ul>
 <p>这就是上文所对应的脏读，可重复度和幻读三个概念了。针对这个定义，我们来看一下其中的概念。</p>
 <ul>
-<li>其中w1[x]表示事务1写入记录x</li>
-<li>r1表示事务1读取记录x</li>
-<li>c1表示事务1提交</li>
-<li>a1表示事务1回滚</li>
 <li>r1[P]表示事务1按照谓词P的条件读取若干条记录</li>
 <li>w1[y in P]表示事务1写入记录y满足谓词P的条件</li>
 </ul>
@@ -588,7 +582,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p>通俗来讲谓词就是 各种各样的函数 中介绍的函数中的一种，是需要满足特定条件的函数，该条件就是返回值是真值。对通常的函数来说，返回值有可能是数字、字符串或者日期等，但是谓词的返回值全都是真值（TRUE/FALSE/UNKNOWN）。这也是谓词和函数的最大区别。</p>
 </blockquote>
 <p>根据定义，我们看到了P1的定义是T2读取提交后，T1恰好回滚之后，T2读取的值必定是T1回滚前的脏值。那么问题来了，异常的出现，我们一定要强调T1的回滚？其实不然，看一下的例子：</p>
-<p>例如：<strong>一下的case: x = 50. y = 50 Txn1 从x 向 y转账40；</strong></p>
+<p>转账的例子：<strong>: x = 50; y = 50  Txn1 从x向y转账40</strong></p>
 <table>
 <thead>
 <tr>
@@ -621,9 +615,8 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </table>
 <p>可以看到，无论Txn1是否提交或者回滚，在某段时间范围内，不论Txn2是否提交或者回滚，读取到x + y ！= 100。因此，对于P1的定义过于严格。</p>
 <h2><span id="重新定义p1-p2-p3">重新定义P1、P2、P3</span></h2>
-<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。</p>
-<p>我举个栗子就明白了。<strong>ANSI SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。</p>
-<p>因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后，不就好了？ 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
+<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。我举个栗子就明白了。<strong>SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。<br>
+因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后， 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
 <ul>
 <li>P1: w1[x]…r2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
 <li>A1: w1[x]…r2[x]…(a1 and c2 in any order)</li>
@@ -726,10 +719,9 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 </tbody>
 </table>
-<p>我们可以看到， Txn1最后获取到结果比原来的多一行。 也即是说，我们第一次读和第二次读取结果应该一样，都应该是2，3，4呀。哎，等一下，这个定义怎么这么像 A2（不可重复度）呀？<br>
-我们再来拿A2的定义看一下：</p>
+<p>我们可以看到， Txn1最后获取到结果比原来的多一行。 也即是说，我们第一次读和第二次读取结果应该一样，都应该是2，3，4。这个定义怎么这么像 A2(<strong>SQL-92中的P2</strong>)（不可重复度）被？我们再来拿A2的定义看一下：</p>
 <blockquote>
-<p>A2 (Non-repeatable or Fuzzy Read): Transaction T1 reads a data item. Another transaction T2 then modifies or deletes that data item and commits. If T1 then attempts to reread the data item, it receives a modified value or discovers that the data item has been deleted.</p>
+<p>P2(A2) (Non-repeatable or Fuzzy Read): Transaction T1 reads a data item. Another transaction T2 then modifies or deletes that data item and commits. If T1 then attempts to reread the data item, it receives a modified value or discovers that the data item has been deleted.</p>
 </blockquote>
 <p>注意和幻读定义的两个不同：</p>
 <ul>
@@ -824,14 +816,10 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 </tbody>
 </table>
-<p>再直观点讲（个人解读），不可重复读是说读的结果的行数不变或者减少，结果的内容发生变化；而幻读呢，就是读的结果的行数变多了。这就是<strong>ANSI SQL-92</strong> 定义的幻读。但是<strong>Critique</strong>认为这样定义幻读是不对的，论文认为幻读强调的是两次相同查询不同的数据，因此把删除一行，也就是数据变少，也应该属于幻读行列。</p>
+<p>再直观点讲（个人解读），不可重复读是说读的结果的行数不变或者减少，结果的内容发生变化；而幻读呢，就是读的结果的行数变多了。这就是<strong>SQL-92</strong> 定义的幻读。但是<strong>Critique</strong>认为这样定义幻读是不对的，论文认为幻读强调的是两次相同查询不同的数据，因此把删除一行，也就是数据变少，也应该属于幻读行列。</p>
 <p>具体原文如下：</p>
 <blockquote>
-<p>One important note is that ANSI SQL P3 only prohibits<br>
-inserts (and updates, according to some interpretations) to<br>
-a predicate whereas the definition of P3 above prohibits<br>
-any write satisfying the predicate once the predicate has<br>
-been read — the write could be an insert, update, or delete.</p>
+<p>One important note is that ANSI SQL P3 only prohibits inserts (and updates, according to some interpretations) to a predicate whereas the definition of P3 above prohibits any write satisfying the predicate once the predicate has been read — the write could be an insert, update, or delete.</p>
 </blockquote>
 <p>有了幻读较少数据的这个补充，我们来讨论另外一个case:</p>
 <table>
@@ -868,7 +856,8 @@ been read — the write could be an insert, update, or delete.</p>
 </tr>
 </tbody>
 </table>
-<p>按照谓词查询一个数据，按照上面说的<strong>Critique</strong> 对P3的定义，这个case应该不仅满足P3也同时满足P2,那么问题又来了，这到底算是那个case?</p>
+<p>按照谓词查询一个数据，按照上面说的<strong>Critique</strong> 对P3的定义，这个case应该不仅满足P3也同时满足P2,那么问题又来了，这到底算是那个case?<br>
+在标准中有如下定义：</p>
 <blockquote>
 <p>p2 Another transaction T2 then modifies or <strong>deletes</strong> that data item</p>
 </blockquote>
@@ -877,12 +866,7 @@ been read — the write could be an insert, update, or delete.</p>
 </blockquote>
 <p>由于标准中幻读和脏读的定义中核心点的区分就是，一个是 date item 的变化，一个是对Data Set的变化，上面的case可以有两种解读, 就是返回的结果是一个 data item 还是一个 data set？</p>
 <p>根据前文知道，a = 1 在where之后，可以理解为谓词：Predicate， 严格来说，所有的查询条件都属于谓词；而相对的，在 KV 存储引擎中直接读取某个 key 的行为则称为 item。然而关系型数据库在 KV 之上还有 SQL 层，SQL 层即使是读取某个 key 也是通过一些查询条件（predicate）来进行描述的，当我们在 SQL 层面之上讨论是 predicate 还是 item 的时候，需要考虑它是否是一个点查询。</p>
-<p>点查询是一种查找数据的方法，通过建立好的索引去定位数据的 key，一般能够用非常高的效率查找到所需的数据，其查询的过程和读取某个 key 相似，所以本文的观点认为：</p>
-<ul>
-<li>点查询是 item 类型的查询条件。</li>
-<li>其他查询均是 predicate 类型的查询条件。</li>
-</ul>
-<p>明白这个之后，我们可以回答这个问题：上面的case是不P2。</p>
+<p>点查询是一种查找数据的方法，通过建立好的索引去定位数据的 key，一般能够用非常高的效率查找到所需的数据，其查询的过程和读取某个 key 相似，所以本文的观点认为：点查询是第一次查询返回为data item类型的查询。其他查询均是 predicate 类型的查询条件。明白这个之后，我们可以回答这个问题：上面的case是不P2。</p>
 <p>当三个原始异常的坑填补上之后，我们再来看隔离级别：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt></p>
 <h4><span id="增加p0">增加P0</span></h4>
