@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          事务详解（2）-- 再谈隔离级别 - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/distributed-transaction-1-2/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                            
+                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                            
+                              <a class="tag" href="/tags/#事务" title="事务">事务</a>
+                            
+                        </div>
+                        <h1>事务详解（2）-- 再谈隔离级别</h1>
+                        <h2 class="subheading">基于锁调度的隔离级别</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2022-01-26
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="前言">前言</span></h2><p>在上一篇文章当中，我们讨论了事务的一般理论以及事务的隔离级别的起源，并讨论了<strong>SQL-92</strong>标准的问题的修正的论文 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>。<br>改论文在标准的基础上推广出了异常现象P1-P3广义的解释，然后根据A1-A3的容忍度补充了标准内的隔离级别P0的个隔离级别。本文继续讨论 <strong>「A Critique of ANSI SQL Isolation Levels」</strong> 中提出的异常现象。</p>
+<h2><span id="异常的补充p4">异常的补充P4</span></h2><p>在前文中，我们P0-P3中均是读写交互的，也就是收一个事务读，一个事务写。那么接下来，要涉及到两个写操作的异常现象。</p>
+<h2><span id="p4-和-p4c-异常现象">P4 和 P4C 异常现象</span></h2><p><strong>Critique</strong> 论文中，针对标准新增了P4、P4C异常现象，并提出了：</p>
+<ul>
+<li>P4（Lost Update）：r1[x]…w2[x]…w1[x]…c1 </li>
+</ul>
+<p>事务 T2 对 x 的修改被事务 T1 后续对 x 的修改覆盖了，之后事务 T1 提交，从外界看来，事务 T2 对 x 的修改丢失了。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin </td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,3)</td>
+</tr>
+<tr>
+<td>w(x, x + 1)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>…</td>
+</tr>
+<tr>
+<td>commit(x = 2)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其含义为T1要更新x的数据，其首先读取x的值，然后再该值上加1再写回数据库。但是在读取x后，T2写入了新的x，而T1还是在老的x值的基础上加1。这样，T2的更新对于T1而言就像被丢弃了一样。P4 看起来有点像P0, 从定义上来看P4是在P0的基础上增加了读取的状态并影响写入，也就是说，P4是一个附加在第一次读的状态上的更新，他并没发生所谓脏读。对于Txn2来说，x = 3的操作就像丢失了一样。</p>
+<p>跟P0的区别是什么？</p>
+<ul>
+<li>P0：在事务T1写入操作w1[x]和提交操作(c1 or a1)之间，被写入了事务T2的数据；</li>
+<li>P4：在事务读取操作r1[x]和写入操作w1[x]之间写入了另外事务T2的数据。</li>
+</ul>
+<p>P4提出的目的是让数据提供“有状态更新”。例如，事务T1想先读取x当前的数值，如果x为1，则在此基础上把x加1，但如果在这中间有另一个事务T2更改了x的值并提交成功，那么T1的判断就应该失效了。但是写锁机制下，以及Mysql的<strong>repeatable read</strong>隔离级别下都不能屏蔽这个异常，因为他们只在写操作时才开始上锁。因此，想要解决这个问题，需要将mysql中的读从快照读，变成当前读，也就是我说的<strong>select * for update</strong>。 因为，Mysql引入了MVCC机制，为了性能牺牲部分一致性，在Mysql的快照读时候，是无法避免的P4异常的。</p>
+<ul>
+<li>P4C (Lost Update):rc1[x]…w2[x]…w1[x]…c1 </li>
+</ul>
+<p>P4 的 Cursor 版本。如果对 Cursor 陌生，可以看看 MySQL 或者 PostgreSQL 关于 Cursor 的文档。</p>
+<h2><span id="read-skew-和-write-skew">Read Skew 和 Write Skew</span></h2><p>P0-P4异常现象中，都是对单一的数据做操作从而导致的异常，现在我们来讨论两个以上的数据违反数据项约束异常现象。取名为<strong>A5 (Data Item Constraint Violation)</strong>：</p>
+<p>假设 C() 是两个数据 x 和 y 之间的一个约束条件「例如 x + y = 100 就可以理解为一个约束」，打破 C() 的异常现象可以分为两类：</p>
+<ul>
+<li><strong>A5A:Read Skew</strong> (读偏序)</li>
+<li><strong>A5B:Write Skew</strong> (写偏序)</li>
+</ul>
+<h3><span id="a5aread-skew-读偏序">A5A:Read Skew (读偏序)</span></h3><p>A5A: r1[x]…w2[x]…w2[y]…c2…r1[y]…(c1 or a1)</p>
+<p>读偏序（Read Skew:如果数据项x与y存在一致性约束，T1先对读x，而后T2修改x和y后commit，此时T1再读y。T1得到的x与y不满足原有的一致性约束。</p>
+<p>下面假设 C() 约束为 X + Y = 100</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,50)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,25)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(y,75)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>r(y, 75)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>事务T1首先读取x = 50，同时事务T2写入了 x = 25 和 y = 75。然后事务T1 继续读取了 x = 75。这时x + y = 125，违背了一致性约束。注意一点，P2级别的异常现象是一种特殊的读偏序现象（当x = y的时候）</p>
+<h3><span id="a5bread-skew-write-skew">A5B:Read Skew (Write Skew)</span></h3><p>A5B：r1[x]…r2[y]…w1[y]…w2[x]…(c1 and c2)</p>
+<p>事务T1先读了x 和 y 的值，发现满足约束条件，然后事务T2 也读了x 和 y，更新了x 后再提交，接着事务T1如果更新 y 的值再提交。两个事务执行完后就可能发生 x 和 y 之间的约束被打破的情况。</p>
+<p>假设我们的约束是 x + y≤100。(x = 30 ，y= 10)</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,30)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>r(y,10)</td>
+</tr>
+<tr>
+<td>w(y,60)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,50)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>事务T1读取了 x = 30，并将y = 60 写入了数据库，事务T2 读取了y = 10，并将x = 50 写回了数据库。但从两个事务中并没有违反约束，但是此时数据库中 x + y = 110，违背了一致性约束。</p>
+<p>至此，所有的异常现象定义完毕，针对这些异常现象，我们需要该处具体的解方案，也就是定义我们的隔离级别。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>符号</th>
+<th>名称</th>
+<th>序列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>脏写（Dirty Write）</td>
+<td>w1[x]…w2[x]…(c1 or a1)</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>脏读（Dirty Read）</td>
+<td>w1[x]…r2[x]…(c1 or a1)</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>不可重复读（Non-Repeatable Read or Fuzzy Read）</td>
+<td>r1[x]…w2[x]…(c1 or a1)</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>幻读 （Phantom）</td>
+<td>r1[P]…w2[y in P]…(c1 or a1)</td>
+</tr>
+<tr>
+<td>P4/P4C</td>
+<td>丢失更新（Lost Update /Cursor ）</td>
+<td>r1[x](rc1[x])…w2[x]…w1[x]…c1</td>
+</tr>
+<tr>
+<td>A5A</td>
+<td>读偏序（Read Skew）</td>
+<td>r1[x]…w2[x]…w2[y]…c2…r1[y]…(c1 or a1)</td>
+</tr>
+<tr>
+<td>A5B</td>
+<td>写偏序（Write Skew）</td>
+<td>r1[x]…r2[y]…w1[y]…w2[x]…(c1 and c2)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Critique</strong> 论文中，给出了针对以上四种异常现象锁定义的隔离级别：</p>
+<h1><span id="ansi基于锁调度的隔离级别">ANSI基于锁调度的隔离级别</span></h1><h2><span id="锁调度下的隔离级别">锁调度下的隔离级别</span></h2><p>当定义好异常序列之后，我们就开始想解决办法了。上文分析，异常的产生大都是由于读写同一个谓词下的数据导致的，因此，解决办法也自然而然出来了，那就是锁。在谈论这些解决问题之前，我们先假定数据是<strong>单版本</strong>。然后再定义一个标准名叫一致性等级（<strong>degrees of consistency</strong>），每解决一个异常现象，我们提升等级Level（这个一致性等级可以等价为隔离级别）。</p>
+<p>论文给出了锁调度和这个一致性等级的关系：</p>
+<p><img src="/article/distributed-transaction-1-2/distributed-transaction-1-2-1645525164643.png" alt></p>
+<p>图中出现的 Read Locks 就是读锁，Wirte Locks 就是写锁。在锁调度的机制下，一致性等级的提升跟写锁、读锁的等级，种类和释放时机有着密切的关系。表中还有一些其他的概念，我们先来看一下几个名词解释：</p>
+<p><strong>predicate lock</strong></p>
+<p>谓词锁(条件可能更合适，predicate lock): 给定一个搜索条件，对满足这个条件的数据加锁。不仅仅对存在的数据，还包括不存在的数据。<br>比如select * from t where age &gt; 1 and age &lt; 8;对age在(1,8)范围加锁，加锁之后，其它的事务不能操作(1&lt;age&lt;8)的数据，也不能插入新的满足条件(1&lt;age&lt;8)的数据，比如insert into t(age) values(6);是不允许的。<br>这类似于MySQL InnoDB的gap lock。</p>
+<p><strong>well-formed reads/writes</strong></p>
+<p>事务在读写一个数据，或者满足某个条件的一些数据时，先加上对应的读写锁，就称为well-formed reads/writes。一个事务的读写操作都是well-formed那么这个事务就是well-formed transaction。</p>
+<p><strong>long-duration/short-duration locking</strong></p>
+<p>事务持有某个锁，一直到事务提交或回滚，这个锁就称为long-duration。否则就是short-duration，就是访问完就释放的锁。</p>
+<p><strong>Critique</strong> 将每一个一致性等级是否能解决异常现象又出了一个表格：</p>
+<p><img src="/article/distributed-transaction-1-2/distributed-transaction-1-2-1644475846175.png" alt></p>
+<p>接下来我们详细分析这两张表格的联系。</p>
+<h2><span id="degree-0-p0-4均未解决">degree 0 (P0-4均未解决)</span></h2><p>Degree 0 在Table2中并没有对读加锁，只对写加锁（Short Duration Write Lock（写完立马释放），这种一致性等级情况下下同时允许 P1(Dirty Read) 和 P0(Dirty Write)异常现象的，由于没有对谓词加锁，因此也会P3异常现象。Degree 0并没有解决任何异常问题</p>
+<p>例子：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>w(x,2)</td>
+<td>lock(x)</td>
+</tr>
+<tr>
+<td>unlock(x)</td>
+<td>waiting </td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,3)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>unlock(x)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2><span id="degree-1-read-uncommitted解决p0问题">degree 1 READ UNCOMMITTED（解决P0问题）</span></h2><p>这一层，我们起码要解决Degree 0并没有解决的P0问题，之所以出现P0是因为<strong>Short Duration Write Lock</strong>的存在，即写完就释放，如果我不释放，一直保留这锁，让Tnx2的写入阻塞主，那么就能解决P0级别的问题，因此我们将这个层级起一个别名叫 <strong>READ UNCOMMITTED</strong><br>例子如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+<th>Tnx3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>w(x,2)</td>
+<td>lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>waiting</td>
+<td>r(x,2)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waiting</td>
+<td>commit</td>
+</tr>
+<tr>
+<td>unlock(x)</td>
+<td>waiting</td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td>w(x,3)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>unlock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>虽然解决了p0的问题，但是我们的读是不加锁的，只有写才加锁，意味着读取是不会阻塞的，因此，我们看到Tnx3读取到了 Tnx1没有提交的数据x = 2, 因此出现了P1的脏读问题。</p>
+<h2><span id="degree-2-read-committed解决p0-p1问题">degree 2 READ COMMITTED（解决P0、P1问题）</span></h2><p>这一层，我们起码要解决Degree 1并没有解决的P1问题，之所以出现P1是因为没有加读锁，到底加类型为 Short 还是 Long的读锁呢？秉着循序渐进的，我们先来上一Short锁，看是否能满足需求，这次我们使用x-lock表示写锁，s-lock表示读锁：<br>例子如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+<th>Tnx3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>x-lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>w(x,2)</td>
+<td>x-lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>waiting</td>
+<td>s-lock(x)</td>
+</tr>
+<tr>
+<td>unlock(x)</td>
+<td>waiting</td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>commit</td>
+<td>w(x,3)</td>
+<td>waiting</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>unlock(x)</td>
+<td>waiting</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+<td>r(x = 3)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>s-unlock(x)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>do sth things</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>commit</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这样一来，我们就解决了P1的脏读问题。实时标明，Short读锁还是能满足需求的。我们在来看，P1解决了那P2（可重复度）解决了吗？ 看下面的例子：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+<th>Tnx3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>x-lock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td>w(x,2)</td>
+<td></td>
+<td>begin</td>
+</tr>
+<tr>
+<td>..</td>
+<td></td>
+<td>s-lock(x)</td>
+</tr>
+<tr>
+<td>x-unlock(x)</td>
+<td></td>
+<td>waitting</td>
+</tr>
+<tr>
+<td>commit</td>
+<td></td>
+<td>r(x,2)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>s-unlock(x)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>begin</td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>x-lock(x)</td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>w(x, 3)</td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>s-lock(s)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>r(x, 3)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>s-unlock(x)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>commit</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>可以看到，Tnx3的数据依旧出现了P2的问题（第一次读取的x和第二次读取的x不相同）。 所以结论 <strong>degree 2 READ COMMITTED</strong>  并没有解决P2的问题。</p>
+<p><strong>Cursor Stability</strong>  </p>
+<p>游标稳定性，如何理解这个级别呢？如果你不了解游标的含义，建议你去理解一下游标的概念。这里我先解决一下P4和P4C的问题，既然是想解决P4C的问题，那我来看一个情景。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin </td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,3)</td>
+</tr>
+<tr>
+<td>w(x, x + 1)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>…</td>
+</tr>
+<tr>
+<td>commit(x = 2)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这里，Tnx2的更新丢失了，因为Txn1在后边有个写的操作。 因此P4的出现是因为一个事务的读写之间又有写的操作，既然如此，我们将Tnx1的r的操作加一个长读锁，避免Tnx1写之前有别的事务写入，不就解决了？但是注意，我们这里还要兼容P0,P1的错误，因此还要给Txn2加上长写锁。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>s-lock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,1)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin </td>
+</tr>
+<tr>
+<td>…</td>
+<td>x-lock(x)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waitng</td>
+</tr>
+<tr>
+<td>w(x, x + 1)</td>
+<td></td>
+</tr>
+<tr>
+<td>s-unlock(x)</td>
+<td></td>
+<td>…</td>
+</tr>
+<tr>
+<td>commit(x = 2)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>w(x = 3)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>x-unlcok(x)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这样看起来可以解决P4的问题，但是似乎有点用力过猛了，因为我的目的是解决（r）+ (w) 的序列，也就是说，我读完之后在根据这个读出来的值进行写入，当我写入成功之后，就可以释放这个读锁了，所以说，没必要Tnx1上加一个严格意义上长读锁。<br>那么，我们可以将 （r）+(w) 作为一个游标区间，锁住这个区间就好了。如果你不理解，再来看一个例子：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>no</th>
+<th>Txn1</th>
+<th>Txn2</th>
+<th>Txn3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>区间1</td>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>s-lock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>r(x, 1)</td>
+<td>begin</td>
+<td>begin </td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>…</td>
+<td>x-lock(y)</td>
+<td>x-lock(x)</td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>…</td>
+<td>w(y, 2)</td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>x-lock(x)</td>
+<td></td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>w(x, x + 1)[x = 2]</td>
+<td></td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>x-unlock(x)</td>
+<td></td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>区间1</td>
+<td>s-unlock(x)</td>
+<td></td>
+<td>waiting</td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>s-lock(y)</td>
+<td></td>
+<td>w(x, 3)</td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>waiting</td>
+<td>x-unlock(y)</td>
+<td>x-unlcok(x)</td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>waiting</td>
+<td>commit</td>
+<td>commit</td>
+<td></td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>r(y, 2)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>x-lock(y)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>w(y, y + 1)[y = 3]</td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>x-unlock(y)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>区间2</td>
+<td>s-unlock(x)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Tnx1想读取x,y 并在每个值的基础上+1后存起来，当读取x的时候，不会对y进行加锁，因此Txn2可以顺利执行完毕。Txn3因为要写x，由于Tnx1在游标内对x加了读锁，因此不能写入，只能等待。<br>当Txn1写完x之后释放，这个时候Tnx3可以写入。Txn1此时写入y，进入区间2。需要等待Txn2的y的写锁释放。这样一来就优化了调度。因此，通过对某个数据加上区间长读锁来避免其他事务写入从而破坏读完之后在写的一致性约束，我们把这个级别定义为：游标稳定性隔离级别。</p>
+<p>但是，这个级别依然没有解决P2的可重复读的问题。试想一下，当Txn1在区间1读取y,然后在区间2 再次读取y，那么区间1和区间2的y也会不相等，原因就在区间1内，Txn2重新写了y的值。P2的问题依旧存在。</p>
+<p>结论是，这个级别一定程度上能避免P4C, 但是不一定能避免P4。但意义在于，如果数据库的实现可以通过游标锁来避免P4，那么你就达到了这个级别的隔离。</p>
+<p>可以对比理解一下，P4C的避免可以通过游标锁，比如mysql select * for update。在看偏序问题，A5A的序列是Tnx1是连续两次次读，并没有写的操作，因此加锁的时候只会给当前读取的数据加锁，当Tnx1给y加锁的时候，Tnx2已经完成了对y的赋值操作，因此还是会出现A5A的异常现象，读者可以根据这个思路来思考一下A5B的问题。</p>
+<h2><span id="repeatabled-read-可重读度">Repeatabled Read 可重读度</span></h2><p>要解决上一个层级的问题，势必需要组织Txn2对于y的写入同时也要阻止其他事务对x的写入，那么只好给x,y都是长读锁了。在长读锁期间，不允许任何属性对x和y进行修改。当然有一点需要说明，我们上面所有的隔离级别，均对谓词的读写没有加长读锁。也就意味着，读取完毕之后，对于满足谓词的区间均是可以插入数据和跟更新的。（可以理解为满足为谓词区间，并没有加间隙锁）也正是如此，以上的级别均没有解决幻读的问题。</p>
+<p>这里我们以A5A的问题来看一下，这个隔离级别如何解决这个问题：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>s-lock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td>r(x,50)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>waiting…</td>
+<td></td>
+</tr>
+<tr>
+<td>s-lock(y)</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>r(y, 75)</td>
+<td>waiting…</td>
+<td></td>
+</tr>
+<tr>
+<td>s-unlock(x, y)</td>
+<td>waiting…</td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td>x-lock(x)</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>x-lock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>w(x,25)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>x-lock(y)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>x-unlock(x,y)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2><span id="snapshot-isolation-快照隔离级别">Snapshot Isolation 快照隔离级别</span></h2><p>前文说道，隔离级别的本质是让事务需要在并发能力和串行化效果之间进行平衡。因此上述的级别虽然解决了一下异常现象，但是实现上来说是，效率是及其低下的。因此，想要实现这个平衡，势必要换个思路，加锁的目的是为了防止前后读取不一致，那么允许别人对修改，但对于本事务来说，别人的修改对我来说不可见，那这不就可以达到每次读取的数据一致了吗？因此，多版本的机制就应运而生。</p>
+<p>多版本的机制是为了解决一个事务对多个数据的有状态叠加而产生的不一致问题。</p>
+<p>对于这个级别来说，事务写操作的同时，不会覆盖原始数据，而是给数据分配一个唯一版本号。而读取事务开始时刻时候会申请一个版本号，事务中的读操作永远不会被阻塞，因为读取的永远是事务开始的版本，这种方式最大的好处在于将读写分离到不同的数据版本中，实现解决冲突的目的。这个级别也是<strong>Critique</strong>论文补充<strong>ANSI-92</strong>标准的一个新隔离级别。</p>
+<p><strong>Snapshot Isolation</strong>是基于多版本事务并发控制的（MVCC）一种事务隔离级别。在 MVCC系统中，每个值在写的时候都会被分配一个新的版本号（Version）。每个事务开启的时间点记为该事务的Start Timestamp，提交时需要获取一个Commit Timestamp，需要比所有正在进行或已完成事务的 Start 和 Commit Timestamp 都大才可以提交成功。</p>
+<p>每个事物只能读到在它的 Start Timestamp 之前提交的其他事务的数据版本。事务 T1 能成功提交的前提是：在它的 Start Timestamp 和 Commit Timestamp 这段时间区间内，不存在任何在这期间提交的事务。T2 和 T1 修改了同样的数据。如果发生了这样的情况，事务 T1 应该回滚。这个特性叫 First-Committer-Wins。显然，这个特性可以可以用来避免 P0 (Dirty Write) 和 P4 (Lost Update)。因为事务读的时候只能读到 Start Timestamp 那一刻数据库的快照和当前事务进行过的修改，所以不难分析 Snapshot Isolation 能够避免 P1 (Dirty Read)。</p>
+<p>举个例子：<br>有个数据 A：version= 1 （version 的分配机制为全局分配）</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin （分配一个start_version = 2）</td>
+<td></td>
+</tr>
+<tr>
+<td>read(A (start_version(2) &gt; A的version(1) 允许读取))</td>
+<td>begin （分配一个start_version = 3）</td>
+<td></td>
+</tr>
+<tr>
+<td>write(A, A+1)</td>
+<td>read(A (3 &gt; A的version（1） 允许读取))</td>
+<td></td>
+</tr>
+<tr>
+<td>其他操作</td>
+<td>write(A, A+1) </td>
+</tr>
+<tr>
+<td>其他操作</td>
+<td>commit(获取新version = 4， 新的version 没有在任何事务的 start_version 和 commit_version 当中可以提交）A的version = 4</td>
+<td></td>
+</tr>
+<tr>
+<td>commit(获取新commit_version = 5, 发现A=verson 在 start_version(2) 和commit_version(5)之间，Txn1失败</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2><span id="snapshot-isolation-和-其他隔离级别的对比">Snapshot Isolation 和 其他隔离级别的对比</span></h2><p>通过上面的分享，我们发现，Snapshot Isolation 是一个比 Degree 0，Read Uncommitted，Read Committed 和 Cursor Stability 更强的隔离级别。但是因为它不能避免避免下面的 H5，所以它比 Serializable 隔离级别弱：</p>
+<p>H5: r1[x=50] r1[y=50] r2[x=50] r2[y=50] w1[y=-40] w2[x=-40] c1 c2。</p>
+<p>例如：假设 要维护一个约束 x(1) + y(1) &gt; 0</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin （分配一个start_version = 2）</td>
+<td></td>
+</tr>
+<tr>
+<td>read(X (start_version(2) &gt; X的version(1) 允许读取))</td>
+<td>begin （分配一个start_version = 3）</td>
+<td></td>
+</tr>
+<tr>
+<td>read(Y (start_version(2) &gt; Y的version(1) 允许读取))</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>read(X (start_version(3) &gt; X的version(1) 允许读取))</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>read(Y (start_version(3) &gt; Y的version(1) 允许读取))</td>
+<td></td>
+</tr>
+<tr>
+<td>write(Y, Y=-40， Y的start_version(2) &gt; Y的version(1)， 允许写入并未破坏x + y &gt; 0的规则)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>write(X, X=-40， X的start_version(3) &gt; X的version(1)， 允许写入并未破坏x + y &gt; 0的规则)</td>
+<td></td>
+</tr>
+<tr>
+<td>commit(获取新version = 4， 新的version 没有在任何事务的 start_version 和 commit_version 当中可以提交）Y的version 变成了2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>commit(获取新version = 5， 新的version 没有在任何事务的 start_version 和 commit_version 当中可以提交）X的version = 3</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>破坏约束 x（-40）+ y（-40） &gt; 0 的约束</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>那接下来就是和 Repeatable Read 隔离级别相比了，我们会发现，它和 Repeatable Read 是不可比较的因为有些 Snapshot Isolation 能够避免的异常现象 Repeatable Read 不能避免，同时有一些 Repeatable Read 能够避免的异常现象 Snapshot Isolation 不能避免。例如上述的A5B。</p>
+<p>Repeatable Read 能够避免的异常现象 Snapshot Isolation 不能避免的异常是因为 A5A 和 A5B 都存在一个事务修改另一个事务读过的数据的情况，所以如果我们能避免 P2（比如事务 T1 读了 x 后，其他事务都不能再写 x），那 A5A 和 A5B 就都能够避免。</p>
+<p>另外还要注意到 Snapshot Isolation 不能够完全避免 P3（幻读）。类似 A5B，事务 T1 根据某个条件读取上来一些数据后，做了修改，事务 T2 也根据同样的条件读取上来同一批数据，但是修改了其他的值，事务 T1 和事务 T2 接下来都能够提交成功。把这样一个多版本系统中的事务历史转换成单版本系统中的事务历史后，会发现这种历史属于 P3 定义的异常行为集合中，因此 Snapshot Isolation 不能完全避免 P3。</p>
+<h1><span id="serializable">Serializable</span></h1><p>这一层是真正的串行化方案，针对于上一层级，这里补全了对谓词加长读锁，避免了在事务过程中新增满足谓词的数据插入，从而避免了幻读。</p>
+<h2><span id="串行化理论概诉">串行化理论概诉</span></h2><p>通过上一个章节的分析，我们从第一级别一直到最高级别，讨论了锁调度对事务隔离性、一致性的影响。不能看出，我们从锁的种类，加锁时机，释放时机不断递进，最终导出了可串行化这个级别。</p>
+<p>事实上，这些上锁的递进行为是有一套理论支撑的——封锁定理，首先我们来了解几个概念：</p>
+<h2><span id="封锁协议">封锁协议</span></h2><p>第一个就是封锁协议，封锁协议分为三个级别：</p>
+<ul>
+<li><p>一级封锁协议：事务T在修改数据R之前必须先对其加X锁，直到事务结束才释放。事务结束包括正常结束（COMMIT）和非正常结束（ROLLBACK）。 一级封锁协议可以防止丢失修改，并保证事务T是可恢复的。使用一级封锁协议可以解决丢失修改问题。在一级封锁协议中，如果仅仅是读数据不对其进行修改，是不需要加锁的，它不能保证可重复读和不读“脏”数据。</p>
+</li>
+<li><p>二级封锁协议：在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，读完后方可释放S锁。 二级封锁协议除防止了丢失修改，还可以进一步防止读“脏”数据。但在二级封锁协议中，由于读完数据后即可释放S锁，所以它不能保证可重复读。</p>
+</li>
+<li><p>三级封锁协议 ：在一级封锁协议之上，事务T在读取数据R之前必须先对其加S锁，直到事务结束才释放。 三级封锁协议除防止了丢失修改和不读“脏”数据外，还进一步防止了不可重复读。</p>
+</li>
+</ul>
+<h2><span id="两段锁协议two-phase-locking-protocol-2pl">两段锁协议（two-phase locking protocol, 2PL）</span></h2><p>每个事务分为两个阶段：</p>
+<ul>
+<li>增长阶段：第一个阶段，事务可以获得锁，但不能释放锁</li>
+<li>缩减阶段：第二个阶段，事务可以释放锁，不能获得锁</li>
+</ul>
+<p>两阶段加锁协议可以保证可串行性的前提之一，但不满足可恢复性，因此不能避免级联回滚，不能保证数据一致性。看这个例子：</p>
+<h3><span id="级联更新">级联更新</span></h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>x-lock(x)</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>r(x)</td>
+<td>s-lock(x)</td>
+</tr>
+<tr>
+<td>w(x)</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>…</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>r(x)</td>
+<td>waiting…</td>
+</tr>
+<tr>
+<td>x-unlock(x)</td>
+<td>waiting…</td>
+<td></td>
+</tr>
+<tr>
+<td>error!</td>
+<td>r(x)</td>
+</tr>
+<tr>
+<td>abort</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>s-unlock(x)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>…</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>2PL锁虽然将事务分为了两个阶段，但是并没有强调事务结束才释放锁，当事务结束之前释放上了锁，那么将会引起级联终止，<br>级联终止： T1 发生异常后，数据库找出读取了 x 数据的事务，将所有的事务一起终止。这种情况下，一个事务失败，引发级联效应，引起后边一系列事务的回滚。</p>
+<h2><span id="严格两段锁协议">严格两段锁协议</span></h2><p>因此，除了这个问题，两阶段加锁协议在工程上很不容易实现，SQL是千变万化、条数不定的,数据库很难在事务中判定什么是加锁阶段，什么是解锁阶段。于是，将2PL + 三级封锁协议，引出了 S2PL 和 SS2PL的概念。</p>
+<ul>
+<li>严格两阶段加锁协议（strict 2PL, S2PL）：排它锁必须在事务提交后才能释放，避免级联回滚，</li>
+<li>更加严格意义的2PL还有强两阶段加锁协议（strong 2PL, SS2PL）：事务提交之前不释放任何锁。</li>
+</ul>
+<p>但值得注意的是，两段锁协议并不要求事务必须一次将所有要使用的数据全部加锁，因此遵守两段锁协议的事务可能发生死锁。</p>
+<h2><span id="封锁定理">封锁定理</span></h2><p>了解两阶段锁协议之后，我们来看一下封锁定理。<strong>如果事务是良构的且是两阶段的，那么任何一个合法的调度都是可串行化的</strong>.我们看先提条件：良构的事务、两阶段、合法的调度，结论：是可串行化的。</p>
+<ul>
+<li><p>如果事务的每个READ、WRITE、 UNLOCK都被响应的锁覆盖，且所有的锁都是在事务结束时释放，那么称这样的事物是良构的（规范的）。</p>
+</li>
+<li><p>如果一个事务可以分成两个阶段，只请求封锁的扩展阶段和只释放锁的收缩阶段，即所有的上锁操作都在解锁前面完成。那么称之为两阶段的事务。（mysql采用两阶段封锁协议）</p>
+</li>
+<li><p>调度是一组事务的操作的某种合并结果,遵守封锁协定的调度称之为合法调度，也就是说，一个调度不应该在一个对象被另外一个事务加上不相容的锁的时候，完成对该对象的加锁。（简单的说就是，如果对A加了共享锁，那么之后，就不会出现对A加排他锁成功的操作。）</p>
+</li>
+</ul>
+<p>一个满足上述封锁协议的调度有很多，数据库产品当中的可串行化隔离级毕竟要落地实现，那么是否有一种简单的规则且易于实现，让我们能快速的判断出这个调度是可串行化的呢？当然，有一种调度方案叫做冲突可串行化（conflict serializable）。</p>
+<p>冲突可串行化（conflict serializable）就是这样的条件，按照两个不同的事务对数据库中的同一元素（需要特别注意，这里的元素不等同于一行数据，可能为一个条件范围，也可能是一张表）的操作组合，定义出三种冲突（conflict）:</p>
+<ul>
+<li>Read-Write conflict</li>
+<li>Write-Read conflict</li>
+<li>Write-Write conflict</li>
+</ul>
+<p>所谓冲突，指的是调度中的一对动作，满足：如果它们的顺序交换，则涉及到的事务中至少有一个的行为会改变。如果调度S通过交换调度中的非冲突动作可以变换为串行调度，这样的调度S称为<strong>冲突可串行化调度（conflict serializable schedule）</strong>。</p>
+<p>冲突可串行化是一个更加容易验证的条件，因此更加适合作为事务并发控制的实现依据。事实上，现在隔离级别中常说的可串行化（serializable），其实是就是指<strong>冲突可串行化（conflict serializable）</strong>。</p>
+<h2><span id="总结">总结</span></h2><p>可串行化固然会让用户感到安心，但是由于可串行化调度的验证方式往往伴随着大量的阻塞等待（比如2PL），难以达到很高的事务并发执行性能，为了提供更好的并发执行性能，数据库不得不放宽调度的验证，允许更多非可串行化的调度被执行。</p>
+<p>显然，多个并发的事务执行结果可能会不再等价于任何一种串行执行的结果，也就是说，事务不再是“隔离”的，事务之间相互产生了影响，导致结果出现了错误。</p>
+<p>没错，从隔离的角度来看，这样的事务并发执行结果就是错误的，但却是为了提高性能不得不付出的代价。为了规范用户使用，数据库需要给用户做出保证：什么样的错误会发生，而什么样的错误不会发生，这些不同的保证，就是数据库的隔离级别。</p>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-transaction-1/" data-toggle="tooltip" data-placement="top" title="事务详解（1）-- 隔离级别">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">前言</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">异常的补充P4</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">P4 和 P4C 异常现象</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Read Skew 和 Write Skew</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">A5A:Read Skew (读偏序)</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">A5B:Read Skew (Write Skew)</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">ANSI基于锁调度的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">锁调度下的隔离级别</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">degree 0 (P0-4均未解决)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">degree 1 READ UNCOMMITTED（解决P0问题）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">degree 2 READ COMMITTED（解决P0、P1问题）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Repeatabled Read 可重读度</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Snapshot Isolation 快照隔离级别</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">Snapshot Isolation 和 其他隔离级别的对比</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Serializable</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">串行化理论概诉</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">封锁协议</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">两段锁协议（two-phase locking protocol, 2PL）</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">级联更新</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">严格两段锁协议</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">封锁定理</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">总结</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                        
+                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                        
+                          <a class="tag" href="/tags/#事务" title="事务">事务</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2022 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

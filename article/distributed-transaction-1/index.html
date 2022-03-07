@@ -95,9 +95,9 @@
                             
                               <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                             
-                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
-                            
                               <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                            
+                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
                             
                         </div>
                         <h1>事务详解（1）-- 隔离级别</h1>
@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -221,24 +221,14 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概要">概要</span></h2>
-<p>本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。</p>
-<h2><span id="事务概述">事务概述</span></h2>
-<h1><span id="什么是事务">什么是事务</span></h1>
-<p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
-<h1><span id="事务的四大特性acid">事务的四大特性ACID</span></h1>
-<h2><span id="原子性atomicity"><strong>原子性（Atomicity）</strong>:</span></h2>
-<p>事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。</p>
-<h2><span id="一致性consistency"><strong>一致性（Consistency）</strong> :</span></h2>
-<p>一致性是指事务必须使数据库从一个一致性状态变成另一个一致性状态，也就是事务执行前后必须处于一致性状态。</p>
-<h2><span id="隔离性isolation"><strong>隔离性（Isolation）</strong>:</span></h2>
-<p>一个事务所做的修改在最终提交以前，对其他事务是不可见，当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其它的事务操作所干扰，多个并发事务之间要相互隔离。</p>
-<h2><span id="持久性durability"><strong>持久性（Durability)</strong>：</span></h2>
-<p>持久性是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即使在数据库系统遇到故障的情况下也不会丢失提交事务的操作。</p>
-<h1><span id="事务的隔离级别">事务的隔离级别</span></h1>
-<h2><span id="事务并发的问题">事务并发的问题</span></h2>
-<h3><span id="1脏读读取未提交数据">【1】脏读（读取未提交数据）</span></h3>
-<p>当前事务(A)中可以读到其他事务(B)未提交的数据（脏数据），这种现象是脏读。</p>
+                <h2><span id="概要">概要</span></h2><p>本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。</p>
+<h2><span id="事务概述">事务概述</span></h2><h1><span id="什么是事务">什么是事务</span></h1><p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
+<h1><span id="事务的四大特性acid">事务的四大特性ACID</span></h1><h2><span id="原子性atomicity"><strong>原子性（Atomicity）</strong>:</span></h2><p>事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。</p>
+<h2><span id="一致性consistency"><strong>一致性（Consistency）</strong> :</span></h2><p>一致性是指事务必须使数据库从一个一致性状态变成另一个一致性状态，也就是事务执行前后必须处于一致性状态。</p>
+<h2><span id="隔离性isolation"><strong>隔离性（Isolation）</strong>:</span></h2><p>一个事务所做的修改在最终提交以前，对其他事务是不可见，当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其它的事务操作所干扰，多个并发事务之间要相互隔离。</p>
+<h2><span id="持久性durability"><strong>持久性（Durability)</strong>：</span></h2><p>持久性是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即使在数据库系统遇到故障的情况下也不会丢失提交事务的操作。</p>
+<h1><span id="事务的隔离级别">事务的隔离级别</span></h1><h2><span id="事务并发的问题">事务并发的问题</span></h2><h3><span id="1脏读读取未提交数据">【1】脏读（读取未提交数据）</span></h3><p>当前事务(A)中可以读到其他事务(B)未提交的数据（脏数据），这种现象是脏读。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -291,12 +281,12 @@
 <tr>
 <td style="text-align:left">备注</td>
 <td>按照逻辑，转账事务读取了B 撤销后的事务出现脏读</td>
-<td></td>
 </tr>
 </tbody>
 </table>
-<h3><span id="2不可重复读前后多次读取数据内容不一致">【2】不可重复读（前后多次读取，数据内容不一致）</span></h3>
-<p>在事务A中先后两次读取同一个数据，两次读取的结果不一样，这种现象称为不可重复读。脏读与不可重复读的区别在于：前者读到的是其他事务未提交的数据，后者读到的是其他事务已提交的数据</p>
+</div>
+<h3><span id="2不可重复读前后多次读取数据内容不一致">【2】不可重复读（前后多次读取，数据内容不一致）</span></h3><p>在事务A中先后两次读取同一个数据，两次读取的结果不一样，这种现象称为不可重复读。脏读与不可重复读的区别在于：前者读到的是其他事务未提交的数据，后者读到的是其他事务已提交的数据</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -344,12 +334,12 @@
 <tr>
 <td style="text-align:left">备注</td>
 <td>按照正确的逻辑，事务A前后两次读取的数据应该一致</td>
-<td></td>
 </tr>
 </tbody>
 </table>
-<h3><span id="3幻读前后多次读取数据总量不一致">【3】幻读（前后多次读取，数据总量不一致）</span></h3>
-<p>在事务A中按照某个条件先后两次查询数据库，两次查询结果的条数不同，这种现象称为幻读。不可重复读与幻读的区别可以通俗的理解为：前者是数据变了，后者是数据的行数变了。</p>
+</div>
+<h3><span id="3幻读前后多次读取数据总量不一致">【3】幻读（前后多次读取，数据总量不一致）</span></h3><p>在事务A中按照某个条件先后两次查询数据库，两次查询结果的条数不同，这种现象称为幻读。不可重复读与幻读的区别可以通俗的理解为：前者是数据变了，后者是数据的行数变了。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -397,63 +387,44 @@
 <tr>
 <td style="text-align:left">备注</td>
 <td>按照正确的逻辑，统计事务后出现了幻读（数据行发生了变化）</td>
-<td></td>
 </tr>
 </tbody>
 </table>
-<h2><span id="数据库的隔离级别">数据库的隔离级别</span></h2>
-<p>为了解决多个事务并发会引发的问题，进行并发控制。数据库系统提供了四种事务隔离级别供用户选择。</p>
-<h3><span id="read-uncommitted-读未提交"><strong>Read Uncommitted 读未提交</strong>：</span></h3>
-<p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。</p>
-<h3><span id="read-committed-读已提交"><strong>Read Committed 读已提交</strong>：</span></h3>
-<p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。</p>
-<h3><span id="repeatable-read-重复读"><strong>Repeatable Read 重复读</strong></span></h3>
-<p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务。但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
-<h3><span id="serializable-可串行化"><strong>Serializable 可串行化</strong>：</span></h3>
-<p>所有的增删改查串行执行。(这里强调可串行化，而非真生意义上的串行化。读写操作是并发的，但是其效果等价于串行化执行，因此这里用可串行化来表述)</p>
-<h2><span id="隔离级别的本质">隔离级别的本质</span></h2>
-<p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识。你可能意识到，上一节的只是事实上来说并不完全，因为似乎少了某些异常情况。例如说，丢失更新等。<br>
-事实上，你的感觉并没有错，因为确实在异常中有很多不尽如人意的地方，这都取决于这套标准的制定。接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
-<h2><span id="标准的提出">标准的提出</span></h2>
-<p>我们知道，这些知识在任何一部MySql教程中都有不少的介绍。即便如此，这些隔离级别其实并不是由MySql定制的，而是由一个组织名叫ANSI的组织制定的。</p>
+</div>
+<h2><span id="数据库的隔离级别">数据库的隔离级别</span></h2><p>为了解决多个事务并发会引发的问题，进行并发控制。数据库系统提供了四种事务隔离级别供用户选择。</p>
+<h3><span id="read-uncommitted-读未提交"><strong>Read Uncommitted 读未提交</strong>：</span></h3><p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。</p>
+<h3><span id="read-committed-读已提交"><strong>Read Committed 读已提交</strong>：</span></h3><p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。</p>
+<h3><span id="repeatable-read-重复读"><strong>Repeatable Read 重复读</strong></span></h3><p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务。但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
+<h3><span id="serializable-可串行化"><strong>Serializable 可串行化</strong>：</span></h3><p>所有的增删改查串行执行。(这里强调可串行化，而非真生意义上的串行化。读写操作是并发的，但是其效果等价于串行化执行，因此这里用可串行化来表述)</p>
+<h2><span id="隔离级别的本质">隔离级别的本质</span></h2><p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识。你可能意识到，上一节的只是事实上来说并不完全，因为似乎少了某些异常情况。例如说，丢失更新等。<br>事实上，你的感觉并没有错，因为确实在异常中有很多不尽如人意的地方，这都取决于这套标准的制定。接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
+<h2><span id="标准的提出">标准的提出</span></h2><p>我们知道，这些知识在任何一部MySql教程中都有不少的介绍。即便如此，这些隔离级别其实并不是由MySql定制的，而是由一个组织名叫ANSI的组织制定的。</p>
 <blockquote>
 <p>ANSI：美国国家标准学会（AMERICAN NATIONAL STANDARDS INSTITUTE: ANSI）成立于1918年。当时，美国的许多企业和专业技术团体，已开始了标准化工作，但因彼此间没有协调，存在不少矛盾和问题。为了进一步提高效率，数百个科技学会、协会组织和团体，均认为有必要成立一个专门的标准化机构，并制订统一的通用标准。</p>
 </blockquote>
 <p>要了解隔离级别的标准，我们必须要知道隔离级别的本质，也即是说我们为什么要设定隔离级别。</p>
-<h2><span id="隔离级别的本质">隔离级别的本质</span></h2>
-<p>在第一章节中，我们给出的事务四个特性ACID并不严谨，本文我们引用了数据库领域的大神Jim Gray对其的定义,Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
+<h2><span id="隔离级别的本质">隔离级别的本质</span></h2><p>在第一章节中，我们给出的事务四个特性ACID并不严谨，本文我们引用了数据库领域的大神Jim Gray对其的定义,Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
 <ul>
-<li>
-<p>Atomicity: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</p>
+<li><p>Atomicity: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</p>
 </li>
-<li>
-<p>Consistency: The transaction preserves the integrity of stored information.</p>
+<li><p>Consistency: The transaction preserves the integrity of stored information.</p>
 </li>
-<li>
-<p>Isolation: Concurrently executing transactions see the stored information as if they were running<br>
-erially (one after another).</p>
+<li><p>Isolation: Concurrently executing transactions see the stored information as if they were running<br>erially (one after another).</p>
 </li>
-<li>
-<p>Durability: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</p>
+<li><p>Durability: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</p>
 </li>
 </ul>
 <p>在上述隔离性（Isolation）的定义中，我们可以发现其目标是使并发事务的执行效果与串行一致。并从一致性（Consistency）定义中知道，事务是需要将数据状态从一个变成另一个状态。假设我们有数据x = 1，经过若干事务之后，我们需要让x = x’。</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758703747.png" alt></p>
-<p>注意事务的顺序，当顺序确定之后，对于事务对数据的改变就是原子性的。也就是说事务2不可以在事务1前面更改数据状态，必须从事务A1结束后的状态开始执行。<br>
-但我们知道，事务中会包含对数据的Read操作和Wirte操作。Read操作不会影响数据的状态，但是Wirte则会影响数据的状态。<br>
-我们假设x的初始值是x = 1,事务A由（Read(x), Wirte(x, x =2), Read(x), Wirte(x, x =1) 的操作序列组成。那么对x的状态变化如下图：</p>
+<p>注意事务的顺序，当顺序确定之后，对于事务对数据的改变就是原子性的。也就是说事务2不可以在事务1前面更改数据状态，必须从事务A1结束后的状态开始执行。<br>但我们知道，事务中会包含对数据的Read操作和Wirte操作。Read操作不会影响数据的状态，但是Wirte则会影响数据的状态。<br>我们假设x的初始值是x = 1,事务A由（Read(x), Wirte(x, x =2), Read(x), Wirte(x, x =1) 的操作序列组成。那么对x的状态变化如下图：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758868868.png" alt></p>
 <p>假如，此时有个事务2，序列为(Read(x), Wirte(x,x + 1)),状态为下图：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758966889.png" alt></p>
 <p>假设我们事务执行的顺序为[事务A, 事务B],则会出现这样一个串行化的序列：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759042722.png" alt></p>
-<p>这里的某种调度就是 Read 和Wirte 的排序方式。<br>
-​但是事实是，现代操作系统中，多核cpu已经普及，为了提高事务执行的效率，不同的事务操作可能会分配到不同的核心。但是这样做，就有可能破坏事务的一致性。因为事务的执行顺序不能随心所欲，必须要串行化执行，那怎么样才能利用多核cpu让事务并发执行且满足事务的串行化效果呢？答案就是串行化理论。</p>
+<p>这里的某种调度就是 Read 和Wirte 的排序方式。<br>​但是事实是，现代操作系统中，多核cpu已经普及，为了提高事务执行的效率，不同的事务操作可能会分配到不同的核心。但是这样做，就有可能破坏事务的一致性。因为事务的执行顺序不能随心所欲，必须要串行化执行，那怎么样才能利用多核cpu让事务并发执行且满足事务的串行化效果呢？答案就是串行化理论。</p>
 <p>串行化调度和可串行化理论：</p>
 <blockquote>
 <p>为了提高数据库的执行效率，显然我们需要并发的执行各个事务，如果存在调度S，对于数据库的任何状态，其执行结果完全等价于另一个串行调度S’，称这样的调度S为可串行化调度（serializable schedule）。</p>
-</blockquote>
-<blockquote>
 <p>对比串行调度，等价的可串行化调度可就多了（比如：最终等价，视图等价冲突等价），并发度大幅提升，但我们又该如何实现并发控制才能校验出一个调度是可串行化的？总不能先按串行调度执行，再对比结果吧？我们需要一个更加易于验证的条件，并且保证满足这个条件的调度是一定是可串行化的，这就是可串行化理论。</p>
 </blockquote>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759263475.png" alt></p>
@@ -464,15 +435,11 @@ erially (one after another).</p>
 <p>回到主题，事实上，大多时候我们无法控制事务B的开始时间（随机出现的）。​但是我们可以通过阻塞或者其他合理调度来提高效率。有时候，提高了效率却又会出现错误状态。​</p>
 <p>事务B的起始时间可能在事务A区间的任何时候，如果不进行阻塞那么就会破坏事务的一致性要求。例如下图，x最后等于3：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760135914.png" alt></p>
-<p>我们称这种破坏一致性的现象成为异常现象（Phenomenon）<br>
-​<br>
-所以，可串行化但在具体技术实现上往往需要在并发能力和串行化效果之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（Phenomenon）。</p>
+<p>我们称这种破坏一致性的现象成为异常现象（Phenomenon）<br>​<br>所以，可串行化但在具体技术实现上往往需要在并发能力和串行化效果之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（Phenomenon）。</p>
 <p>通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降，两者负相关。</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760232142.png" alt></p>
-<h2><span id="隔离级别起源">隔离级别起源</span></h2>
-<p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务要保证串行化效果的前提下均衡性能和一致性要求的结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个理解的起源。</p>
-<h1><span id="隔离级别标准的提出">隔离级别标准的提出</span></h1>
-<p>首先，我们对比MysqlInnoDB引擎中的提供的四个隔离级别来入手。分别是：</p>
+<h2><span id="隔离级别起源">隔离级别起源</span></h2><p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务为了保证串行化效果的前提下均衡性能和一致性要求的结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个隔离级别的起源。</p>
+<h1><span id="隔离级别标准的提出">隔离级别标准的提出</span></h1><p>首先，我们对比MysqlInnoDB引擎中的提供的四个隔离级别来入手。分别是：</p>
 <ul>
 <li>1）READ UNCOMMITTED (读未提交)；</li>
 <li>2）READ COMMITTED （读已提交）；</li>
@@ -488,70 +455,37 @@ erially (one after another).</p>
 <li>(P3) Phantom （幻读）</li>
 </ul>
 <p>因此，根据对这些异常现象的容忍程度，给出了如下表格：</p>
-<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt><br>
-(可以暂时认为P=A)</p>
-<h1><span id="被质疑sql-92标准">被质疑SQL-92标准</span></h1>
-<h2><span id="标准的缺陷">标准的缺陷</span></h2>
-<p><strong>ANSI SQL-92</strong> 标准的出是想构建一个与实现无关，全面，理论话的标准，单是这个想法失败了。虽然针对于上述的三种异常现象<strong>ANSI SQL-92</strong> 给出了明确的定义。并且以这三种异常现象的有无来定义隔离级别。这显然是有些问题的。</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt><br>(可以暂时认为P=A)</p>
+<h1><span id="被质疑sql-92标准">被质疑SQL-92标准</span></h1><h2><span id="标准的缺陷">标准的缺陷</span></h2><p><strong>ANSI SQL-92</strong> 标准的出是想构建一个与实现无关，全面，理论话的标准，单是这个想法失败了。虽然针对于上述的三种异常现象<strong>ANSI SQL-92</strong> 给出了明确的定义。并且以这三种异常现象的有无来定义隔离级别。这显然是有些问题的。</p>
 <ul>
 <li>原因1：<strong>ANSI SQL-92</strong> 对这些异常现象给出的定义不够清晰和全面。</li>
 </ul>
 <p>作为标准，本应该由各大数据库厂商遵循并实现，但遗憾的是，在实际在实现过程中出现的异常现象远多于<strong>QL-92</strong>定义的现象，那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>SQL-92</strong>的标准也开始被质疑。</p>
 <ul>
-<li>
-<p>原因2：<strong>SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据可以有多个版本的情况。</p>
+<li><p>原因2：<strong>SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据可以有多个版本的情况。</p>
 </li>
-<li>
-<p>原因3： <strong>ANSI SQL-92</strong> 是根据现象的容忍程度来定义标准，这显然是不符合理论的。</p>
+<li><p>原因3： <strong>ANSI SQL-92</strong> 是根据现象的容忍程度来定义标准，这显然是不符合理论的。</p>
 </li>
 </ul>
-<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。<br>
-比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
+<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。<br>比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
 <p>即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
 <blockquote>
 <p>如果想知道各大 RDBMS 厂商对事务隔离机制的实现的情况将参见:<a href="https://github.com/ept/hermitage" target="_blank" rel="noopener">https://github.com/ept/hermitage</a></p>
 </blockquote>
-<h2><span id="标准的批判">标准的批判</span></h2>
-<p>由于这个标准的各种不足，随后一篇著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）但是并没有从本质上解决隔离级别定义的​局限性。</p>
-<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了科学的隔离级别的定义标准。这也是我们第一篇文章的理论依据。至此，隔离级别的争论才慢慢平息了下来。</p>
+<h2><span id="标准的批判">标准的批判</span></h2><p>由于这个标准的各种不足，随后一篇著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）但是并没有从本质上解决隔离级别定义的​局限性。</p>
+<p>随后，2000 <strong>「Generalized Isolation Level Definitions」</strong>这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了科学的隔离级别的定义标准。这也是我们第一篇文章的理论依据。至此，隔离级别的争论才慢慢平息了下来。</p>
 <p>但是，隔离级别的本质没有变化，还是性能和正确性之间的权衡。随着隔离级别多元化的理论发展下，各个数据库厂商的同名隔离级实现也大相径庭，没有做到标准规定那样。比如，MySQL 的 <strong>REPEATABLE READ</strong> 无法避免丢失更新（P4），(A5)读写偏序的问题（这两异常现象随后介绍），MVCC的实现也无法完全避免幻读（P3）异常等。也正因为如此，Mysql InnoDB的<strong>REPEATABLE READ</strong>被人狠狠的吐槽。</p>
-<h2><span id="标准的修订之路">标准的修订之路</span></h2>
-<p>接下来，我将用大量的篇幅介绍 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>  这篇著名的论文，带你体会严谨的学术态度和数学建模的魅力所在。</p>
+<h2><span id="标准的修订之路">标准的修订之路</span></h2><p>接下来，我将用大量的篇幅介绍 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>  这篇著名的论文，带你体会严谨的学术态度和数学建模的魅力所在。</p>
 <p><strong>「Critique」</strong> 论文中，对<strong>SQL-92</strong>的隔离级别标准做了批判</p>
-<p>第一，**异常现象（Phenomenon）**定义的模糊性：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；<br>
-第二、**异常现象（Phenomenon）**总结的不全面性。</p>
-<p>ANSI当初制定标准时，依据的是<strong>single version（单版本）</strong> 和**Lock schedule（锁调度）**的思路，从最严格的 **Serializable（由2PL实现）**开始减少锁的数量、种类，放宽 <strong>release lock（释放锁）</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的异常现象必定有所缺失。</p>
+<p>第一，<strong>异常现象（Phenomenon）</strong>定义的模糊性：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；<br>第二、<strong>异常现象（Phenomenon）</strong>总结的不全面性。</p>
+<p>ANSI当初制定标准时，依据的是<strong>single version（单版本）</strong> 和<strong>Lock schedule（锁调度）</strong>的思路，从最严格的 <strong>Serializable（由2PL实现）</strong>开始减少锁的数量、种类，放宽 <strong>release lock（释放锁）</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的异常现象必定有所缺失。</p>
 <p>因此，<strong>「Critique」</strong> 文中对<strong>SQL-92</strong>的三种异常现象由原来的（P1,P2,P3）重新将其编号为（A1/A2/A3）同时用公式来重新定义了A1,A2,A3并命名为新的（P1,P2,P3），又从中引申出了P0现象。并增加了两种锁实现中的可能异常（P4C和P4）和两种多版本并发控制实现中可能出现的异常（A5A和A5B），最后将所有这些异常组合在一起，并增加了两种隔离级别：<strong>Cursor Stability</strong>和 <strong>Snapshot</strong>。</p>
 <p>接下来，我会深度分析 <strong>ANSI SQL-92</strong>，以及 <strong>「Critique」</strong> 中对其的补充修订。</p>
-<h1><span id="对sql-92标准中的异常定义规范化">对SQL-92标准中的异常定义规范化</span></h1>
-<h2><span id="ansi-sql-92-对phantom的重新定义">ANSI SQL-92 对Phantom的重新定义</span></h2>
-<p>再次强调，ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，不存在多版本的情况。先来看<strong>ANSI SQL-92</strong> 标准中的可能导致三种数据出现的问题：</p>
+<h1><span id="对sql-92标准中的异常定义规范化">对SQL-92标准中的异常定义规范化</span></h1><h2><span id="ansi-sql-92-对phantom的重新定义">ANSI SQL-92 对Phantom的重新定义</span></h2><p>再次强调，ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，不存在多版本的情况。先来看<strong>ANSI SQL-92</strong> 标准中的可能导致三种数据出现的问题：</p>
 <blockquote>
-<ol>
-<li>P1 (“Dirty read”): SQL-transaction T1 modifies a row. SQL-<br>
-transaction T2 then reads that row before T1 performs a COMMIT.<br>
-If T1 then performs a ROLLBACK, T2 will have read a row that was<br>
-never committed and that may thus be considered to have never<br>
-existed.</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="2">
-<li>P2 (“Non-repeatable read”): SQL-transaction T1 reads a row. SQL-<br>
-transaction T2 then modifies or deletes that row and performs<br>
-a COMMIT. If T1 then attempts to reread the row, it may receive<br>
-the modified value or discover that the row has been deleted.</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="3">
-<li>P3 (“Phantom”): SQL-transaction T1 reads the set of rows N<br>
-that satisfy some . SQL-transaction T2 then<br>
-executes SQL-statements that generate one or more rows that<br>
-satisfy the used by SQL-transaction T1. If<br>
-SQL-transaction T1 then repeats the initial read with the same<br>
-, it obtains a different collection of rows.</li>
-</ol>
+<p>1) P1 (“Dirty read”): SQL-transaction T1 modifies a row. SQL-<br>transaction T2 then reads that row before T1 performs a COMMIT.<br>If T1 then performs a ROLLBACK, T2 will have read a row that was<br>never committed and that may thus be considered to have never<br>existed.</p>
+<p>2) P2 (“Non-repeatable read”): SQL-transaction T1 reads a row. SQL-<br>transaction T2 then modifies or deletes that row and performs<br>a COMMIT. If T1 then attempts to reread the row, it may receive<br>the modified value or discover that the row has been deleted.</p>
+<p>3) P3 (“Phantom”): SQL-transaction T1 reads the set of rows N<br>that satisfy some . SQL-transaction T2 then<br>executes SQL-statements that generate one or more rows that<br>satisfy the used by SQL-transaction T1. If<br>SQL-transaction T1 then repeats the initial read with the same<br>, it obtains a different collection of rows.</p>
 </blockquote>
 <p>这一冗长的打算不容易理解，我们用公式化来理解。</p>
 <p>为了能更清晰的表述事务之间的操作关系，我们将操作简化为 w(write)， r(read) ，每个操作的数字w1,r2代表执行操作的事务，例如  r1代表事务1读， w2代表事务2写。紧跟着操作的中括号[]的内容代表当前操作所涉及的资源，例如 w1[x] 代表事务1写入了资源x， r2[P] 代表事务2读取了满足谓词P的资源。最后，使用  c(commit) 和 a (abort) 来表示提交与回滚。</p>
@@ -577,30 +511,31 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </ul>
 <blockquote>
 <p>谓词（predicate）虽然之前我们没有提及谓词这个概念，但其实大家已经使用过了。例如，=、&lt;、&gt;、&lt;&gt; 等比较运算符，其正式的名称就是比较谓词。 我们可以简单理解为 SQL 语句Where 后面的表达式就好了。</p>
-</blockquote>
-<blockquote>
 <p>通俗来讲谓词就是 各种各样的函数 中介绍的函数中的一种，是需要满足特定条件的函数，该条件就是返回值是真值。对通常的函数来说，返回值有可能是数字、字符串或者日期等，但是谓词的返回值全都是真值（TRUE/FALSE/UNKNOWN）。这也是谓词和函数的最大区别。</p>
 </blockquote>
 <p>根据定义，我们看到了P1的定义是T2读取提交后，T1恰好回滚之后，T2读取的值必定是T1回滚前的脏值。那么问题来了，异常的出现，我们一定要强调T1的回滚？其实不然，看一下的例子：</p>
 <p>转账的例子：<strong>: x = 50; y = 50  Txn1 从x向y转账40</strong></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>r1[x, 50]<br> w1[x = 10](x - 40)</td>
+<td>r1[x, 50]<br> w1<a href="x - 40">x = 10</a></td>
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td>r2[x = 10] <br> r2[y = 50]</td>
 </tr>
 <tr>
-<td>r1[y = 50] <br>w1[y = 90](y = y + 40)</td>
+<td>r1[y = 50] <br>w1<a href="y = y + 40">y = 90</a></td>
 <td></td>
 </tr>
 <tr>
@@ -609,14 +544,14 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>commit</td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>可以看到，无论Txn1是否提交或者回滚，在某段时间范围内，不论Txn2是否提交或者回滚，读取到x + y ！= 100。因此，对于P1的定义过于严格。</p>
-<h2><span id="重新定义p1-p2-p3">重新定义P1、P2、P3</span></h2>
-<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。我举个栗子就明白了。<strong>SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。<br>
-因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后， 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
+<h2><span id="重新定义p1-p2-p3">重新定义P1、P2、P3</span></h2><p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。我举个栗子就明白了。<strong>SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。<br>因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后， 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
 <ul>
 <li>P1: w1[x]…r2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
 <li>A1: w1[x]…r2[x]…(a1 and c2 in any order)</li>
@@ -625,24 +560,27 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p>解释一下： 无论你T1提交还是回滚 T2在回滚和提交前，我已经读到你的脏值了，那么问题就会产生。</p>
 </blockquote>
 <p>还是上面转账的例子：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>r1[x, 50]<br> w1[x = 10](x - 40)</td>
+<td>r1[x, 50]<br> w1<a href="x - 40">x = 10</a></td>
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td>r2[x = 10] <br> r2[y = 50]</td>
 </tr>
 <tr>
-<td>r1[y = 50] <br>w1[y = 90](y = y + 40)</td>
+<td>r1[y = 50] <br>w1<a href="y = y + 40">y = 90</a></td>
 <td></td>
 </tr>
 <tr>
@@ -651,32 +589,21 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 </tbody>
 </table>
+</div>
 <p>只要Txn2读到x = 10(x =10 是 Txn1中未提交的修改)就算脏读，不论是否有没有提交或者回滚。</p>
 <p>根据这个规则，我们对原来的P2 和 P3 也类似的解释：</p>
 <ul>
-<li>
-<p>P2: r1[x]…w2[x]…((c1 or a1) and (c2 or a2) in any order)</p>
+<li>P2: r1[x]…w2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
+<li><p>A2: r1[x]…w2[x]…c2…r1[x]…c1</p>
 </li>
-<li>
-<p>A2: r1[x]…w2[x]…c2…r1[x]…c1</p>
+<li><p>P3: r1[P]…w2[y in P]…((c1 or a1) and (c2 or a2) any order)</p>
 </li>
-<li>
-<p>P3: r1[P]…w2[y in P]…((c1 or a1) and (c2 or a2) any order)</p>
-</li>
-<li>
-<p>A3: r1[P]…w2[y in P]…c2…r1[P]…c1</p>
-</li>
+<li>A3: r1[P]…w2[y in P]…c2…r1[P]…c1</li>
 </ul>
 <p>有些文章将A系列(<strong>ANSI SQL-92</strong> 定义的异常现象)叫做狭义解释（严格解释），把P系列（ <strong>Critique</strong> 优化A系列定义的异常现象）叫做广义解释（宽泛解释）。</p>
-<h2><span id="p3幻读的坑的补充">P3（幻读的坑）的补充</span></h2>
-<p>A3名叫幻读，在幻读问题上，它和P2有着混淆的一个概念，首先我们先来看 <strong>ANSI SQL-92</strong> 定义的幻读:</p>
+<h2><span id="p3幻读的坑的补充">P3（幻读的坑）的补充</span></h2><p>A3名叫幻读，在幻读问题上，它和P2有着混淆的一个概念，首先我们先来看 <strong>ANSI SQL-92</strong> 定义的幻读:</p>
 <blockquote>
-<p>(“Phantom”): SQL-transaction T1 reads the set of rows N<br>
-that satisfy some . SQL-transaction T2 then<br>
-executes SQL-statements that generate one or more rows that<br>
-satisfy the used by SQL-transaction T1. If<br>
-SQL-transaction T1 then repeats the initial read with the same<br>
-, it obtains a different collection of rows.</p>
+<p>(“Phantom”): SQL-transaction T1 reads the set of rows N<br>that satisfy some . SQL-transaction T2 then<br>executes SQL-statements that generate one or more rows that<br>satisfy the used by SQL-transaction T1. If<br>SQL-transaction T1 then repeats the initial read with the same<br>, it obtains a different collection of rows.</p>
 </blockquote>
 <p>翻译一下：</p>
 <ul>
@@ -685,9 +612,11 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <li>如果 T1 用相同的&lt;搜索条件&gt;再次读取，得到一组不同于第一次读取的数据。这就叫幻读。</li>
 </ul>
 <p>例子如下:</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
@@ -703,7 +632,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td>…</td>
-<td>begin</td>
+<td>begin </td>
 </tr>
 <tr>
 <td>…</td>
@@ -711,14 +640,17 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>commit</td>
 </tr>
 <tr>
 <td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,2,3,4]</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>我们可以看到， Txn1最后获取到结果比原来的多一行。 也即是说，我们第一次读和第二次读取结果应该一样，都应该是2，3，4。这个定义怎么这么像 A2(<strong>SQL-92中的P2</strong>)（不可重复度）被？我们再来拿A2的定义看一下：</p>
 <blockquote>
 <p>P2(A2) (Non-repeatable or Fuzzy Read): Transaction T1 reads a data item. Another transaction T2 then modifies or deletes that data item and commits. If T1 then attempts to reread the data item, it receives a modified value or discovers that the data item has been deleted.</p>
@@ -728,7 +660,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <li>幻读定义中有 &lt; search condition &gt;</li>
 <li>幻读定义中 T2 是“创建数据”，不可重复读的定义中 T2 是修改或者删除数据</li>
 </ul>
-<p>在满足 **&lt; search condition &gt;**的范围内，修改和删除数据必定是对已经存在的数据行操作，而创建数据则意味着创建之前这个数据项是不存在的。“创建数据”不仅是 insert，还包括 update。update 把本来不满足谓词范围的数据项更新成满足谓词范围的数据项，比如：谓词范围是 a&gt;1 and a&lt;5，update a=2 where a=6 就是这样的情况。</p>
+<p>在满足 <strong>&lt; search condition &gt;</strong>的范围内，修改和删除数据必定是对已经存在的数据行操作，而创建数据则意味着创建之前这个数据项是不存在的。“创建数据”不仅是 insert，还包括 update。update 把本来不满足谓词范围的数据项更新成满足谓词范围的数据项，比如：谓词范围是 a&gt;1 and a&lt;5，update a=2 where a=6 就是这样的情况。</p>
 <p>显然，这样定义幻读是不合适的。对于A3和扩展P3的来说</p>
 <ul>
 <li>P3: r1[P]…w2[y in P]…((c1 or a1) and (c2 or a2) any order)</li>
@@ -737,9 +669,11 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p>A3 的定义强调Txn2 提交后 r1 再去查询谓词，得到结果集不符合才算是幻读。这样是有问题的，下看面的例子：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//tt是员工表</span><br><span class="line">mysql&gt; select * from tt;</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| name     | department |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">| zhangsan | developer  |</span><br><span class="line">| lisi     | developer  |</span><br><span class="line">+<span class="comment">----------+------------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">//tt_count是各部门人数统计表</span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> tt_count;</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| department | number |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">| developer  |      2 |</span><br><span class="line">+<span class="comment">------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 <p>查询序列</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
@@ -755,17 +689,18 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td>…</td>
-<td>begin</td>
+<td>begin </td>
 </tr>
 <tr>
 <td>…</td>
-<td>insert tt(name, department) values(‘wangwu’,‘developer’);</td>
+<td>insert tt(name, department) values(‘wangwu’,’developer’);</td>
 </tr>
 <tr>
 <td>…</td>
 <td>update tt_count set number = number + 1 where department = ‘developer’</td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td>commit</td>
 </tr>
@@ -776,15 +711,19 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <tr>
 <td>commit</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<p>上述的例子当中，Txn1 并没有去查询所谓的谓词，但是依然出现了tt_count表中的 <code>developer 的number = 3</code>, 因此，按照A3的定义来说是有问题的，如果我们用P3广义的来解释，只要 <code>insert tt(name, department) values('wangwu','developer')</code> 这条语句成功，那就算是幻读了。这样是可以解释通的。</p>
+</div>
+<p>上述的例子当中，Txn1 并没有去查询所谓的谓词，但是依然出现了tt_count表中的 <code>developer 的number = 3</code>, 因此，按照A3的定义来说是有问题的，如果我们用P3广义的来解释，只要 <code>insert tt(name, department) values(&#39;wangwu&#39;,&#39;developer&#39;)</code> 这条语句成功，那就算是幻读了。这样是可以解释通的。</p>
 <p>这也是 P3 定义的由来，只要事务2对事务1的谓词范围进行了写入（写入成功），不管后面事务1做什么查询，都算是幻读。</p>
 <p>幻读的另外一个例子：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
@@ -800,7 +739,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td>…</td>
-<td>begin</td>
+<td>begin </td>
 </tr>
 <tr>
 <td>…</td>
@@ -808,23 +747,28 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>commit</td>
 </tr>
 <tr>
 <td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,2,3,4]</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>再直观点讲（个人解读），不可重复读是说读的结果的行数不变或者减少，结果的内容发生变化；而幻读呢，就是读的结果的行数变多了。这就是<strong>SQL-92</strong> 定义的幻读。但是<strong>Critique</strong>认为这样定义幻读是不对的，论文认为幻读强调的是两次相同查询不同的数据，因此把删除一行，也就是数据变少，也应该属于幻读行列。</p>
 <p>具体原文如下：</p>
 <blockquote>
 <p>One important note is that ANSI SQL P3 only prohibits inserts (and updates, according to some interpretations) to a predicate whereas the definition of P3 above prohibits any write satisfying the predicate once the predicate has been read — the write could be an insert, update, or delete.</p>
 </blockquote>
 <p>有了幻读较少数据的这个补充，我们来讨论另外一个case:</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
@@ -840,7 +784,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td>…</td>
-<td>begin</td>
+<td>begin </td>
 </tr>
 <tr>
 <td>…</td>
@@ -848,20 +792,20 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>commit</td>
 </tr>
 <tr>
 <td>select a from t where a = 1)[result:[]</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<p>按照谓词查询一个数据，按照上面说的<strong>Critique</strong> 对P3的定义，这个case应该不仅满足P3也同时满足P2,那么问题又来了，这到底算是那个case?<br>
-在标准中有如下定义：</p>
+</div>
+<p>按照谓词查询一个数据，按照上面说的<strong>Critique</strong> 对P3的定义，这个case应该不仅满足P3也同时满足P2,那么问题又来了，这到底算是那个case?<br>在标准中有如下定义：</p>
 <blockquote>
 <p>p2 Another transaction T2 then modifies or <strong>deletes</strong> that data item</p>
-</blockquote>
-<blockquote>
 <p>p3 the write could be an insert, update, or <strong>delete</strong></p>
 </blockquote>
 <p>由于标准中幻读和脏读的定义中核心点的区分就是，一个是 date item 的变化，一个是对Data Set的变化，上面的case可以有两种解读, 就是返回的结果是一个 data item 还是一个 data set？</p>
@@ -869,15 +813,16 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p>点查询是一种查找数据的方法，通过建立好的索引去定位数据的 key，一般能够用非常高的效率查找到所需的数据，其查询的过程和读取某个 key 相似，所以本文的观点认为：点查询是第一次查询返回为data item类型的查询。其他查询均是 predicate 类型的查询条件。明白这个之后，我们可以回答这个问题：上面的case是不P2。</p>
 <p>当三个原始异常的坑填补上之后，我们再来看隔离级别：</p>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt></p>
-<h4><span id="增加p0">增加P0</span></h4>
-<p><strong>ANSI SQL-92</strong> 在定义异常的时候忽略了一个比较低级的异常现象， 先看定义：</p>
+<h4><span id="增加p0">增加P0</span></h4><p><strong>ANSI SQL-92</strong> 在定义异常的时候忽略了一个比较低级的异常现象， 先看定义：</p>
 <ul>
 <li>P0: w1[x]…w2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
 </ul>
 <p>看一下例子：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
+<th></th>
 <th>Txn1</th>
 <th>Txn2</th>
 </tr>
@@ -893,7 +838,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td>…</td>
-<td>begin</td>
+<td>begin </td>
 </tr>
 <tr>
 <td>…</td>
@@ -901,22 +846,24 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>…</td>
 </tr>
 <tr>
 <td>commit(abort)</td>
 <td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>T1写入和提交之间，T2趁机写入别的的数据。能带来的后果为两个，导致T1的更新丢失了（没错，脏写有时候会被归为丢失更新。）</p>
 <ul>
 <li>1、不能保证数据的一致性。</li>
 <li>2、回滚异常（设定x初始值为0， 当T1发生异常要回滚，是回滚到3还是回滚到0？）</li>
 </ul>
 <p>讲到这里你获取会奇怪，两个事务同时写X。同时写X加锁不就好了？管谁写，写成功就好了，为啥这也定义？是的，如果给x记上锁，那就意味着我想对这个序列串行化处理，串行化是我们后边隔离级别要讨论的事情，我们这里只谈问题，不谈解决办法，毕竟只有知道有问题在哪，我们才能解决不是。</p>
-<h3><span id="重新定义隔离级别">重新定义隔离级别</span></h3>
-<p>至此，四个新的定义出现了, 注意这里一个点，就是删掉了c2和a2,既然我们不强第二个调事务终止，所以就没有必要强调第二个事务提交或者回滚。但是我们必须要保留第一个事务的提交或者回滚，来却确保一个事务的操作会影响另一个事务操作。</p>
+<h3><span id="重新定义隔离级别">重新定义隔离级别</span></h3><p>至此，四个新的定义出现了, 注意这里一个点，就是删掉了c2和a2,既然我们不强第二个调事务终止，所以就没有必要强调第二个事务提交或者回滚。但是我们必须要保留第一个事务的提交或者回滚，来却确保一个事务的操作会影响另一个事务操作。</p>
 <ul>
 <li>P0: w1[x]…w2[x]…(c1 or a1) (Dirty Write)</li>
 <li>P1: w1[x]…r2[x]…(c1 or a1) (Dirty Read)</li>
@@ -927,8 +874,7 @@ SQL-transaction T1 then repeats the initial read with the same<br>
 <p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642766870162.png" alt></p>
 <p>然后根据P0-P3的容忍度补充了标准内的隔离级别。根据上面的新定义的图示，有了PO之后，感觉这个标准更加完善了，但是依旧有些异常现象不在这四种之内，比如<strong>P4,P4C</strong>之类的。我们下一篇文章在谈论。</p>
 <p>下一篇文章，我会根据基于ANSI锁调度，分析上表中的隔离级别是如何实现的。</p>
-<h2><span id="参考">参考</span></h2>
-<ul>
+<h2><span id="参考">参考</span></h2><ul>
 <li><a href="https://www.modb.pro/db/88214" target="_blank" rel="noopener">关于 MySQL Repeatable Read Isolation 常见的三个误区</a></li>
 <li><a href="https://www.cnblogs.com/ivan-uno/p/8274355.html" target="_blank" rel="noopener">再谈数据库事务隔离性</a></li>
 <li><a href="https://juejin.cn/post/6844903854857781262" target="_blank" rel="noopener">Mysql RR级别依然可能丢失更新数据</a></li>
@@ -951,6 +897,10 @@ SQL-transaction T1 then repeats the initial read with the same<br>
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/distributed-transaction-1-2/" data-toggle="tooltip" data-placement="top" title="事务详解（2）-- 再谈隔离级别">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
@@ -1040,9 +990,9 @@ SQL-transaction T1 then repeats the initial read with the same<br>
                        
                           <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                         
-                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
-                        
                           <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                        
+                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
                         
                     </div>
                 </section>

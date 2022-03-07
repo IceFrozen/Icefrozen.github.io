@@ -149,14 +149,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -219,96 +219,69 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="背包问题">背包问题</span></h2>
-<p>有N件物品和一个容量为V的背包。第i件物品的费用是<code>c[i]</code>，价值是<code>w[i]</code>。求解将哪些物品装入背包可使价值总和最大。</p>
-<h3><span id="问题分类">问题分类</span></h3>
-<ul>
+                <h2><span id="背包问题">背包问题</span></h2><p>有N件物品和一个容量为V的背包。第i件物品的费用是<code>c[i]</code>，价值是<code>w[i]</code>。求解将哪些物品装入背包可使价值总和最大。</p>
+<h3><span id="问题分类">问题分类</span></h3><ul>
 <li>01背包问题  如果<code>N</code>个物品每个物品只能使用一次，则成为01背包问题</li>
-<li>完全背包问题 如果N<code>N</code>个物品每个物品可以使用无限次，则为完全背包问题</li>
-</ul>
-<h3><span id="问题的解法">问题的解法</span></h3>
-<ul>
+<li>完全背包问题 如果N<code>N</code>个物品每个物品可以使用无限次，则为完全背包问题<h3><span id="问题的解法">问题的解法</span></h3></li>
 <li>暴力搜索解法（递归解法）</li>
-<li>动态规划解法</li>
-<li>优化后的动态规划（滚动数组，自下而上）</li>
+<li>动态规划解法 </li>
+<li>优化后的动态规划（滚动数组，自下而上）<h2><span id="01背包问题">01背包问题</span></h2></li>
 </ul>
-<h2><span id="01背包问题">01背包问题</span></h2>
 <blockquote>
 <p>有N件物品和一个容量为V的背包。第i件物品的费用是<code>c[i]</code>，价值是<code>w[i]</code>。求解将哪些物品装入背包可使价值总和最大。 每件物品只能使用1次</p>
 </blockquote>
 <p><img src="/article/knapsack-problem/1559184539388knapsack-problem_.png" alt></p>
-<h3><span id="问题分析">问题分析</span></h3>
-<ul>
-<li>设 C(i,w) 为 当物品有<code>i</code>个的时候, 且背包重量在 w 的情况下 取得的最大值。那么考虑第 <code>i</code> 个物品，无外乎两种可能：选，或者不选。
-<ul>
+<h3><span id="问题分析">问题分析</span></h3><ul>
+<li>设 C(i,w) 为 当物品有<code>i</code>个的时候, 且背包重量在 w 的情况下 取得的最大值。那么考虑第 <code>i</code> 个物品，无外乎两种可能：选，或者不选。<ul>
 <li>不选的话，背包的容量不变，改变为问题 <code>C(i -1, w)</code>；</li>
-<li>选的话，背包的容量变小，改变为问题 <code>C(i -1, w- w[i])</code> 。<br>
-最优方案就是比较这两种方案，哪个会更好些：<br>
-我们来看状态方程</li>
+<li>选的话，背包的容量变小，改变为问题 <code>C(i -1, w- w[i])</code> 。<br>最优方案就是比较这两种方案，哪个会更好些：<br>我们来看状态方程</li>
 </ul>
 </li>
 </ul>
 <p><img src="/article/knapsack-problem/1559191080552knapsack-problem_.png" alt></p>
 <ul>
-<li>
-<p>如何理解这个方程：</p>
-<p>假设 我们有 <code>c[3,4]</code> 和 w <code>[5,10]</code> ,<code>i[0,1] i</code> 我们放每个元素的名称。</p>
-<p>首先对于<code>0</code> 这个元素 重量为<code>5</code> 价值为<code>3</code>。<br>
-假设<br>
-我们要求 <code>C(1,5)</code> 代表  在背包重量为<code>5</code> 的情况下 从 <code>0,1</code>中选择价值最大的。 直观的结果当让是<code>3</code>了。</p>
+<li><p>如何理解这个方程：</p>
+<p>  假设 我们有 <code>c[3,4]</code> 和 w <code>[5,10]</code> ,<code>i[0,1] i</code> 我们放每个元素的名称。</p>
+<p>  首先对于<code>0</code> 这个元素 重量为<code>5</code> 价值为<code>3</code>。<br>  假设<br>  我们要求 <code>C(1,5)</code> 代表  在背包重量为<code>5</code> 的情况下 从 <code>0,1</code>中选择价值最大的。 直观的结果当让是<code>3</code>了。</p>
 </li>
-<li>
-<p>分析过程<br>
-按照上述公式 当我要求 <code>C(1,5)</code> 的时候，对于<code>1</code>这个元素有两种求法</p>
+<li><p>分析过程<br>  按照上述公式 当我要求 <code>C(1,5)</code> 的时候，对于<code>1</code>这个元素有两种求法</p>
 <ul>
 <li><code>1</code> 这个元素被选中</li>
-<li><code>1</code> 这个元素没有被选中</li>
-</ul>
+<li><p><code>1</code> 这个元素没有被选中</p>
 <p>如果<code>1</code> 被选中了，则背包的重量要减去<code>1</code>的重量<code>10</code>那么在接下来的问题就变成 在 <code>C(0,5 - 10) + 4</code>（4 是用于1已经被选中了，所以原问题就变成了在子问题基础上 加上 已经选中的价值）  但是 <code>C(0, -5)</code> 不可能存在，所以 <code>1</code> 不能选 所以 有了 <code>C(0,5)</code> 的子问题</p>
 </li>
-<li>
-<p>我们在看一个更复杂的例子：</p>
-<p><code>ps = [12,3,1,3,6]</code></p>
-<p><code>ws = [5,4,7,2,6]</code></p>
-<p><code>i = [0,1,2,3,4]</code>   （物品的代号）</p>
-<p><code>W = 10</code></p>
-<p>我们依旧定义问题 <code>C(4, 10)</code><br>
-根据公式，我们来公式<br>
-<img src="/article/knapsack-problem/1559211607230knapsack-problem_.png" alt></p>
-<p>下面是具体的分析过程<br>
-<code>4</code> 被选中<br>
-<img src="/article/knapsack-problem/1559277486742knapsack-problem_.png" alt></p>
-<p><code>4</code> 没有被选中<br>
-<img src="/article/knapsack-problem/1559277542327knapsack-problem_.png" alt></p>
-<p>求<code>C(4, 10)</code></p>
+</ul>
+</li>
+<li><p>我们在看一个更复杂的例子：</p>
+<p>  <code>ps = [12,3,1,3,6]</code></p>
+<p>  <code>ws = [5,4,7,2,6]</code></p>
+<p>   <code>i = [0,1,2,3,4]</code>   （物品的代号）</p>
+<p>  <code>W = 10</code></p>
+<p>  我们依旧定义问题 <code>C(4, 10)</code><br>  根据公式，我们来公式<br>  <img src="/article/knapsack-problem/1559211607230knapsack-problem_.png" alt></p>
+<p>  下面是具体的分析过程<br>  <code>4</code> 被选中<br>  <img src="/article/knapsack-problem/1559277486742knapsack-problem_.png" alt></p>
+<p>  <code>4</code> 没有被选中<br>  <img src="/article/knapsack-problem/1559277542327knapsack-problem_.png" alt></p>
+<p>  求<code>C(4, 10)</code> </p>
 <ul>
-<li>如果<code>4</code> 号元素被选中了，则进入子问题构成的问题<br>
-<code>C(4 -1, 10 - ws[4]) + ps[4]</code></li>
+<li>如果<code>4</code> 号元素被选中了，则进入子问题构成的问题<br><code>C(4 -1, 10 - ws[4]) + ps[4]</code> </li>
 <li>如果<code>4</code> 号元素 没有被选中，则进入第个子问题<code>C(4 -1, 10</code></li>
 <li>这两个我们要取得最大的结果 才符合要求</li>
-<li>处理边界 当<code>i</code> 和<code>v</code> 有一个小于<code>0</code> 的时候 这个问题都是不存在的</li>
+<li>处理边界 当<code>i</code> 和<code>v</code> 有一个小于<code>0</code> 的时候 这个问题都是不存在的 <h3><span id="代码实现">代码实现</span></h3><h4><span id="递归写法">递归写法</span></h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0 -1 背包问题 </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> v &gt;= w:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> idx &gt; len(ps) - <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>       </span><br><span class="line">    <span class="comment"># 如果选中该物品 太大 则放弃选中 原因就是 如果返回0 则会参与下边的运算max 会使得 ps[idx] + 0 会直接返回 ps[idx] 的值导致问题错误</span></span><br><span class="line">    <span class="keyword">if</span> ws[idx] + v &gt; w:</span><br><span class="line">        <span class="keyword">return</span> package0_1(idx+<span class="number">1</span>, v, w, ws, ps)</span><br><span class="line">    <span class="keyword">return</span>  max(ps[idx] + package0_1(idx+<span class="number">1</span>, v + ws[idx], w, ws, ps), package0_1(idx+<span class="number">1</span>, v, w, ws, ps))</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
-<h3><span id="代码实现">代码实现</span></h3>
-<h4><span id="递归写法">递归写法</span></h4>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0 -1 背包问题 </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> v &gt;= w:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> idx &gt; len(ps) - <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>       </span><br><span class="line">    <span class="comment"># 如果选中该物品 太大 则放弃选中 原因就是 如果返回0 则会参与下边的运算max 会使得 ps[idx] + 0 会直接返回 ps[idx] 的值导致问题错误</span></span><br><span class="line">    <span class="keyword">if</span> ws[idx] + v &gt; w:</span><br><span class="line">        <span class="keyword">return</span> package0_1(idx+<span class="number">1</span>, v, w, ws, ps)</span><br><span class="line">    <span class="keyword">return</span>  max(ps[idx] + package0_1(idx+<span class="number">1</span>, v + ws[idx], w, ws, ps), package0_1(idx+<span class="number">1</span>, v, w, ws, ps))</span><br></pre></td></tr></table></figure>
-<p>运行结果</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret = package0_1(<span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>, ws, ps) </span><br><span class="line">ret = <span class="number">15</span></span><br></pre></td></tr></table></figure>
-<h4><span id="动态规划写法">动态规划写法</span></h4>
-<ul>
-<li>
-<p>中间结果的保存</p>
-<p>由于我们的问题是<code>C(i,w)</code> <code>i</code> 和<code>w</code> 会有各种不同的取值 那么我们申请一个二维数组来保存中间计算的结果</p>
-</li>
-</ul>
+<p>运行结果<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret = package0_1(<span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>, ws, ps) </span><br><span class="line">ret = <span class="number">15</span></span><br></pre></td></tr></table></figure></p>
+<h4><span id="动态规划写法">动态规划写法</span></h4><ul>
+<li><p>中间结果的保存</p>
+<p>  由于我们的问题是<code>C(i,w)</code> <code>i</code> 和<code>w</code> 会有各种不同的取值 那么我们申请一个二维数组来保存中间计算的结果</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#   由于我们的问题是`C(i,w)` `i` 和`w` 会有各种不同的取值 那么我们申请一个二维数组来保存中间计算的结果</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1_dynamic_1</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">    max_idx = len(ps)</span><br><span class="line">    ret_mid = [[ <span class="literal">None</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(w + <span class="number">1</span>)] <span class="keyword">for</span> j <span class="keyword">in</span> range(max_idx)]</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">package0_1_inner_1</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> v &gt;= w:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span> idx &gt; max_idx - <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ret_mid[idx][v] <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> ret_mid[idx][v]</span><br><span class="line">        ret_tmp = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span> ws[idx] + v &gt; w:</span><br><span class="line">            ret_tmp = package0_1_inner_1(idx + <span class="number">1</span>,v, w, ws, ps)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ret_tmp = max(ps[idx] + package0_1_inner_1(idx+<span class="number">1</span>,v + ws[idx], w, ws, ps),package0_1_inner_1(idx+<span class="number">1</span>,v, w, ws, ps))</span><br><span class="line">        ret_mid[idx][v] = ret_tmp</span><br><span class="line">        <span class="keyword">return</span> ret_mid[idx][v]</span><br><span class="line">    </span><br><span class="line">    ret = package0_1_inner_1(idx, v, w, ws, ps)</span><br><span class="line">    print(ret_mid)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
-<p>运行结果</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret = package0_1_dynamic_1(<span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>, ws, ps) </span><br><span class="line">ret = <span class="number">15</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>优化分析<br>
-如果我们打印 ret_mid</li>
+</li>
 </ul>
+<p>运行结果<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret = package0_1_dynamic_1(<span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>, ws, ps) </span><br><span class="line">ret = <span class="number">15</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>优化分析<br>如果我们打印 ret_mid </li>
+</ul>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -399,16 +372,13 @@
 </tr>
 </tbody>
 </table>
-<p>这个表格的意思是，当我们选中 背包选中<code>0</code> 的时候 且这个时候背包的总量为 <code>0</code>的时候 最大的价值 为<code>15</code> 既<code>C（0，0）</code>的含义<br>
-同理<code>C(1,0)</code>的意思是 没有选中 <code>0</code>  且 选中 <code>1</code>和 不选 <code>1</code>的价值最大的值</p>
-<p>我们分析一下 如果我要求 <code>C(i,w)</code> 但是需要依赖于 <code>C(i+1,?)</code> 这里用<code>?</code> 表示只需要行数据。 那么需要上面数组 <code>C(i+1,?)</code> 的结果<br>
-也就是说 我们的 ret_mid[i] 要依赖于 ret_mid[i+1] 的结果 这个时候 我们的 <code>ret_mid[i+1]</code>  还没有被算出来<br>
-如果我们反转一下， 是否能计算将这个顺序 倒置一下，比如说让<code>ret_mid[i]</code> 依赖于 <code>ret_mid[i - 1]</code> 这样依赖，我们算到了<code>ret_mid[0]</code> 的时候，就可以被 <code>ret_mid[1]</code> 复用结果了。</p>
-<p>我们来看一下代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#   由于我们的问题是`C(i,w)` `i` 和`w` 会有各种不同的取值 那么我们申请一个二维数组来保存中间计算的结果</span></span><br><span class="line"><span class="comment">#   idx 变成了 物品数量</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1_dynamic_2</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">    <span class="comment"># 刚开始为 物品的数量</span></span><br><span class="line">    ret_mid = [[ <span class="literal">None</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(v)] <span class="keyword">for</span> j <span class="keyword">in</span> range(idx + <span class="number">1</span>)]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">package0_1_inner_2</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> idx &lt; <span class="number">0</span> <span class="keyword">or</span> v &lt; <span class="number">0</span>:           <span class="comment"># 这里我们做了处理 如果为0 则证明还有东西没有选的 因为 0 也是一个物品</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        print(idx,v)</span><br><span class="line">        <span class="keyword">if</span> ret_mid[idx][v - <span class="number">1</span>] <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:       <span class="comment"># v 的长度要减一 因为你传递过来的是 背包上线 当背包上线是10 的时候 对应 9号位置</span></span><br><span class="line">            <span class="keyword">return</span> ret_mid[idx][v - <span class="number">1</span>]</span><br><span class="line">        ret_tmp = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>  v - ws[idx] &lt; <span class="number">0</span>:        <span class="comment"># 表示剩下的已经不足装下现在的东西了</span></span><br><span class="line">            ret_tmp = package0_1_inner_2(idx - <span class="number">1</span>,v, w, ws, ps)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ret_tmp = max(ps[idx] + package0_1_inner_2(idx - <span class="number">1</span>,v - ws[idx], w, ws, ps),package0_1_inner_2(idx - <span class="number">1</span>,v, w, ws, ps))</span><br><span class="line">        ret_mid[idx][v<span class="number">-1</span>] = ret_tmp</span><br><span class="line">        <span class="keyword">return</span> ret_mid[idx][v<span class="number">-1</span>]</span><br><span class="line">    </span><br><span class="line">    ret = package0_1_inner_2(idx, v, w, ws, ps)</span><br><span class="line">    print(ret_mid)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
-<p>运行结果</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret3 = package0_1_dynamic_2(<span class="number">4</span>, <span class="number">10</span>, <span class="number">10</span>, ws, ps)</span><br><span class="line"><span class="comment"># ret = 15</span></span><br></pre></td></tr></table></figure>
+</div>
+<p>这个表格的意思是，当我们选中 背包选中<code>0</code> 的时候 且这个时候背包的总量为 <code>0</code>的时候 最大的价值 为<code>15</code> 既<code>C（0，0）</code>的含义<br>同理<code>C(1,0)</code>的意思是 没有选中 <code>0</code>  且 选中 <code>1</code>和 不选 <code>1</code>的价值最大的值</p>
+<p>我们分析一下 如果我要求 <code>C(i,w)</code> 但是需要依赖于 <code>C(i+1,?)</code> 这里用<code>?</code> 表示只需要行数据。 那么需要上面数组 <code>C(i+1,?)</code> 的结果<br>也就是说 我们的 ret_mid[i] 要依赖于 ret_mid[i+1] 的结果 这个时候 我们的 <code>ret_mid[i+1]</code>  还没有被算出来<br>如果我们反转一下， 是否能计算将这个顺序 倒置一下，比如说让<code>ret_mid[i]</code> 依赖于 <code>ret_mid[i - 1]</code> 这样依赖，我们算到了<code>ret_mid[0]</code> 的时候，就可以被 <code>ret_mid[1]</code> 复用结果了。 </p>
+<p>我们来看一下代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#   由于我们的问题是`C(i,w)` `i` 和`w` 会有各种不同的取值 那么我们申请一个二维数组来保存中间计算的结果</span></span><br><span class="line"><span class="comment">#   idx 变成了 物品数量</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1_dynamic_2</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">    <span class="comment"># 刚开始为 物品的数量</span></span><br><span class="line">    ret_mid = [[ <span class="literal">None</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(v)] <span class="keyword">for</span> j <span class="keyword">in</span> range(idx + <span class="number">1</span>)]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">package0_1_inner_2</span><span class="params">(idx, v, w, ws, ps)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> idx &lt; <span class="number">0</span> <span class="keyword">or</span> v &lt; <span class="number">0</span>:           <span class="comment"># 这里我们做了处理 如果为0 则证明还有东西没有选的 因为 0 也是一个物品</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        print(idx,v)</span><br><span class="line">        <span class="keyword">if</span> ret_mid[idx][v - <span class="number">1</span>] <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:       <span class="comment"># v 的长度要减一 因为你传递过来的是 背包上线 当背包上线是10 的时候 对应 9号位置</span></span><br><span class="line">            <span class="keyword">return</span> ret_mid[idx][v - <span class="number">1</span>]</span><br><span class="line">        ret_tmp = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>  v - ws[idx] &lt; <span class="number">0</span>:        <span class="comment"># 表示剩下的已经不足装下现在的东西了</span></span><br><span class="line">            ret_tmp = package0_1_inner_2(idx - <span class="number">1</span>,v, w, ws, ps)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ret_tmp = max(ps[idx] + package0_1_inner_2(idx - <span class="number">1</span>,v - ws[idx], w, ws, ps),package0_1_inner_2(idx - <span class="number">1</span>,v, w, ws, ps))</span><br><span class="line">        ret_mid[idx][v<span class="number">-1</span>] = ret_tmp</span><br><span class="line">        <span class="keyword">return</span> ret_mid[idx][v<span class="number">-1</span>]</span><br><span class="line">    </span><br><span class="line">    ret = package0_1_inner_2(idx, v, w, ws, ps)</span><br><span class="line">    print(ret_mid)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure></p>
+<p>运行结果<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret3 = package0_1_dynamic_2(<span class="number">4</span>, <span class="number">10</span>, <span class="number">10</span>, ws, ps)</span><br><span class="line"><span class="comment"># ret = 15</span></span><br></pre></td></tr></table></figure></p>
 <p>我们看到下面的ret_mid 数据</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -493,127 +463,18 @@
 </tr>
 </tbody>
 </table>
-<p>看一下依赖关系</p>
+</div>
+<p>看一下依赖关系 </p>
 <p><img src="/article/knapsack-problem/1559276755945knapsack-problem_.png" alt></p>
-<p>我们根据这个图发现<br>
-第<code>4</code>行的图依赖于 <code>3</code>行的图数据 而第<code>3</code>行的数据依赖于第<code>2</code>行的数据 如果这样的话那么我们是不是可只用 两行数据来算出结果<br>
-级 <code>i</code> 行数据依赖于 <code>i -1</code> 行 ， 我们可以利用<code>滚动数组</code>的方法优化空间，也可以用<code>自下而上</code>的优化方法来优化</p>
+<p>我们根据这个图发现<br>第<code>4</code>行的图依赖于 <code>3</code>行的图数据 而第<code>3</code>行的数据依赖于第<code>2</code>行的数据 如果这样的话那么我们是不是可只用 两行数据来算出结果<br>级 <code>i</code> 行数据依赖于 <code>i -1</code> 行 ， 我们可以利用<code>滚动数组</code>的方法优化空间，也可以用<code>自下而上</code>的优化方法来优化</p>
 <p>滚动数组的方式 好优化 只需要 将<code>idx % 2</code>就可以了</p>
 <p>下面我来用自下而上的</p>
-<p>来看代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1_dynamic_3</span><span class="params">(v, ws, ps)</span>:</span></span><br><span class="line">    max_idx = len(ws)       <span class="comment"># 物品数量</span></span><br><span class="line">    ret_mid = []</span><br><span class="line">    <span class="comment"># 初始化0 0 节点</span></span><br><span class="line">    ret_zero = [<span class="number">0</span>  <span class="keyword">for</span> i <span class="keyword">in</span> range(v + <span class="number">1</span>)]</span><br><span class="line">    ret_mid.insert(<span class="number">0</span>, ret_zero)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,max_idx + <span class="number">1</span>):     </span><br><span class="line">        ret_item = [ <span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(v + <span class="number">1</span>)]</span><br><span class="line">        <span class="keyword">for</span> vi <span class="keyword">in</span> range(<span class="number">0</span>, v + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> ws[i<span class="number">-1</span>] &gt; vi:</span><br><span class="line">                ret_item[vi] = ret_mid[i - <span class="number">1</span>][vi]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                ret_item[vi]= max(ret_mid[i - <span class="number">1</span>][vi - ws[i - <span class="number">1</span>]] + ps[i - <span class="number">1</span>], ret_mid[i - <span class="number">1</span>][vi])</span><br><span class="line">        ret_mid.insert(i,ret_item)</span><br><span class="line">    print(ret_mid)</span><br><span class="line">    <span class="keyword">return</span> ret_mid[max_idx][v]</span><br></pre></td></tr></table></figure>
-<p>运行如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret3 = package0_1_dynamic_3(<span class="number">10</span>, ws, ps)</span><br><span class="line">print(ret3)</span><br></pre></td></tr></table></figure>
-<p>来看中间结果</p>
-<table>
-<thead>
-<tr>
-<th>i/v</th>
-<th>0</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-<th>6</th>
-<th>7</th>
-<th>8</th>
-<th>9</th>
-<th>10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>15</td>
-<td>15</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>12</td>
-<td>15</td>
-<td>15</td>
-</tr>
-<tr>
-<td>4</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-<td>12</td>
-<td>12</td>
-<td>15</td>
-<td>15</td>
-<td>15</td>
-<td>15</td>
-</tr>
-<tr>
-<td>5</td>
-<td>0</td>
-<td>0</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-<td>12</td>
-<td>12</td>
-<td>15</td>
-<td>15</td>
-<td>15</td>
-<td>15</td>
-</tr>
-</tbody>
-</table>
-<h4><span id="总结">总结</span></h4>
-<p>动态规划的主要难点就是如何划分问题，将大问题拆解为子问题之后，分析子问题和原问题的最优解，然后根据问题描述拆分通项公式，最后在分析计算的冗余度。对于逻辑分析能力是个很好的锻炼。</p>
-<h2><span id="完全背包问题">完全背包问题</span></h2>
-<pre><code>敬请期待</code></pre>
-
+<p>来看代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">package0_1_dynamic_3</span><span class="params">(v, ws, ps)</span>:</span></span><br><span class="line">    max_idx = len(ws)       <span class="comment"># 物品数量</span></span><br><span class="line">    ret_mid = []</span><br><span class="line">    <span class="comment"># 初始化0 0 节点</span></span><br><span class="line">    ret_zero = [<span class="number">0</span>  <span class="keyword">for</span> i <span class="keyword">in</span> range(v + <span class="number">1</span>)]</span><br><span class="line">    ret_mid.insert(<span class="number">0</span>, ret_zero)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,max_idx + <span class="number">1</span>):     </span><br><span class="line">        ret_item = [ <span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(v + <span class="number">1</span>)]</span><br><span class="line">        <span class="keyword">for</span> vi <span class="keyword">in</span> range(<span class="number">0</span>, v + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> ws[i<span class="number">-1</span>] &gt; vi:</span><br><span class="line">                ret_item[vi] = ret_mid[i - <span class="number">1</span>][vi]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                ret_item[vi]= max(ret_mid[i - <span class="number">1</span>][vi - ws[i - <span class="number">1</span>]] + ps[i - <span class="number">1</span>], ret_mid[i - <span class="number">1</span>][vi])</span><br><span class="line">        ret_mid.insert(i,ret_item)</span><br><span class="line">    print(ret_mid)</span><br><span class="line">    <span class="keyword">return</span> ret_mid[max_idx][v]</span><br></pre></td></tr></table></figure></p>
+<p>运行如下<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps = [<span class="number">12</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>]</span><br><span class="line">ws = [<span class="number">5</span>,<span class="number">4</span>,<span class="number">7</span>,<span class="number">2</span>,<span class="number">6</span>]</span><br><span class="line">ret3 = package0_1_dynamic_3(<span class="number">10</span>, ws, ps)</span><br><span class="line">print(ret3)</span><br></pre></td></tr></table></figure></p>
+<p>来看中间结果<br>| i/v | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10 |<br>| —- | —- | —- | —- | —- | —- | —- | —- | —- | —- | —- | —-|<br>| 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0  |<br>| 1   | 0   | 0   | 0   | 0   | 0   | 12  | 12  | 12  | 12  | 12  | 12 |<br>| 2   | 0   | 0   | 0   | 0   | 3   | 12  | 12  | 12  | 12  | 15  | 15 |<br>| 3   | 0   | 0   | 0   | 0   | 3   | 12  | 12  | 12  | 12  | 15  | 15 |<br>| 4   | 0   | 0   | 3   | 3   | 3   | 12  | 12  | 15  | 15  | 15  | 15 |<br>| 5   | 0   | 0   | 3   | 3   | 3   | 12  | 12  | 15  | 15  | 15  | 15 |</p>
+<h4><span id="总结">总结</span></h4><p>动态规划的主要难点就是如何划分问题，将大问题拆解为子问题之后，分析子问题和原问题的最优解，然后根据问题描述拆分通项公式，最后在分析计算的冗余度。对于逻辑分析能力是个很好的锻炼。</p>
+<h2><span id="完全背包问题">完全背包问题</span></h2><pre><code>敬请期待
+</code></pre>
         
                 <hr>
                 <!-- Pager -->

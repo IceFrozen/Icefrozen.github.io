@@ -93,9 +93,9 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
-                            
                               <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                            
+                              <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
                             
                         </div>
                         <h1>Redis系列之数据结构篇(3)</h1>
@@ -149,14 +149,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -222,12 +222,9 @@
                 <blockquote>
 <p>本文转自 <a href="http://redisbook.com/" target="_blank" rel="noopener">redis 的设计与实现</a></p>
 </blockquote>
-<h1><span id="跳表">跳表</span></h1>
-<p>–</p>
-<h2><span id="跳表的结构">跳表的结构</span></h2>
-<p>跳跃表（skiplist）是一种随机化的数据， 跳跃表以有序的方式在层次化的链表中保存元素， 效率和平衡树媲美 —— 查找、删除、添加等操作都可以在对数期望时间下完成， 并且比起平衡树来说， 跳跃表的实现要简单直观得多。</p>
-<p>以下是个典型的跳跃表例子（图片来自维基百科）：<br>
-<img src="/article/distributed-redis-data-structure-skip-zip-list/1561702628780distributed-redis-data-structure-skip-zip-list_.png" alt></p>
+<h1><span id="跳表">跳表</span></h1><p>—</p>
+<h2><span id="跳表的结构">跳表的结构</span></h2><p>跳跃表（skiplist）是一种随机化的数据， 跳跃表以有序的方式在层次化的链表中保存元素， 效率和平衡树媲美 —— 查找、删除、添加等操作都可以在对数期望时间下完成， 并且比起平衡树来说， 跳跃表的实现要简单直观得多。</p>
+<p>以下是个典型的跳跃表例子（图片来自维基百科）：<br><img src="/article/distributed-redis-data-structure-skip-zip-list/1561702628780distributed-redis-data-structure-skip-zip-list_.png" alt></p>
 <p>从图中可以看到， 跳跃表主要由以下部分构成：</p>
 <ul>
 <li><code>表头（head）：负责维护跳跃表的节点指针。</code></li>
@@ -243,21 +240,12 @@
 </ul>
 <p>跳表的结构如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 头节点，尾节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">header</span>, *<span class="title">tail</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 目前表内节点的最大层数</span></span><br><span class="line">    <span class="keyword">int</span> level;</span><br><span class="line"></span><br><span class="line">&#125; zskiplist;</span><br></pre></td></tr></table></figure>
-<p>跳表的节点</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// member 对象</span></span><br><span class="line">    robj *obj;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分值</span></span><br><span class="line">    <span class="keyword">double</span> score;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后退指针</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 层</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 前进指针</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">forward</span>;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这个层跨越的节点数量</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</span><br><span class="line"></span><br><span class="line">    &#125; level[];</span><br><span class="line"></span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure>
-<h2><span id="跳表的应用">跳表的应用</span></h2>
-<p>和字典、链表或者字符串这几种在 Redis 中大量使用的数据结构不同， 跳跃表在 Redis 的唯一作用， 就是实现有序集数据类型。<br>
-跳跃表将指向有序集的 score 值和 member 域的指针作为元素， 并以 score 值为索引， 对有序集元素进行排序。<br>
-举个例子， 以下代码创建了一个带有 3 个元素的有序集：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> ZADD s 6 x 10 y 15 z</span></span><br><span class="line">(integer) 3</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> ZRANGE s 0 -1 WITHSCORES</span></span><br><span class="line">1) "x"</span><br><span class="line">2) "6"</span><br><span class="line">3) "y"</span><br><span class="line">4) "10"</span><br><span class="line">5) "z"</span><br><span class="line">6) "15"</span><br></pre></td></tr></table></figure>
+<p>跳表的节点<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// member 对象</span></span><br><span class="line">    robj *obj;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分值</span></span><br><span class="line">    <span class="keyword">double</span> score;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后退指针</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 层</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 前进指针</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">forward</span>;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这个层跨越的节点数量</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</span><br><span class="line"></span><br><span class="line">    &#125; level[];</span><br><span class="line"></span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure></p>
+<h2><span id="跳表的应用">跳表的应用</span></h2><p>和字典、链表或者字符串这几种在 Redis 中大量使用的数据结构不同， 跳跃表在 Redis 的唯一作用， 就是实现有序集数据类型。<br>跳跃表将指向有序集的 score 值和 member 域的指针作为元素， 并以 score 值为索引， 对有序集元素进行排序。<br>举个例子， 以下代码创建了一个带有 3 个元素的有序集：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> ZADD s 6 x 10 y 15 z</span></span><br><span class="line">(integer) 3</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> ZRANGE s 0 -1 WITHSCORES</span></span><br><span class="line">1) "x"</span><br><span class="line">2) "6"</span><br><span class="line">3) "y"</span><br><span class="line">4) "10"</span><br><span class="line">5) "z"</span><br><span class="line">6) "15"</span><br></pre></td></tr></table></figure></p>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561702897381distributed-redis-data-structure-skip-zip-list_.png" alt></p>
 <p><strong>为了方便展示， 在图片中我们直接将 member 和 score 值包含在表节点中， 但是在实际的定义中， 因为跳跃表要和另一个实现有序集的结构（字典）分享 member 和 score 值， 所以跳跃表只保存指向 member 和 score 的指针。</strong></p>
-<h1><span id="压缩表">压缩表</span></h1>
-<h2><span id="简介">简介</span></h2>
-<p>压缩列表（ziplist）是列表键和哈希键的底层实现之一。<br>
-当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。</p>
-<h2><span id="结构">结构</span></h2>
-<p>压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的连续内存块组成的顺序型（sequential）数据结构。</p>
+<h1><span id="压缩表">压缩表</span></h1><h2><span id="简介">简介</span></h2><p>压缩列表（ziplist）是列表键和哈希键的底层实现之一。<br>当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。</p>
+<h2><span id="结构">结构</span></h2><p>压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的连续内存块组成的顺序型（sequential）数据结构。</p>
 <p>一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。</p>
 <p>图 7-1 展示了压缩列表的各个组成部分， 表 7-1 则记录了各个组成部分的类型、长度、以及用途。</p>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703120380distributed-redis-data-structure-skip-zip-list_.png" alt></p>
@@ -309,6 +297,7 @@
 </tr>
 </tbody>
 </table>
+
 <p>图 7-2 展示了一个压缩列表示例：</p>
 <ul>
 <li>列表 zlbytes 属性的值为 0x50 （十进制 80）， 表示压缩列表的总长为 80 字节。</li>
@@ -316,8 +305,7 @@
 <li>列表 zllen 属性的值为 0x3 （十进制 3）， 表示压缩列表包含三个节点。</li>
 </ul>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703205387distributed-redis-data-structure-skip-zip-list_.png" alt></p>
-<h2><span id="压缩列表节点的构成">压缩列表节点的构成</span></h2>
-<p>每个压缩列表节点可以保存一个字节数组或者一个整数值， 其中， 字节数组可以是以下三种长度的其中一种：</p>
+<h2><span id="压缩列表节点的构成">压缩列表节点的构成</span></h2><p>每个压缩列表节点可以保存一个字节数组或者一个整数值， 其中， 字节数组可以是以下三种长度的其中一种：</p>
 <ul>
 <li>长度小于等于 63 （2^{6}-1）字节的字节数组；</li>
 <li>长度小于等于 16383 （2^{14}-1） 字节的字节数组；</li>
@@ -334,15 +322,12 @@
 </ul>
 <p>每个压缩列表节点都由 <code>previous_entry_length</code> 、 <code>encoding</code> 、 <code>content</code> 三个部分组成， 如图 7-4 所示。</p>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703498906distributed-redis-data-structure-skip-zip-list_.png" alt></p>
-<h3><span id="previous_entry_length">previous_entry_length</span></h3>
-<p>节点的 <code>previous_entry_length</code> 属性以字节为单位， 记录了压缩列表中前一个节点的长度。</p>
+<h3><span id="previous_entry_length">previous_entry_length</span></h3><p>节点的 <code>previous_entry_length</code> 属性以字节为单位， 记录了压缩列表中前一个节点的长度。</p>
 <p><code>previous_entry_length</code> 属性的长度可以是 1 字节或者 5 字节：</p>
 <ul>
-<li>
-<p>如果前一节点的长度小于 254 字节， 那么 <code>previous_entry_length</code> 属性的长度为 1 字节： 前一节点的长度就保存在这一个字节里面。</p>
+<li><p>如果前一节点的长度小于 254 字节， 那么 <code>previous_entry_length</code> 属性的长度为 1 字节： 前一节点的长度就保存在这一个字节里面。</p>
 </li>
-<li>
-<p>如果前一节点的长度大于等于 254 字节， 那么 <code>previous_entry_length</code> 属性的长度为 5 字节： 其中属性的第一字节会被设置为 0xFE （十进制值 254）， 而之后的四个字节则用于保存前一节点的长度。</p>
+<li><p>如果前一节点的长度大于等于 254 字节， 那么 <code>previous_entry_length</code> 属性的长度为 5 字节： 其中属性的第一字节会被设置为 0xFE （十进制值 254）， 而之后的四个字节则用于保存前一节点的长度。</p>
 </li>
 </ul>
 <p>图 7-5 展示了一个包含一字节长 previous_entry_length 属性的压缩列表节点， 属性的值为 0x05 ， 表示前一节点的长度为 5 字节。</p>
@@ -350,35 +335,31 @@
 <p>图 7-6 展示了一个包含五字节长 previous_entry_length 属性的压缩节点， 属性的值为 0xFE00002766 ， 其中值的最高位字节 0xFE 表示这是一个五字节长的 previous_entry_length 属性， 而之后的四字节 0x00002766 （十进制值 10086 ）才是前一节点的实际长度。</p>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703626097distributed-redis-data-structure-skip-zip-list_.png" alt></p>
 <p>压缩列表的从表尾向表头遍历操作就是使用这一原理实现的： 只要我们拥有了一个指向某个节点起始地址的指针， 那么通过这个指针以及这个节点的 <code>previous_entry_length</code> 属性， 程序就可以一直向前一个节点回溯， 最终到达压缩列表的表头节点。</p>
-<h3><span id="encoding">encoding</span></h3>
-<p>节点的 <code>encoding</code> 属性记录了节点的 <code>content</code> 属性所保存数据的类型以及长度：</p>
+<h3><span id="encoding">encoding</span></h3><p>节点的 <code>encoding</code> 属性记录了节点的 <code>content</code> 属性所保存数据的类型以及长度：</p>
 <ul>
-<li>
-<p>一字节、两字节或者五字节长， 值的最高位为 00 、 01 或者 10 的是字节数组编码： 这种编码表示节点的 <code>content</code> 属性保存着字节数组， 数组的长度由编码除去最高两位之后的其他位记录；</p>
+<li><p>一字节、两字节或者五字节长， 值的最高位为 00 、 01 或者 10 的是字节数组编码： 这种编码表示节点的 <code>content</code> 属性保存着字节数组， 数组的长度由编码除去最高两位之后的其他位记录；</p>
 </li>
-<li>
-<p>一字节长， 值的最高位以 11 开头的是整数编码： 这种编码表示节点的 <code>content</code> 属性保存着整数值， 整数值的类型和长度由编码除去最高两位之后的其他位记录；</p>
+<li><p>一字节长， 值的最高位以 11 开头的是整数编码： 这种编码表示节点的 <code>content</code> 属性保存着整数值， 整数值的类型和长度由编码除去最高两位之后的其他位记录；</p>
 </li>
 </ul>
 <p>表 7-2 记录了所有可用的字节数组编码， 而表 7-3 则记录了所有可用的整数编码。 表格中的下划线 _ 表示留空， 而 b 、 x 等变量则代表实际的二进制数据， 为了方便阅读， 多个字节之间用空格隔开。</p>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703731706distributed-redis-data-structure-skip-zip-list_.png" alt></p>
-<h3><span id="content">content</span></h3>
-<p>节点的 content 属性负责保存节点的值， 节点值可以是一个字节数组或者整数， 值的类型和长度由节点的 encoding 属性决定。</p>
+<h3><span id="content">content</span></h3><p>节点的 content 属性负责保存节点的值， 节点值可以是一个字节数组或者整数， 值的类型和长度由节点的 encoding 属性决定。</p>
 <p>图 7-9 展示了一个保存字节数组的节点示例：</p>
 <ul>
 <li>编码的最高两位 00 表示节点保存的是一个字节数组；</li>
 <li>编码的后六位 001011 记录了字节数组的长度 11 ；</li>
-<li>content 属性保存着节点的值 “hello world” 。</li>
+<li><p>content 属性保存着节点的值 “hello world” 。</p>
+<p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703790975distributed-redis-data-structure-skip-zip-list_.png" alt> </p>
+</li>
 </ul>
-<p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703790975distributed-redis-data-structure-skip-zip-list_.png" alt></p>
 <p>图 7-10 展示了一个保存整数值的节点示例：</p>
 <ul>
 <li>编码 11000000 表示节点保存的是一个 int16_t 类型的整数值；</li>
 <li>content 属性保存着节点的值 10086 。</li>
 </ul>
 <p><img src="/article/distributed-redis-data-structure-skip-zip-list/1561703826960distributed-redis-data-structure-skip-zip-list_.png" alt></p>
-<h2><span id="连锁更新">连锁更新</span></h2>
-<p>前面说过， 每个节点的 previous_entry_length 属性都记录了前一个节点的长度：</p>
+<h2><span id="连锁更新">连锁更新</span></h2><p>前面说过， 每个节点的 previous_entry_length 属性都记录了前一个节点的长度：</p>
 <ul>
 <li>如果前一节点的长度小于 254 字节， 那么 previous_entry_length 属性需要用 1 字节长的空间来保存这个长度值。</li>
 <li>如果前一节点的长度大于等于 254 字节， 那么 previous_entry_length 属性需要用 5 字节长的空间来保存这个长度值。</li>
@@ -398,11 +379,9 @@
 <p>因为连锁更新在最坏情况下需要对压缩列表执行 N 次空间重分配操作， 而每次空间重分配的最坏复杂度为 O(N) ， 所以连锁更新的最坏复杂度为 O(N^2) 。</p>
 <p>要注意的是， 尽管连锁更新的复杂度较高， 但它真正造成性能问题的几率是很低的：</p>
 <ul>
-<li>
-<p>首先， 压缩列表里要恰好有多个连续的、长度介于 250 字节至 253 字节之间的节点， 连锁更新才有可能被引发， 在实际中， 这种情况并不多见；</p>
+<li><p>首先， 压缩列表里要恰好有多个连续的、长度介于 250 字节至 253 字节之间的节点， 连锁更新才有可能被引发， 在实际中， 这种情况并不多见；</p>
 </li>
-<li>
-<p>其次， 即使出现连锁更新， 但只要被更新的节点数量不多， 就不会对性能造成任何影响： 比如说， 对三五个节点进行连锁更新是绝对不会影响性能的；</p>
+<li><p>其次， 即使出现连锁更新， 但只要被更新的节点数量不多， 就不会对性能造成任何影响： 比如说， 对三五个节点进行连锁更新是绝对不会影响性能的；</p>
 </li>
 </ul>
 <p>因为以上原因， ziplistPush 等命令的平均复杂度仅为 O(N) ， 在实际中， 我们可以放心地使用这些函数， 而不必担心连锁更新会影响压缩列表的性能。</p>
@@ -502,9 +481,9 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
-                        
                           <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                        
+                          <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
                         
                     </div>
                 </section>

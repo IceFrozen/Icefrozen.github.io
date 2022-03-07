@@ -95,9 +95,9 @@
                             
                               <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                             
-                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
-                            
                               <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                            
+                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
                             
                         </div>
                         <h1>数据库原理篇(2)</h1>
@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -221,36 +221,24 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="innobd-的数据结构">InnoBD 的数据结构</span></h2>
-<h2><span id="innobd-中的数据结构概览">InnoBD 中的数据结构概览</span></h2>
-<p>先来看一下 InnoDB 中的整体存贮逻辑<br>
-<img src="/article/distributed-transaction-innodb/1575793726712distributed-transaction_.png" alt></p>
+                <h2><span id="innobd-的数据结构">InnoBD 的数据结构</span></h2><h2><span id="innobd-中的数据结构概览">InnoBD 中的数据结构概览</span></h2><p>先来看一下 InnoDB 中的整体存贮逻辑<br><img src="/article/distributed-transaction-innodb/1575793726712distributed-transaction_.png" alt></p>
 <p>MySQL 使用 InnoDB 存储表时，会将<strong>表的定义</strong>和<strong>数据索引</strong>等信息分开存储，其中前者存储在 .frm 文件中，后者存储在 .ibd 文件中，这一节就会对这两种不同的文件分别进行介绍。</p>
-<h3><span id="frm-文件">.frm 文件</span></h3>
-<p>无论在 MySQL 中选择了哪个存储引擎，所有的 MySQL 表都会在硬盘上创建一个 .frm 文件用来描述表的格式或者说定义； .frm 文件的格式在不同的平台上都是相同的。</p>
-<h3><span id="ibd-文件">.ibd 文件</span></h3>
-<p>InnoDB 中用于存储数据的文件总共有两个部分，一是<strong>系统表空间文件</strong>，包括 ibdata1、 ibdata2 等文件，其中存储了 InnoDB 系统信息和用户数据库表数据和索引，是所有表公用的。<br>
-当打开 <code>innodb_file_per_table</code> 选项时， .ibd 文件就是每一个表独有的表空间，文件存储了当前表的数据和相关的索引数据。</p>
-<h3><span id="数据结构分类">数据结构分类</span></h3>
-<ul>
-<li>
-<p><strong>表空间Tablespace（ibd文件）</strong></p>
+<h3><span id="frm-文件">.frm 文件</span></h3><p>无论在 MySQL 中选择了哪个存储引擎，所有的 MySQL 表都会在硬盘上创建一个 .frm 文件用来描述表的格式或者说定义； .frm 文件的格式在不同的平台上都是相同的。</p>
+<h3><span id="ibd-文件">.ibd 文件</span></h3><p>InnoDB 中用于存储数据的文件总共有两个部分，一是<strong>系统表空间文件</strong>，包括 ibdata1、 ibdata2 等文件，其中存储了 InnoDB 系统信息和用户数据库表数据和索引，是所有表公用的。<br>当打开 <code>innodb_file_per_table</code> 选项时， .ibd 文件就是每一个表独有的表空间，文件存储了当前表的数据和相关的索引数据。</p>
+<h3><span id="数据结构分类">数据结构分类</span></h3><ul>
+<li><p><strong>表空间Tablespace（ibd文件）</strong></p>
 <p>新建一个数据库时，innodb存储引擎会初始化一个名为<code>ibdata1</code>的表空间文件，默认情况下，这个文件会存储所有表的数据，以及我们所熟知但看不到的系统表 sys_tables、sys_columns、sys_indexes 、sys_fields等。此外，还会存储<strong>用来保证数据完整性的回滚段数据</strong>，当然这部分数据在新版本的MySQL中，已经可以通过参数来设置回滚段的存储位置了；</p>
 </li>
-<li>
-<p><strong>段Segment（一个索引2个段）</strong></p>
-<p>段是表空间文件中的主要组织结构，它是一个逻辑概念，用来管理物理文件，是构成索引、表、回滚段的基本元素。<br>
-常见的段有数据段、索引段、回滚段等。InnoDB存储引擎表是索引组织的（index organized），<strong>因此数据即索引，索引即数据</strong>。那么数据段即为B+树的页节点（上图的leaf node segment），索引段即为B+树的非索引节点（上图的non-leaf node segment）。</p>
+<li><p><strong>段Segment（一个索引2个段）</strong></p>
+<p>段是表空间文件中的主要组织结构，它是一个逻辑概念，用来管理物理文件，是构成索引、表、回滚段的基本元素。<br>常见的段有数据段、索引段、回滚段等。InnoDB存储引擎表是索引组织的（index organized），<strong>因此数据即索引，索引即数据</strong>。那么数据段即为B+树的页节点（上图的leaf node segment），索引段即为B+树的非索引节点（上图的non-leaf node segment）。</p>
 <p>创建一个索引（B+树）时会同时创建两个段，分别是内节点段和叶子段，内节点段用来管理（存储）B+树非叶子（页面）的数据，叶子段用来管理（存储）B+树叶子节点的数据；也就是说，在索引数据量一直增长的过程中，所有新的存储空间的申请，都是从“段”这个概念中申请的。</p>
 </li>
-<li>
-<p><strong>簇(区)Extent（1MB）：64个Page</strong></p>
+<li><p><strong>簇(区)Extent（1MB）：64个Page</strong></p>
 <p>簇是由64个连续的页组成的，<strong>每个页大小为16KB</strong>，<strong>即每个簇的大小为1MB</strong>。簇是构成段的基本元素，一个段由若干个簇构成。一个簇是物理上连续分配的一个段空间，每一个段至少会有一个簇，在创建一个段时会创建一个默认的簇。如果存储数据时，一个簇已经不足以放下更多的数据，此时需要从这个段中分配一个新的簇来存放新的数据。一个段所管理的空间大小是无限的，可以一直扩展下去，但是扩展的最小单位就是簇。</p>
 <p>一个B+树节点就是一个页16KB,页的编号可以映射到物理文件偏移,B+树叶子节点前后形成双向链表,如下图</p>
 <p><img src="/article/distributed-transaction-innodb/1575794673983distributed-transaction_.png" alt></p>
 </li>
-<li>
-<p><strong>页Page（16KB）</strong>：</p>
+<li><p><strong>页Page（16KB）</strong>：</p>
 <p>磁盘管理的最小单位,可以理解为簇的细化。页是InnoDB磁盘管理的最小单位。</p>
 <p>页的本质就是一块16KB大小的存储空间，InnoDB为了不同的目的而把页分为不同的类型，其中用于存放记录的页也称为数据页</p>
 <p>常见的页类型有：</p>
@@ -262,36 +250,28 @@
 <li>插入缓冲位图页（Insert Buffer Bitmap）。</li>
 <li>插入缓冲空闲列表页（Insert Buffer Free List）。</li>
 <li>未压缩的二进制大对象页（Uncompressed BLOB Page）。</li>
-<li>压缩的二进制大对象页（Compressed BLOB Page）。<br>
-在逻辑上（页面号都是从小到大连续的）及物理上都是连续的。在向表中插入数据时，如果一个页面已经被写完，系统会从当前簇中分配一个新的空闲页面处理使用，如果当前簇中的64个页面都被分配完，系统会从当前页面所在段中分配一个新的簇，然后再从这个簇中分配一个新的页面来使用；</li>
+<li>压缩的二进制大对象页（Compressed BLOB Page）。<br>在逻辑上（页面号都是从小到大连续的）及物理上都是连续的。在向表中插入数据时，如果一个页面已经被写完，系统会从当前簇中分配一个新的空闲页面处理使用，如果当前簇中的64个页面都被分配完，系统会从当前页面所在段中分配一个新的簇，然后再从这个簇中分配一个新的页面来使用；</li>
 </ul>
 </li>
 </ul>
-<h2><span id="innobd-page详解">InnoBD Page详解</span></h2>
-<h3><span id="page和行结构结构">Page和行结构结构</span></h3>
-<p><img src="/article/distributed-transaction-innodb/1575794929155distributed-transaction_.png" alt><br>
-为了更好的理解Page页的具体作用，我们先来看行记录格式<br>
-行记录格式 存放在 <code>UserRecords</code> 中，是从 <code>Free Space</code> 分配而来的</p>
-<h4><span id="行记录格式">行记录格式</span></h4>
-<ul>
+<h2><span id="innobd-page详解">InnoBD Page详解</span></h2><h3><span id="page和行结构结构">Page和行结构结构</span></h3><p><img src="/article/distributed-transaction-innodb/1575794929155distributed-transaction_.png" alt><br>为了更好的理解Page页的具体作用，我们先来看行记录格式<br>行记录格式 存放在 <code>UserRecords</code> 中，是从 <code>Free Space</code> 分配而来的    </p>
+<h4><span id="行记录格式">行记录格式</span></h4><ul>
 <li><strong>行记录格式（Compact 格式）</strong></li>
 </ul>
 <p>想要了解 Page的结构，还需要从 行格式来说起。行记录记录在5.1版本的情况下，有 <code>Compact</code> 和 <code>Redundant</code> 格式两种情况,<code>Compact</code> 则是在5.0 的时候引入的。</p>
 <p>另外还有其他两种结构 具体的请移步<a href="https://mp.weixin.qq.com/s?__biz=MzIxNTQ3NDMzMw==&amp;mid=2247483670&amp;idx=1&amp;sn=751d84d0ce50d64934d636014abe2023&amp;chksm=979688e4a0e101f2a51d1f06ec75e25c56f8936321ae43badc2fe9fc1257b4dc1c24223699de&amp;mpshare=1&amp;scene=23&amp;srcid=1210jEAAUuWPRLJ9u61XjZLl&amp;sharer_sharetime=1575964590022&amp;sharer_shareid=224e201559d0f0f2cae21cbf8a695c55%23rd" target="_blank" rel="noopener">InnoDB记录存储结构</a></p>
 <p>下面我们主要是讲解 <code>Compact</code> 格式的行记录，结构如下：</p>
 <p><img src="/article/distributed-transaction-innodb/1575875953139distributed-transaction_.png" alt></p>
-<p>我们可以用 <code>show table status like 'sth'\G;</code> 来查看行结构</p>
+<p>我们可以用 <code>show table status like &#39;sth&#39;\G;</code> 来查看行结构 </p>
 <ul>
-<li>
-<p><strong>变长字段长度列表：</strong>  如果列的长度小于255字节，用1字节表示；如果大于255个字节，用2字节表示，也就是说，innodb 中的 <code>varchar</code> 不能超过 <code>65535</code> 个字节，因为有其他的字段，所以实际创建的 <code>varchar</code> 的具体只要比 <code>65535</code> 个字节少</p>
+<li><p><strong>变长字段长度列表：</strong>  如果列的长度小于255字节，用1字节表示；如果大于255个字节，用2字节表示，也就是说，innodb 中的 <code>varchar</code> 不能超过 <code>65535</code> 个字节，因为有其他的字段，所以实际创建的 <code>varchar</code> 的具体只要比 <code>65535</code> 个字节少</p>
 </li>
-<li>
-<p><strong>NULL标志位</strong>：表明该行数据是否有NULL值。占一个字节。该行明确定义了哪些列可以为空，一个字节</p>
+<li><p><strong>NULL标志位</strong>：表明该行数据是否有NULL值。占一个字节。该行明确定义了哪些列可以为空，一个字节</p>
 </li>
-<li>
-<p><strong>记录头信息</strong>：固定占用5字节,每位的含义见下表：</p>
+<li><p><strong>记录头信息</strong>：固定占用5字节,每位的含义见下表：</p>
 </li>
 </ul>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -343,96 +323,73 @@
 </tr>
 </tbody>
 </table>
+</div>
 <ul>
 <li><strong>事务id</strong>  占6个字节</li>
 <li><strong>回滚指针</strong> 占7 个字节</li>
 <li><strong>row_id</strong> 如果没有置顶主键， 则会默认生成一个这个列 占6个字节</li>
 </ul>
-<p>我们下面里创建一张表：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE page_demo(</span><br><span class="line">    -&gt;     c1 INT,</span><br><span class="line">    -&gt;     c2 INT,</span><br><span class="line">    -&gt;     c3 VARCHAR(10000),</span><br><span class="line">    -&gt;     PRIMARY KEY (c1)</span><br><span class="line">    -&gt; ) CHARSET=ascii ROW_FORMAT=Compact;</span><br><span class="line">Query OK, 0 rows affected (0.03 sec)</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+<p>我们下面里创建一张表：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE page_demo(</span><br><span class="line">    -&gt;     c1 INT,</span><br><span class="line">    -&gt;     c2 INT,</span><br><span class="line">    -&gt;     c3 VARCHAR(10000),</span><br><span class="line">    -&gt;     PRIMARY KEY (c1)</span><br><span class="line">    -&gt; ) CHARSET=ascii ROW_FORMAT=Compact;</span><br><span class="line">Query OK, 0 rows affected (0.03 sec)</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure></p>
 <p>这个新创建的 <code>page_demo</code> 表有3个列，其中 c1 和 c2 列是用来存储整数的，c3 列是用来存储字符串的。</p>
 <p>需要注意的是，我们把 c1 列指定为主键，所以在具体的行格式中MySQL就没必要为我们去创建那个所谓的 <code>row_id</code> 隐藏列了。而且我们为这个表指定了ascii字符集以及 <code>Compact</code> 的行格式。所以这个表中记录的行格式示意图就是这样的：</p>
 <p><img src="/article/distributed-transaction-innodb/1575876493352distributed-transaction_.png" alt></p>
-<p>我们插入几条数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; INSERT INTO page_demo VALUES(1, 100, 'aaaa'), (2, 200, 'bbbb'), (3, 300, 'cccc'), (4, 400, 'dddd');</span><br><span class="line">Query OK, 4 rows affected (0.00 sec)</span><br><span class="line">Records: 4  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
+<p>我们插入几条数据：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; INSERT INTO page_demo VALUES(1, 100, 'aaaa'), (2, 200, 'bbbb'), (3, 300, 'cccc'), (4, 400, 'dddd');</span><br><span class="line">Query OK, 4 rows affected (0.00 sec)</span><br><span class="line">Records: 4  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure></p>
 <p>插入之后的结果如下：</p>
 <p><img src="/article/distributed-transaction-innodb/1575887545816distributed-transaction-innodb_.png" alt></p>
 <p>下面我们具体来分析一下 记录头信息 信息相关内容</p>
 <ul>
-<li>
-<p><code>delete_mask</code> 表示是否删除，行记录可能被其他覆盖</p>
-</li>
-<li>
-<p><code>min_rec_mask</code> 标记该记录是否为B+树的非叶子节点中的最小记录</p>
-</li>
-<li>
-<p><code>n_owned</code>:   该记录管理的槽数量，见页目录章节</p>
-</li>
-<li>
-<p><code>heap_no</code> ：<br>
-这个属性表示当前记录在本页中的位置，从图中可以看出来，我们插入的4条记录在本页中的位置分别是 2、3、4、5<br>
-而0和1 表示两条虚拟记录，最大的和最小的，由于这两个记录并不是我们自己插入的，所以有时候也称为伪记录或者虚拟记录</p>
+<li><code>delete_mask</code> 表示是否删除，行记录可能被其他覆盖</li>
+<li><code>min_rec_mask</code> 标记该记录是否为B+树的非叶子节点中的最小记录</li>
+<li><code>n_owned</code>:   该记录管理的槽数量，见页目录章节</li>
+<li><p><code>heap_no</code> ：<br>这个属性表示当前记录在本页中的位置，从图中可以看出来，我们插入的4条记录在本页中的位置分别是 2、3、4、5<br>而0和1 表示两条虚拟记录，最大的和最小的，由于这两个记录并不是我们自己插入的，所以有时候也称为伪记录或者虚拟记录</p>
 <p>这两条记录的构造十分简单，都是由5字节大小的记录头信息和8字节大小的一个固定的部分组成的</p>
 <p><img src="/article/distributed-transaction-innodb/1575878951094distributed-transaction_.png" alt></p>
 <p>由于这两条记录不是我们自己定义的记录，所以它们并不存放在页的<code>User Records</code>部分，他们被单独放在一个称为<code>Infimum + Supremum</code>的部分，如图所示：</p>
 <p><img src="/article/distributed-transaction-innodb/1575880203017distributed-transaction_.png" alt></p>
 </li>
-<li>
-<p><code>record_type</code></p>
+<li><p><code>record_type</code></p>
 <p>这个属性表示当前记录的类型，一共有4种类型的记录，0表示普通记录，1表示B+树非叶节点记录，2表示最小记录，3表示最大记录。从图中我们也可以看出来，我们自己插入的记录就是普通记录，它们的 <code>record_type</code> 值都是0，而最小记录和最大记录的 <code>record_type</code> 值分别为2和3。</p>
 <p>至于 <code>record_type</code> 为1的情况，我们之后在说索引的时候会重点强调的。</p>
 </li>
-<li>
-<p><code>next_record</code><br>
-它表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。比方说第一条记录的<code>next_record</code>值为36，意味着从第一条记录的真实数据的地址处向后找36个字节便是下一条记录的真实数据。</p>
+<li><p><code>next_record</code><br>它表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。比方说第一条记录的<code>next_record</code>值为36，意味着从第一条记录的真实数据的地址处向后找36个字节便是下一条记录的真实数据。</p>
 <p>如果你熟悉数据结构的话，就立即明白了，这其实是个链表，可以通过一条记录找到它的下一条记录。但是需要注意注意再注意的一点是，下一条记录指得并不是按照我们插入顺序的下一条记录，而是按照主键值由小到大的顺序的下一条记录。而且规定 最小记录 的下一条记录就本页中主键值最小的记录，而本页中主键值最大的记录的下一条记录就是 最大记录 ，为了更形象的表示一下这个next_record起到的作用，我们用箭头来替代一下next_record中的地址偏移量：</p>
 </li>
 </ul>
 <p><img src="/article/distributed-transaction-innodb/1575880301031distributed-transaction_.png" alt></p>
-<p>图中可以看出来，我们的记录按照从小到大的顺序形成了一个单链表。最大记录的next_record的值为0，这也就是说最大记录是没有下一条记录了，它是这个单链表中的最后一个节点。如果从中删除掉一条记录，这个链表也是会跟着变化的，比如我们把第2条记录删掉：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; DELETE FROM page_demo WHERE c1 = 2;</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+<p>图中可以看出来，我们的记录按照从小到大的顺序形成了一个单链表。最大记录的next_record的值为0，这也就是说最大记录是没有下一条记录了，它是这个单链表中的最后一个节点。如果从中删除掉一条记录，这个链表也是会跟着变化的，比如我们把第2条记录删掉：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; DELETE FROM page_demo WHERE c1 = 2;</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure></p>
 <p>删掉第2条记录后的示意图就是：</p>
 <p><img src="/article/distributed-transaction-innodb/1575882481097distributed-transaction_.png" alt></p>
-<p>从图中可以看出来，删除第2条记录前后主要发生了这些变化：<br>
-所以，不论我们怎么对页中的记录做增删改操作，InnoDB始终会维护一条记录的单链表，链表中的各个节点是按照主键值由小到大的顺序连接起来的。</p>
+<p>从图中可以看出来，删除第2条记录前后主要发生了这些变化：<br>所以，不论我们怎么对页中的记录做增删改操作，InnoDB始终会维护一条记录的单链表，链表中的各个节点是按照主键值由小到大的顺序连接起来的。</p>
 <ul>
 <li>第2条记录并没有从存储空间中移除，而是把该条记录的delete_mask值设置为1。</li>
 <li>第2条记录的 <code>next_record</code> 值变为了0，意味着该记录没有下一条记录了。</li>
 <li>第1条记录的 <code>next_record</code> 指向了第3条记录。还有一点你可能忽略了，就是最大记录的n_owned值从5变成了4，关于这一点的变化我们稍后会详细说明的。</li>
 </ul>
-<p>再来看一个有意思的事情，因为主键值为2的记录被我们删掉了，但是存储空间却没有回收，如果我们再次把这条记录插入到表中, 那么2这个数据 就会复用原来的空间。</p>
+<p>再来看一个有意思的事情，因为主键值为2的记录被我们删掉了，但是存储空间却没有回收，如果我们再次把这条记录插入到表中, 那么2这个数据 就会复用原来的空间。 </p>
 <ul>
-<li>
-<p><strong>行溢出</strong></p>
-<p>即使我们能存放65 532个字节了，但是有没有想过，InnoDB存储引擎的页为16KB，即16 384个字节，怎么能存放65 532个字节呢？一般情况下，数据都是存放在B-tree Node的页类型中，但是当发生行溢处时，则这个存放行溢处的页类型为Uncompress BLOB Page。</p>
+<li><p><strong>行溢出</strong></p>
+<p>  即使我们能存放65 532个字节了，但是有没有想过，InnoDB存储引擎的页为16KB，即16 384个字节，怎么能存放65 532个字节呢？一般情况下，数据都是存放在B-tree Node的页类型中，但是当发生行溢处时，则这个存放行溢处的页类型为Uncompress BLOB Page。</p>
 </li>
 </ul>
-<p>我们来看个例子：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t (a <span class="built_in">varchar</span> (<span class="number">65532</span>));</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">select</span> <span class="keyword">repeat</span> (<span class="string">'a'</span>,<span class="number">65532</span>);</span><br></pre></td></tr></table></figure>
-<p>下面的表空间文件:<br>
-<img src="/article/distributed-transaction-innodb/1575895093171distributed-transaction-innodb_.png" alt></p>
-<p>可以看到一个B-tree Node页类型，另外有4个为Uncompressed BLOB Page，这些页中才是真正存放了65 532个字节的数据。既然实际存放的数据都放到BLOB页中，那数据页中又存放了些什么东西呢？同样，通过之前的hexdump来读取表空间文件,可以看到，从0x0000c093到0x0000c392数据页面其实只保存了varchar（65 532）的前768个字节的前缀（prefix）数据（这里都是a），之后跟的是偏移量，指向行溢出页，也就是前面我们看到的Uncompressed BLOB Page。因此，对于行溢出数据，其存放方式下图4所示：<br>
-<img src="/article/distributed-transaction-innodb/1575895129375distributed-transaction-innodb_.png" alt></p>
+<p>我们来看个例子：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t (a <span class="built_in">varchar</span> (<span class="number">65532</span>));</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">select</span> <span class="keyword">repeat</span> (<span class="string">'a'</span>,<span class="number">65532</span>);</span><br></pre></td></tr></table></figure></p>
+<p>下面的表空间文件:<br><img src="/article/distributed-transaction-innodb/1575895093171distributed-transaction-innodb_.png" alt></p>
+<p>可以看到一个B-tree Node页类型，另外有4个为Uncompressed BLOB Page，这些页中才是真正存放了65 532个字节的数据。既然实际存放的数据都放到BLOB页中，那数据页中又存放了些什么东西呢？同样，通过之前的hexdump来读取表空间文件,可以看到，从0x0000c093到0x0000c392数据页面其实只保存了varchar（65 532）的前768个字节的前缀（prefix）数据（这里都是a），之后跟的是偏移量，指向行溢出页，也就是前面我们看到的Uncompressed BLOB Page。因此，对于行溢出数据，其存放方式下图4所示：<br><img src="/article/distributed-transaction-innodb/1575895129375distributed-transaction-innodb_.png" alt></p>
 <p>CHAR很明确地被视为了变长类型，对于未能占满长度的字符还是填充0x20。</p>
 <ul>
 <li><strong>页目录</strong></li>
 </ul>
 <p>上边我们了解了记录在页中按照主键值由小到大顺序串联成一个单链表，那如果我们想根据主键值查找页中的某条记录该咋办呢？比如说这样的查询语句：</p>
 <p><code>SELECT * FROM page_demo WHERE c1 = 3;</code></p>
-<p><strong>顺序查找：</strong></p>
-<p>从最小记录开始，沿着链表一直往后找，在找的时候还能投机取巧，因为链表中各个记录的值是按照从小到大顺序排列的，所以当链表的某个节点代表的记录的主键值大于你想要查找的主键值时，你就可以停止查找了，因为该节点后边的节点的主键值依次递增。<br>
-但是如果一个页中存储了非常多的记录，这么查找对性能来说还是有损耗的。</p>
-<p><strong>基于slot的查找</strong><br>
-因此基于目录的思想，innodBD 设计了如下的数据结构：</p>
+<p><strong>顺序查找：</strong> </p>
+<p>从最小记录开始，沿着链表一直往后找，在找的时候还能投机取巧，因为链表中各个记录的值是按照从小到大顺序排列的，所以当链表的某个节点代表的记录的主键值大于你想要查找的主键值时，你就可以停止查找了，因为该节点后边的节点的主键值依次递增。<br>但是如果一个页中存储了非常多的记录，这么查找对性能来说还是有损耗的。</p>
+<p><strong>基于slot的查找</strong><br>因此基于目录的思想，innodBD 设计了如下的数据结构：</p>
 <ul>
 <li>将所有正常的记录（包括最大和最小记录，不包括标记为已删除的记录）划分为几个组。</li>
 <li>每个组的<strong>最后一条记录</strong>的头信息中的n_owned属性表示该组内共有几条记录。</li>
 <li>将每个组的最后一条记录的地址偏移量按顺序存储起来，每个地址偏移量也被称为一个槽（英文名：Slot）。这些地址偏移量都会被存储到靠近页的尾部的地方，页中存储地址偏移量的部分也被称为<code>Page Directory</code>。</li>
 </ul>
-<p>比方说现在的 <code>page_demo</code> 表中正常的记录共有6条，InnoDB会把它们分成两组，第一组中只有一个最小记录，第二组中是剩余的5条记录，看下边的示意图：<br>
-<img src="/article/distributed-transaction-innodb/1575884533564distributed-transaction_.png" alt></p>
-<p>从这个图中我们需要注意这么几点：<br>
-现在Page Directory部分中有两个槽，也就意味着我们的记录被分成了两个组，槽0中的值是112，代表最大记录的地址偏移量；槽1中的值是99，代表最小记录的地址偏移量。</p>
+<p>比方说现在的 <code>page_demo</code> 表中正常的记录共有6条，InnoDB会把它们分成两组，第一组中只有一个最小记录，第二组中是剩余的5条记录，看下边的示意图：<br><img src="/article/distributed-transaction-innodb/1575884533564distributed-transaction_.png" alt></p>
+<p>从这个图中我们需要注意这么几点：<br>现在Page Directory部分中有两个槽，也就意味着我们的记录被分成了两个组，槽0中的值是112，代表最大记录的地址偏移量；槽1中的值是99，代表最小记录的地址偏移量。</p>
 <ul>
 <li>注意最小和最大记录的头信息中的n_owned属性</li>
 <li>最小记录的n_owned值为1，这就代表着以最小记录结尾的这个分组中只有1条记录，也就是最小记录本身。</li>
@@ -440,8 +397,7 @@
 </ul>
 <p>99和112这样的地址偏移量很不直观，我们用箭头指向的方式替代数字，这样更易于我们理解，所以修改后的示意图就是这样：</p>
 <p><img src="/article/distributed-transaction-innodb/1575884564248distributed-transaction_.png" alt></p>
-<p>单纯从逻辑上看一下这些记录和页目录的关系，如下图<br>
-<img src="/article/distributed-transaction-innodb/1575884591930distributed-transaction_.png" alt></p>
+<p>单纯从逻辑上看一下这些记录和页目录的关系，如下图<br><img src="/article/distributed-transaction-innodb/1575884591930distributed-transaction_.png" alt></p>
 <p>设计InnoDB的设计师个分组中的记录条数是有规定的，对于最小记录所在的分组只能有 1 条记录，最大记录所在的分组拥有的记录条数只能在 1~8 条之间，剩下的分组中记录的条数范围只能在是 4~8 条之间。所以分组是按照下边的步骤进行的：</p>
 <ul>
 <li>初始情况下一个数据页里只有最小记录和最大记录两条记录，它们分属于两个分组。</li>
@@ -450,22 +406,18 @@
 </ul>
 <p>由于现在page_demo表中的记录太少，无法演示添加了页目录之后加快查找速度的过程，所以再往page_demo表中添加一些记录：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; INSERT INTO page_demo VALUES(5, 500, 'eeee'), </span><br><span class="line">(6, 600, 'ffff'), (7, 700, 'gggg'), </span><br><span class="line">(8, 800, 'hhhh'), (9, 900, 'iiii'), </span><br><span class="line">(10, 1000, 'jjjj'), (11, 1100, 'kkkk'), </span><br><span class="line">(12, 1200, 'llll'), (13, 1300, 'mmmm'), </span><br><span class="line">(14, 1400, 'nnnn'), (15, 1500, 'oooo'), (16, 1600, 'pppp');</span><br><span class="line">Query OK, 12 rows affected (0.00 sec)</span><br><span class="line">Records: 12  Duplicates: 0  Warnings: 0</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
-<p>往表中添加了12条记录，现在就一共有16条正常的记录了（包括最小和最大记录），这些记录被分成了5个组，如图所示：<br>
-<img src="/article/distributed-transaction-innodb/1575884726338distributed-transaction_.png" alt></p>
+<p>往表中添加了12条记录，现在就一共有16条正常的记录了（包括最小和最大记录），这些记录被分成了5个组，如图所示：<br><img src="/article/distributed-transaction-innodb/1575884726338distributed-transaction_.png" alt></p>
 <p><strong>查找过程</strong></p>
 <p>因为各个槽代表的记录的主键值都是从小到大排序的，所以我们可以使用所谓的二分法来进行快速查找。4个槽的编号分别是：0、1、2、3、4，所以初始情况下最低的槽就是low=0，最高的槽就是high=4。比方说我们想找主键值为5的记录，过程是这样的：</p>
 <ul>
 <li>计算中间槽的位置：(0+4)/2=2，所以查看槽2对应记录的主键值为8，又因为8 &gt; 5，所以设置high=2，low保持不变。</li>
 <li>重新计算中间槽的位置：(0+2)/2=1，所以查看槽1对应的主键值为4。所以设置low=1，high保持不变。</li>
 <li>因为high - low的值为1，所以确定主键值为5的记录在槽1和槽2之间，接下来就是遍历链表的查找了。</li>
-<li>所以在一个数据页中查找指定主键值的记录的过程分为两步：<br>
-通过二分法确定该记录所在的槽。<br>
-通过记录的 <code>next_record</code> 属性组成的链表遍历查找该槽中的各个记录。</li>
+<li>所以在一个数据页中查找指定主键值的记录的过程分为两步：<br>通过二分法确定该记录所在的槽。<br>通过记录的 <code>next_record</code> 属性组成的链表遍历查找该槽中的各个记录。</li>
 </ul>
-<h3><span id="page结构的详细说明">Page结构的详细说明</span></h3>
-<p>本章开始 我们已经介绍过了Page的信息，下面我们在来看一下每一页的具体细节。</p>
+<h3><span id="page结构的详细说明">Page结构的详细说明</span></h3><p>本章开始 我们已经介绍过了Page的信息，下面我们在来看一下每一页的具体细节。</p>
 <p><img src="/article/distributed-transaction-innodb/1575794929155distributed-transaction_.png" alt></p>
-<h4><span id="page-header">Page Header</span></h4>
+<h4><span id="page-header">Page Header</span></h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -547,8 +499,8 @@
 </tr>
 </tbody>
 </table>
-<h4><span id="file-header">File Header</span></h4>
-<p><img src="/article/distributed-transaction-innodb/1575966669980distributed-transaction-innodb_.png" alt></p>
+</div>
+<h4><span id="file-header">File Header</span></h4><p><img src="/article/distributed-transaction-innodb/1575966669980distributed-transaction-innodb_.png" alt></p>
 <ul>
 <li>FIL_PAGE_SPACE_OR_CHKSUM</li>
 </ul>
@@ -565,14 +517,10 @@
 <ul>
 <li>FIL_PAGE_PREV和FIL_PAGE_NEXT</li>
 </ul>
-<p>一张表中可以有成千上万条记录，一个页只有16KB，所以可能需要好多页来存放数据，FIL_PAGE_PREV和FIL_PAGE_NEXT就分别代表本页的上一个和下一个页的页号。需要注意的是，并不是所有类型的页都有上一个和下一个页的属性，不过我们本集中唠叨的数据页是有这两个属性的，所以所有的数据页其实是一个双链表，就像这样：<br>
-<img src="/article/distributed-transaction-innodb/1575966768836distributed-transaction-innodb_.png" alt></p>
-<h4><span id="freespace">FreeSpace</span></h4>
-<p>在页的7个组成部分中，我们自己存储的记录会按照我们指定的行格式存储到User Records部分。但是在一开始生成页的时候，其实并没有User Records这个部分，每当我们插入一条记录，都会从Free Space部分，也就是尚未使用的存储空间中申请一个记录大小的空间划分到User Records部分，当Free Space部分的空间全部被User Records部分替代掉之后，也就意味着这个页使用完了，如果还有新的记录插入的话，就需要去申请新的页了，这个过程的图示如下</p>
+<p>一张表中可以有成千上万条记录，一个页只有16KB，所以可能需要好多页来存放数据，FIL<em>PAGE_PREV和FIL_PAGE_NEXT就分别代表本页的上一个和下一个页的页号。需要注意的是，并不是所有类型的页都有上一个和下一个页的属性，不过我们本集中唠叨的数据页是有这两个属性的，所以所有的数据页其实是一个双链表，就像这样：<br>![](distributed-transaction-innodb/1575966768836distributed-transaction-innodb</em>.png)</p>
+<h4><span id="freespace">FreeSpace</span></h4><p>在页的7个组成部分中，我们自己存储的记录会按照我们指定的行格式存储到User Records部分。但是在一开始生成页的时候，其实并没有User Records这个部分，每当我们插入一条记录，都会从Free Space部分，也就是尚未使用的存储空间中申请一个记录大小的空间划分到User Records部分，当Free Space部分的空间全部被User Records部分替代掉之后，也就意味着这个页使用完了，如果还有新的记录插入的话，就需要去申请新的页了，这个过程的图示如下</p>
 <p><img src="/article/distributed-transaction-innodb/1575875117094distributed-transaction_.png" alt></p>
-<h3><span id="file-header">File Header</span></h3>
-<p>对于这个部分，我的理解比较简单，我们知道InnoDB 会把数据从内存刷新到磁盘，中间交互的单位是页 ，但是我们想想，假如再刷新到磁盘的时候出现了问题，这样的话怎么办呢？<br>
-​这就是File Trailer 作用，这个部分由8个字节组成，可以分成2个小部分：</p>
+<h3><span id="file-header">File Header</span></h3><p>对于这个部分，我的理解比较简单，我们知道InnoDB 会把数据从内存刷新到磁盘，中间交互的单位是页 ，但是我们想想，假如再刷新到磁盘的时候出现了问题，这样的话怎么办呢？<br>​这就是File Trailer 作用，这个部分由8个字节组成，可以分成2个小部分：</p>
 <ul>
 <li>前四个字节代表页的检验和：</li>
 </ul>
@@ -580,8 +528,7 @@
 <ul>
 <li>后四个字节代表日志序列位置（LSN）这个部分也是为了校验页的完整性的，可以先不用管这个属性。</li>
 </ul>
-<h2><span id="参考">参考</span></h2>
-<ul>
+<h2><span id="参考">参考</span></h2><ul>
 <li><a href="https://www.gaoyaxuan.net/blog/296.html" target="_blank" rel="noopener">快速理解脏读、不可重复读、幻读</a></li>
 <li><a href="https://cloud.tencent.com/developer/article/1100494" target="_blank" rel="noopener">扫盲贴-分布式数据一致性：两阶段提交，三阶段提交</a></li>
 <li><a href="https://juejin.im/post/5aa3c7736fb9a028bb189bca" target="_blank" rel="noopener">常用的分布式事务解决方案</a></li>
@@ -692,9 +639,9 @@
                        
                           <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                         
-                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
-                        
                           <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                        
+                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
                         
                     </div>
                 </section>

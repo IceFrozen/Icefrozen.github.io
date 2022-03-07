@@ -149,14 +149,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -219,21 +219,16 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="概述">概述</span></h2>
-<p>前面章节，我们简单介绍了TLS的秘钥交换的算法。接下来我们来讲一下SSL层。</p>
-<h2><span id="tls层ssl层">TLS层SSL层</span></h2>
-<p><strong>TLS是介于网络层和传输层之间的半层。</strong></p>
+                <h2><span id="概述">概述</span></h2><p>前面章节，我们简单介绍了TLS的秘钥交换的算法。接下来我们来讲一下SSL层。</p>
+<h2><span id="tls层ssl层">TLS层SSL层</span></h2><p><strong>TLS是介于网络层和传输层之间的半层。</strong></p>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-123531.png" alt></p>
-<h2><span id="协议层分类">协议层分类</span></h2>
-<p>TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分又可以分为 2 层：</p>
+<h2><span id="协议层分类">协议层分类</span></h2><p>TLS/SSL 协议位于应用层和传输层 TCP 协议之间。TLS 粗略的划分又可以分为 2 层：</p>
 <ul>
 <li>靠近应用层的握手协议 <strong>TLS Handshaking Protocols</strong></li>
 <li>靠近 TCP 的记录层协议 <strong>TLS Record Protocol</strong></li>
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-125556.png" alt></p>
-<h2><span id="ssltcl层">SSL/TCL层</span></h2>
-<h3><span id="握手协议">握手协议</span></h3>
-<p>TLS 握手协议还能细分为 5 个子协议：</p>
+<h2><span id="ssltcl层">SSL/TCL层</span></h2><h3><span id="握手协议">握手协议</span></h3><p>TLS 握手协议还能细分为 5 个子协议：</p>
 <p>如上图</p>
 <ul>
 <li>change_cipher_spec (在 TLS 1.3 中这个协议已经删除，为了兼容 TLS 老版本，可能还会存在)： 密码切换协议</li>
@@ -242,53 +237,35 @@
 <li>application_data： 应用数据协议</li>
 <li>heartbeat (这个是 TLS 1.3 新加的，TLS 1.3 之前的版本没有这个协议) 心跳协议</li>
 </ul>
-<p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手（handshake）。<br>
-基本过程</p>
+<p>开始加密通信之前，客户端和服务器首先必须建立连接和交换参数，这个过程叫做握手（handshake）。<br>基本过程</p>
 <ul>
-<li>
-<p>1、 client 端想server 端获取公钥</p>
+<li>1、 client 端想server 端获取公钥</li>
+<li>2、 双方协商生成”对话密钥”</li>
+<li><p>3、 双方用对话秘钥进行通讯</p>
 </li>
-<li>
-<p>2、 双方协商生成&quot;对话密钥&quot;</p>
-</li>
-<li>
-<p>3、 双方用对话秘钥进行通讯</p>
-</li>
-<li>
-<p><strong>一个TCL1.2 秘钥交换的大致过程</strong></p>
+<li><p><strong>一个TCL1.2 秘钥交换的大致过程</strong></p>
 </li>
 </ul>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-112851.png" alt></p>
 <hr>
-<br>
-<br>
-<br>
-<h2><span id="协议详解">协议详解</span></h2>
-<h2><span id="记录层协议">记录层协议</span></h2>
-<p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-133951.png" alt></p>
-<p>记录层将上层的信息块分段为 <code>TLSPlaintext</code> 记录<br>
-<code>TLSPlaintext</code> 记录规范如下</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">         ContentType type;</span><br><span class="line">         ProtocolVersion legacy_record_version;</span><br><span class="line">         uint16 length;</span><br><span class="line">         opaque fragment[TLSPlaintext.length];</span><br><span class="line">   &#125; TLSPlaintext;</span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br></p>
+<h2><span id="协议详解">协议详解</span></h2><h2><span id="记录层协议">记录层协议</span></h2><p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-133951.png" alt></p>
+<p>记录层将上层的信息块分段为 <code>TLSPlaintext</code> 记录<br><code>TLSPlaintext</code> 记录规范如下<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">         ContentType type;</span><br><span class="line">         ProtocolVersion legacy_record_version;</span><br><span class="line">         uint16 length;</span><br><span class="line">         opaque fragment[TLSPlaintext.length];</span><br><span class="line">   &#125; TLSPlaintext;</span><br></pre></td></tr></table></figure></p>
 <p>记录层将上层的信息块分段为 <code>TLSPlaintext</code> 记录，<code>TLSPlaintext</code> 中包含 2^14 字节或更少字节块的数据。根据底层 <code>ContentType</code> 的不同，消息边界的处理方式也不同。TLS 1.3 中的规则比 TLS 1.2 中强制执行的规则更加严格。</p>
 <p>握手消息可以合并为单个 <code>TLSPlaintext</code> 记录，或者在几个记录中分段，前提是：</p>
 <ul>
-<li>
-<p>握手消息不得与其他记录类型交错。也就是说，如果握手消息被分成两个或多个记录，则它们之间不能有任何其他记录。</p>
+<li><p>握手消息不得与其他记录类型交错。也就是说，如果握手消息被分成两个或多个记录，则它们之间不能有任何其他记录。</p>
 </li>
-<li>
-<p>握手消息绝不能跨越密钥更改。实现方必须验证密钥更改之前的所有消息是否与记录边界对齐; 如果没有，那么他们必须用 “unexpected_message” alert 消息终止连接。因为 ClientHello，EndOfEarlyData，ServerHello，Finished 和 KeyUpdate 消息可以在密钥更改之前立即发生，所以实现方必须将这些消息与记录边界对齐。</p>
+<li><p>握手消息绝不能跨越密钥更改。实现方必须验证密钥更改之前的所有消息是否与记录边界对齐; 如果没有，那么他们必须用 “unexpected_message” alert 消息终止连接。因为 ClientHello，EndOfEarlyData，ServerHello，Finished 和 KeyUpdate 消息可以在密钥更改之前立即发生，所以实现方必须将这些消息与记录边界对齐。</p>
 </li>
-<li>
-<p>实现方绝不能发送握手类型的零长度片段，即使这些片段包含填充。</p>
+<li><p>实现方绝不能发送握手类型的零长度片段，即使这些片段包含填充。</p>
 </li>
-<li>
-<p>另外 Alert 消息禁止在记录之间进行分段，并且多条 <code>alert</code> 消息不得合并为单个 <code>TLSPlaintext</code> 记录。换句话说，具有 alert 类型的记录必须只包含一条消息。</p>
+<li><p>另外 Alert 消息禁止在记录之间进行分段，并且多条 <code>alert</code> 消息不得合并为单个 <code>TLSPlaintext</code> 记录。换句话说，具有 alert 类型的记录必须只包含一条消息。</p>
 </li>
 </ul>
 <p>应用数据消息包含对 TLS 不透明的数据。应用数据消息始终应该受到保护。可以发送应用数据的零长度片段，因为它们可能作为流量分析对策使用。应用数据片段可以拆分为多个记录，也可以合并为一个记录。</p>
-<h3><span id="字段详解">字段详解</span></h3>
-<h4><span id="contenttype">ContentType</span></h4>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    invalid(<span class="number">0</span>),</span><br><span class="line">    change_cipher_spec(<span class="number">20</span>),</span><br><span class="line">    alert(<span class="number">21</span>),</span><br><span class="line">    handshake(<span class="number">22</span>),</span><br><span class="line">    application_data(<span class="number">23</span>),</span><br><span class="line">    heartbeat(<span class="number">24</span>),  <span class="comment">/* RFC 6520 */</span></span><br><span class="line">&#125; ContentType;</span><br></pre></td></tr></table></figure>
+<h3><span id="字段详解">字段详解</span></h3><h4><span id="contenttype">ContentType</span></h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    invalid(<span class="number">0</span>),</span><br><span class="line">    change_cipher_spec(<span class="number">20</span>),</span><br><span class="line">    alert(<span class="number">21</span>),</span><br><span class="line">    handshake(<span class="number">22</span>),</span><br><span class="line">    application_data(<span class="number">23</span>),</span><br><span class="line">    heartbeat(<span class="number">24</span>),  <span class="comment">/* RFC 6520 */</span></span><br><span class="line">&#125; ContentType;</span><br></pre></td></tr></table></figure>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -307,11 +284,12 @@
 <td>alert</td>
 <td>0x015</td>
 <td>告警协议</td>
+<td></td>
 </tr>
 <tr>
 <td>handshake</td>
 <td>0x016</td>
-<td>握手协议</td>
+<td>握手协议 </td>
 </tr>
 <tr>
 <td>application_data</td>
@@ -325,7 +303,8 @@
 </tr>
 </tbody>
 </table>
-<h4><span id="protocolversion-协议版本">ProtocolVersion 协议版本</span></h4>
+</div>
+<h4><span id="protocolversion-协议版本">ProtocolVersion 协议版本</span></h4><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -356,8 +335,8 @@
 </tr>
 </tbody>
 </table>
-<h4><span id="fragment">fragment</span></h4>
-<ul>
+</div>
+<h4><span id="fragment">fragment</span></h4><ul>
 <li>length:</li>
 </ul>
 <p><code>TLSPlaintext.fragment</code> 的长度(以字节为单位)。长度不得超过 2 ^ 14 字节。接收超过此长度的记录的端点必须使用 <code>&quot;record_overflow&quot; alert</code> 消息终止连接。</p>
@@ -370,12 +349,12 @@
 <p>封装处理 TLS 上层(握手层)中的平行子协议(TLS 1.3 中是 5 个子协议，TLS 1.2 及更老的版本是 4 个子协议)，加上消息头，打包往下传递给 TCP 处理。</p>
 </blockquote>
 <p>对上层应用数据协议进行密码保护，对其他的子协议只是简单封装(即不加密)</p>
-<h2><span id="tls-密码切换协议change_cipher_spec">TLS 密码切换协议（change_cipher_spec）</span></h2>
-<blockquote>
+<h2><span id="tls-密码切换协议change_cipher_spec">TLS 密码切换协议（change_cipher_spec）</span></h2><blockquote>
 <p>change_cipher_spec 在TSL1.3 可能被删除</p>
 </blockquote>
 <p><code>change_cipher_spec</code> (以下简称 CCS 协议) 协议，是 TLS 记录层对应用数据是否进行加密的分界线。客户端或者服务端一旦收到对端发来的 CCS 协议，就表明接下来传输数据过程中可以对应用数据协议进行加密了。</p>
 <p>TLS 记录层在处理上层 5 个协议(密码切换协议，警告协议，握手协议，心跳协议，应用数据协议)的时候，TLS 不同版本对不同协议加密的情况不同，具体情况如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -406,18 +385,15 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>协议数据结构如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">enum</span> &#123; change_cipher_spec(<span class="number">1</span>), (<span class="number">255</span>) &#125; type;</span><br><span class="line">&#125; ChangeCipherSpec;</span><br></pre></td></tr></table></figure>
 <p>经过 TLS 记录层包装以后，结构如下:</p>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-141552.png" alt></p>
-<h2><span id="tls-警告协议alert">TLS 警告协议（alert）</span></h2>
-<p><code>TLS</code> 提供 <code>alert</code> 内容类型用来表示关闭信息和错误。<br>
-与其他消息一样，alert 消息也会根据当前连接状态的进行加密。</p>
-<p>在 <code>TLS</code> 1.3 中，错误的严重性隐含在正在发送的警报类型中，并且可以安全地忽略 “<code>level</code>” 字段。<br>
-&quot;<code>close_notify</code>&quot; <code>alert</code> <code>用于表示连接从一个方向开始有序的关闭。收到这样的警报后，TLS</code> 实现方应该表明应用程序的数据结束。</p>
+<h2><span id="tls-警告协议alert">TLS 警告协议（alert）</span></h2><p><code>TLS</code> 提供 <code>alert</code> 内容类型用来表示关闭信息和错误。<br>与其他消息一样，alert 消息也会根据当前连接状态的进行加密。</p>
+<p>在 <code>TLS</code> 1.3 中，错误的严重性隐含在正在发送的警报类型中，并且可以安全地忽略 “<code>level</code>“ 字段。<br>“<code>close_notify</code>“ <code>alert</code> <code>用于表示连接从一个方向开始有序的关闭。收到这样的警报后，TLS</code> 实现方应该表明应用程序的数据结束。</p>
 <p>收到错误警报后，<code>TLS</code> 实现方应该向应用程序表示出现了错误，并且不允许在连接上发送或接收任何其他数据。</p>
-<p>协议数据结构如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123; warning(<span class="number">1</span>), fatal(<span class="number">2</span>), (<span class="number">255</span>) &#125; AlertLevel;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    AlertLevel level;</span><br><span class="line">    AlertDescription description;</span><br><span class="line">&#125; Alert;</span><br></pre></td></tr></table></figure>
+<p>协议数据结构如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123; warning(<span class="number">1</span>), fatal(<span class="number">2</span>), (<span class="number">255</span>) &#125; AlertLevel;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    AlertLevel level;</span><br><span class="line">    AlertDescription description;</span><br><span class="line">&#125; Alert;</span><br></pre></td></tr></table></figure></p>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-141226.png" alt></p>
 <ul>
 <li>TLS 1.2 的所有警告描述信息：</li>
@@ -429,36 +405,29 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    close_notify(<span class="number">0</span>),</span><br><span class="line">    unexpected_message(<span class="number">10</span>),</span><br><span class="line">    bad_record_mac(<span class="number">20</span>),</span><br><span class="line">    decryption_failed_RESERVED(<span class="number">21</span>),</span><br><span class="line">    record_overflow(<span class="number">22</span>),</span><br><span class="line">    decompression_failure_RESERVED(<span class="number">30</span>),</span><br><span class="line">    handshake_failure(<span class="number">40</span>),</span><br><span class="line">    no_certificate_RESERVED(<span class="number">41</span>),</span><br><span class="line">    bad_certificate(<span class="number">42</span>),</span><br><span class="line">    unsupported_certificate(<span class="number">43</span>),</span><br><span class="line">    certificate_revoked(<span class="number">44</span>),</span><br><span class="line">    certificate_expired(<span class="number">45</span>),</span><br><span class="line">    certificate_unknown(<span class="number">46</span>),</span><br><span class="line">    illegal_parameter(<span class="number">47</span>),</span><br><span class="line">    unknown_ca(<span class="number">48</span>),</span><br><span class="line">    access_denied(<span class="number">49</span>),</span><br><span class="line">    decode_error(<span class="number">50</span>),</span><br><span class="line">    decrypt_error(<span class="number">51</span>),</span><br><span class="line">    export_restriction_RESERVED(<span class="number">60</span>),</span><br><span class="line">    protocol_version(<span class="number">70</span>),</span><br><span class="line">    insufficient_security(<span class="number">71</span>),</span><br><span class="line">    internal_error(<span class="number">80</span>),</span><br><span class="line">    inappropriate_fallback(<span class="number">86</span>),</span><br><span class="line">    user_canceled(<span class="number">90</span>),</span><br><span class="line">    no_renegotiation_RESERVED(<span class="number">100</span>),</span><br><span class="line">    missing_extension(<span class="number">109</span>),</span><br><span class="line">    unsupported_extension(<span class="number">110</span>),</span><br><span class="line">    certificate_unobtainable_RESERVED(<span class="number">111</span>),</span><br><span class="line">    unrecognized_name(<span class="number">112</span>),</span><br><span class="line">    bad_certificate_status_response(<span class="number">113</span>),</span><br><span class="line">    bad_certificate_hash_value_RESERVED(<span class="number">114</span>),</span><br><span class="line">    unknown_psk_identity(<span class="number">115</span>),</span><br><span class="line">    certificate_required(<span class="number">116</span>),</span><br><span class="line">    no_application_protocol(<span class="number">120</span>),</span><br><span class="line">    (<span class="number">255</span>)</span><br><span class="line">&#125; AlertDescription;</span><br></pre></td></tr></table></figure>
 <p>TLS 1.3 比 TLS 1.2 新增了 9 个警告描述信息：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inappropriate_fallback(<span class="number">86</span>),</span><br><span class="line">missing_extension(<span class="number">109</span>),</span><br><span class="line">certificate_unobtainable_RESERVED(<span class="number">111</span>),</span><br><span class="line">unrecognized_name(<span class="number">112</span>),</span><br><span class="line">bad_certificate_status_response(<span class="number">113</span>),</span><br><span class="line">bad_certificate_hash_value_RESERVED(<span class="number">114</span>),</span><br><span class="line">unknown_psk_identity(<span class="number">115</span>),</span><br><span class="line">certificate_required(<span class="number">116</span>),</span><br><span class="line">no_application_protocol(<span class="number">120</span>),</span><br></pre></td></tr></table></figure>
-<h2><span id="数据传输协议application_data">数据传输协议（application_data）</span></h2>
-<p>应用数据协议就是 TLS 上层的各种协议，TLS 主要保护的数据就是应用数据协议的数据。<br>
-<img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-141131.png" alt><br>
-TLS 记录层会根据加密模式的不同在应用数据的末尾加上 MAC 校验数据。</p>
-<h2><span id="心跳协议">心跳协议</span></h2>
-<p>这个协议是 TLS 1.3 新增的。更加细节可以看这篇文章<a href="https://github.com/halfrost/Halfrost-Field/blob/master/contents/Protocol/TLS_Heartbeat.md" target="_blank" rel="noopener">《TLS &amp; DTLS Heartbeat Extension》</a>， [RFC 6520] 翻译的。感兴趣的可以去看看这篇文章。这篇文章还涉及到了 DTLS 和 PMTU 发现。</p>
+<h2><span id="数据传输协议application_data">数据传输协议（application_data）</span></h2><p>应用数据协议就是 TLS 上层的各种协议，TLS 主要保护的数据就是应用数据协议的数据。<br><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-141131.png" alt><br>TLS 记录层会根据加密模式的不同在应用数据的末尾加上 MAC 校验数据。</p>
+<h2><span id="心跳协议">心跳协议</span></h2><p>这个协议是 TLS 1.3 新增的。更加细节可以看这篇文章<a href="https://github.com/halfrost/Halfrost-Field/blob/master/contents/Protocol/TLS_Heartbeat.md" target="_blank" rel="noopener">《TLS &amp; DTLS Heartbeat Extension》</a>， [RFC 6520] 翻译的。感兴趣的可以去看看这篇文章。这篇文章还涉及到了 DTLS 和 PMTU 发现。</p>
 <p>协议数据结构如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    heartbeat_request(<span class="number">1</span>),</span><br><span class="line">    heartbeat_response(<span class="number">2</span>),</span><br><span class="line">    (<span class="number">255</span>)</span><br><span class="line">&#125; HeartbeatMessageType;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    HeartbeatMessageType type;</span><br><span class="line">    uint16 payload_length;</span><br><span class="line">    opaque payload[HeartbeatMessage.payload_length];</span><br><span class="line">    opaque padding[padding_length];</span><br><span class="line">&#125; HeartbeatMessage;</span><br></pre></td></tr></table></figure>
 <p>经过 TLS 记录层包装以后，结构如下:</p>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-145352.png" alt></p>
-<p>根据 [RFC6066] 中的定义，在协商的时候，HeartbeatMessage 的总长度不得超过 2 ^ 14 或 max_fragment_length。<br>
-<code>HeartbeatMessage</code> 的长度为 TLS 的 <code>TLSPlaintext.length</code> 和 <code>DTLS</code> 的 <code>DTLSPlaintext.length</code>。此外，类型 <code>type</code> 字段的长度是 1 个字节，并且 <code>payload_length</code> 的长度是 2 个字节。因此，padding_length 是TLSPlaintext.length - <code>payload_length</code> - 3 用于 <code>TLS，DTLSPlaintext.length - payload_length - 3</code> 用于 <code>DTLS</code>。<code>padding_length</code> 必须至少为 16。</p>
+<p>根据 [RFC6066] 中的定义，在协商的时候，HeartbeatMessage 的总长度不得超过 2 ^ 14 或 max_fragment_length。<br><code>HeartbeatMessage</code> 的长度为 TLS 的 <code>TLSPlaintext.length</code> 和 <code>DTLS</code> 的 <code>DTLSPlaintext.length</code>。此外，类型 <code>type</code> 字段的长度是 1 个字节，并且 <code>payload_length</code> 的长度是 2 个字节。因此，padding_length 是TLSPlaintext.length - <code>payload_length</code> - 3 用于 <code>TLS，DTLSPlaintext.length - payload_length - 3</code> 用于 <code>DTLS</code>。<code>padding_length</code> 必须至少为 16。</p>
 <p><code>HeartbeatMessage</code> 的发送方必须使用至少 16 个字节的随机填充。必须忽略收到的 <code>HeartbeatMessage</code> 消息的填充。</p>
-<h2><span id="握手协议">握手协议</span></h2>
-<p>握手协议是整个 <code>TLS</code> <code>协议簇中最最核心的协议，HTTPS</code> 能保证安全也是因为它的功劳。</p>
+<h2><span id="握手协议">握手协议</span></h2><p>握手协议是整个 <code>TLS</code> <code>协议簇中最最核心的协议，HTTPS</code> 能保证安全也是因为它的功劳。</p>
 <p>握手协议由多个子消息构成，服务端和客户端第一次完成一次握手需要 <code>2-RTT</code>。</p>
 <p>握手协议的目的是为了双方协商出密码块，这个密码块会交给 TLS 记录层进行密钥加密。也就是说握手协议达成的“共识”(密码块)是整个 TLS 和 <code>HTTPS</code> 安全的基础。</p>
 <p>握手协议在 <code>TLS 1.2</code>和 <code>TLS 1.3</code> 中发生了很大的变化。<code>TLS 1.3</code> 的 <strong>0-RTT</strong>是一个全新的概念。两个版本在密钥协商上，密码套件选择上都有很大不同。</p>
 <ul>
-<li>TLS 1.2 协议数据结构如下：</li>
-</ul>
+<li><p>TLS 1.2 协议数据结构如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    hello_request(<span class="number">0</span>), </span><br><span class="line">    client_hello(<span class="number">1</span>), </span><br><span class="line">    server_hello(<span class="number">2</span>),</span><br><span class="line">    certificate(<span class="number">11</span>), </span><br><span class="line">    server_key_exchange (<span class="number">12</span>),</span><br><span class="line">    certificate_request(<span class="number">13</span>), </span><br><span class="line">    server_hello_done(<span class="number">14</span>),</span><br><span class="line">    certificate_verify(<span class="number">15</span>), </span><br><span class="line">    client_key_exchange(<span class="number">16</span>),</span><br><span class="line">    finished(<span class="number">20</span>)</span><br><span class="line">    (<span class="number">255</span>)</span><br><span class="line">&#125; HandshakeType;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    HandshakeType msg_type;</span><br><span class="line">    uint24 length;</span><br><span class="line">    select (HandshakeType) &#123;</span><br><span class="line">        <span class="keyword">case</span> hello_request:       HelloRequest;</span><br><span class="line">        <span class="keyword">case</span> client_hello:        ClientHello;</span><br><span class="line">        <span class="keyword">case</span> server_hello:        ServerHello;</span><br><span class="line">        <span class="keyword">case</span> certificate:         Certificate;</span><br><span class="line">        <span class="keyword">case</span> server_key_exchange: ServerKeyExchange;</span><br><span class="line">        <span class="keyword">case</span> certificate_request: CertificateRequest;</span><br><span class="line">        <span class="keyword">case</span> server_hello_done:   ServerHelloDone;</span><br><span class="line">        <span class="keyword">case</span> certificate_verify:  CertificateVerify;</span><br><span class="line">        <span class="keyword">case</span> client_key_exchange: ClientKeyExchange;</span><br><span class="line">        <span class="keyword">case</span> finished:            Finished;</span><br><span class="line">    &#125; body;</span><br><span class="line">&#125; Handshake;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>TLS 1.3 协议数据结构如下：</li>
+</li>
+<li><p>TLS 1.3 协议数据结构如下：</p>
+</li>
 </ul>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 协议类型</span></span><br><span class="line"><span class="keyword">enum</span> &#123;</span><br><span class="line">    hello_request_RESERVED(<span class="number">0</span>),</span><br><span class="line">    client_hello(<span class="number">1</span>),</span><br><span class="line">    server_hello(<span class="number">2</span>),</span><br><span class="line">    hello_verify_request_RESERVED(<span class="number">3</span>),</span><br><span class="line">    new_session_ticket(<span class="number">4</span>),</span><br><span class="line">    end_of_early_data(<span class="number">5</span>),</span><br><span class="line">    hello_retry_request_RESERVED(<span class="number">6</span>),</span><br><span class="line">    encrypted_extensions(<span class="number">8</span>),</span><br><span class="line">    certificate(<span class="number">11</span>),</span><br><span class="line">    server_key_exchange_RESERVED(<span class="number">12</span>),</span><br><span class="line">    certificate_request(<span class="number">13</span>),</span><br><span class="line">    server_hello_done_RESERVED(<span class="number">14</span>),</span><br><span class="line">    certificate_verify(<span class="number">15</span>),</span><br><span class="line">    client_key_exchange_RESERVED(<span class="number">16</span>),</span><br><span class="line">    finished(<span class="number">20</span>),</span><br><span class="line">    certificate_url_RESERVED(<span class="number">21</span>),</span><br><span class="line">    certificate_status_RESERVED(<span class="number">22</span>),</span><br><span class="line">    supplemental_data_RESERVED(<span class="number">23</span>),</span><br><span class="line">    key_update(<span class="number">24</span>),</span><br><span class="line">    message_hash(<span class="number">254</span>),</span><br><span class="line">    (<span class="number">255</span>)</span><br><span class="line">&#125; HandshakeType;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    HandshakeType msg_type;    <span class="comment">/* handshake type */</span></span><br><span class="line">    uint24 length;             <span class="comment">/* bytes in message */</span></span><br><span class="line">    select (Handshake.msg_type) &#123;</span><br><span class="line">        <span class="keyword">case</span> client_hello:          ClientHello;</span><br><span class="line">        <span class="keyword">case</span> server_hello:          ServerHello;</span><br><span class="line">        <span class="keyword">case</span> end_of_early_data:     EndOfEarlyData;</span><br><span class="line">        <span class="keyword">case</span> encrypted_extensions:  EncryptedExtensions;</span><br><span class="line">        <span class="keyword">case</span> certificate_request:   CertificateRequest;</span><br><span class="line">        <span class="keyword">case</span> certificate:           Certificate;</span><br><span class="line">        <span class="keyword">case</span> certificate_verify:    CertificateVerify;</span><br><span class="line">        <span class="keyword">case</span> finished:              Finished;</span><br><span class="line">        <span class="keyword">case</span> new_session_ticket:    NewSessionTicket;</span><br><span class="line">        <span class="keyword">case</span> key_update:            KeyUpdate;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125; Handshake</span><br></pre></td></tr></table></figure>
 <p><img src="/article/tcpip-4-SSL-TLS-2/tcpip-4-SSL-TLS-2-144932.png" alt></p>
 <p><strong>握手消息类型虽然有很多种，但是最终传到 TLS 记录层，有些会被合并到一条消息。</strong></p>
-<h2><span id="参考">参考</span></h2>
-<ul>
+<h2><span id="参考">参考</span></h2><ul>
 <li><a href="https://tools.ietf.org/html/rfc8446" target="_blank" rel="noopener">RFC8446</a></li>
 <li><a href="https://halfrost.com/https-begin/" target="_blank" rel="noopener">HTTPS 温故知新（一） —— 开篇</a></li>
 <li><a href="https://tools.ietf.org/html/rfc5246" target="_blank" rel="noopener">RFC5246</a></li>

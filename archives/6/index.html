@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -232,12 +232,48 @@
 
 <div class="post-preview">
 
+    <a href="/article/distributed-redis-lock/">
+        <h2 class="post-title">
+            Redis系列之分布式锁实现
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/66/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                基于Redis的单点和基于集群的Redlock的分析
+            </h3>
+        <div class="post-content-preview">
+            概述在大多数的情况下，我们需要对一个共享资源进行写操作，在分布式的环境下，对于资源的写操作的互斥性就显得尤为重要。由于生产环境对redis有很多依赖，所以最近在分布式锁的实现上进行了一些调研。
+对于锁的安全性，一直是分布式领域不可逃避的话题，一个分布式锁的实现在网上所以下，就会发现，这些文章的思路大体相近，给出的实现算法也看似合乎逻辑，但当我们着手去实现它们的时候，却发现如果你越是仔细推敲，...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-30
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/knapsack-problem/">
         <h2 class="post-title">
             算法探秘系列之动态规划（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/11/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,22 +281,16 @@
                 背包问题
             </h3>
         <div class="post-content-preview">
-            背包问题
-有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
+            背包问题有N件物品和一个容量为V的背包。第i件物品的费用是c[i]，价值是w[i]。求解将哪些物品装入背包可使价值总和最大。
 问题分类
-
 01背包问题  如果N个物品每个物品只能使用一次，则成为01背包问题
-完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题
-
-问题的解法
-
+完全背包问题 如果NN个物品每个物品可以使用无限次，则为完全背包问题问题的解法
 暴力搜索解法（递归解法）
-动态规划解法
-优化后的动态规划（滚动数组，自下而上）
+动态规划解法 
+优化后的动态规划（滚动数组，自下而上）01背包问题
 
-01背包问题
 
-...
+有N件物品...
         </div>
     </a>
     
@@ -287,7 +317,7 @@
             算法探秘系列之动态规划（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/24/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/92/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -295,32 +325,18 @@
                 动态规划介绍
             </h3>
         <div class="post-content-preview">
-            概述
-态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。
+            概述态规划(dynamic programming)是运筹学的一个分支，是求解决策过程(decision process)最优化的数学方法。
 动态规划一般可分为
 
-
 线性动规
-
-
 区域动规
-
-
 树形动规
-
-
 背包动规四类。
-
-
 举例：
 
 线性动规：拦截导弹(最大递减数列)，合唱队形，挖地雷，建学校，剑客决斗等；
-
-
 区域动规：石子合并， 加分二叉树，统计单词个数，炮兵布阵等；
-
-
-树形动规...
+树形动规：贪吃的九头龙，二分查找树，...
         </div>
     </a>
     
@@ -347,7 +363,7 @@
             Redis系列之数据结构篇(3)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/44/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -358,15 +374,12 @@
             
 本文转自 redis 的设计与实现
 
-跳表
-–
-跳表的结构
-跳跃表（skiplist）是一种随机化的数据， 跳跃表以有序的方式在层次化的链表中保存元素， 效率和平衡树媲美 —— 查找、删除、添加等操作都可以在对数期望时间下完成， 并且比起平衡树来说， 跳跃表的实现要简单直观得多。
+跳表—
+跳表的结构跳跃表（skiplist）是一种随机化的数据， 跳跃表以有序的方式在层次化的链表中保存元素， 效率和平衡树媲美 —— 查找、删除、添加等操作都可以在对数期望时间下完成， 并且比起平衡树来说， 跳跃表的实现要简单直观得多。
 以下是个典型的跳跃表例子（图片来自维基百科）：
-
 从图中可以看到， 跳跃表主要由以下部分构成：
 
-表头（hea...
+表头（head）：...
         </div>
     </a>
     
@@ -376,9 +389,9 @@
         </p>
         <div class="tags">
             
-              <a href="/tags/#分布式" title="分布式">分布式</a>
-            
               <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
             
         </div>
     
@@ -393,7 +406,7 @@
             大数据算法之空间亚线性算法（二）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/75/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -401,10 +414,9 @@
                 Misra-Gries 算法（数据流中最频繁的的数字）
             </h3>
         <div class="post-content-preview">
-            概诉
-水库抽样算法 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。
+            概诉水库抽样算法 样算法虽然是抽样算法却不是近似算法。本节分享一下有限内存利用近似解求数据流中最频繁的元素。
 Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那些在数据流中出现频率最高的数据项。频繁项挖掘，这个看似简单的任务却是很多复杂算法的基础，同时也有着广泛的应用。
-对于频繁项挖掘而言，一个简单的想法是，为所有的数据项分配计数器，当一个数据项到达，我们即增加相应计数器...
+对于频繁项挖掘而言，一个简单的想法是，为所有的数据项分配计数器，当一个数据项到达，我们即增加相应计数器的...
         </div>
     </a>
     
@@ -433,7 +445,7 @@ Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那
             大数据算法之空间亚线性算法(一)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/22/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/83/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -442,14 +454,12 @@ Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那
             </h3>
         <div class="post-content-preview">
             问题描述
-
 输入：一组数据，大小未知
 输出：这组数据的K个均匀抽取
 要求：仅扫描一次
 总体要求：从N个元素中随机的抽取k个元素，其中N无法确定，保证每个元素抽到的概率相同
 
-问题难点
-首先明确什么叫均匀抽样，就是每个数据被等概率抽取呗。即当样本总体为n 时候，每个样本被抽取的概率为1/n,如果要抽取k个元素，那么每个样本被抽到的概率为k/n。但是我们实现不知道总体的数量n。如果就只有n=K个...
+问题难点 首先明确什么叫均匀抽样，就是每个数据被等概率抽取呗。即当样本总体为n 时候，每个样本被抽取的概率为1/n,如果要抽取k个元素，那么每个样本被抽到的概率为k/n。但是我们实现不知道总体的数量n。如果就只有n=K个元...
         </div>
     </a>
     
@@ -478,7 +488,7 @@ Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那
             Redis系列之数据结构篇(4)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/26/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -489,9 +499,8 @@ Misra-Gries算法是频繁项挖掘中一个著名的算法。频繁项就是那
             
 本文转自 redis 的设计与实现
 
-简介
-我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。
-Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前...
+简介我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。
+Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面...
         </div>
     </a>
     
@@ -501,9 +510,9 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
         </p>
         <div class="tags">
             
-              <a href="/tags/#分布式" title="分布式">分布式</a>
-            
               <a href="/tags/#Redis" title="Redis">Redis</a>
+            
+              <a href="/tags/#分布式" title="分布式">分布式</a>
             
         </div>
     
@@ -518,7 +527,7 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
             Java8使用@sun.misc.Contended避免伪共享
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/19/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -527,9 +536,8 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
             </h3>
         <div class="post-content-preview">
             
-什么是伪共享
-缓存系统中是以缓存行（cache line）为单位存储的。缓存行是2的整数幂个连续字节，一般为32-256个字节。最常见的缓存行大小是64个字节。当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。
-缓存行上的写竞争是运行在SMP系统中并行线程实现可伸缩性最重要的限制因素。有人将伪共享描述成无声的性能杀手，因为从代码中很难看清楚...
+什么是伪共享缓存系统中是以缓存行（cache line）为单位存储的。缓存行是2的整数幂个连续字节，一般为32-256个字节。最常见的缓存行大小是64个字节。当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。
+缓存行上的写竞争是运行在SMP系统中并行线程实现可伸缩性最重要的限制因素。有人将伪共享描述成无声的性能杀手，因为从代码中很难看清楚是...
         </div>
     </a>
     
@@ -564,12 +572,10 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
                 
             </h3>
         <div class="post-content-preview">
-            Java类加载机制的七个阶段
-当我们的Java代码编译完成后，会生成对应的 class 文件。接着我们运行java Demo命令的时候，我们其实是启动了JVM 虚拟机执行 class 字节码文件的内容。而 JVM 虚拟机执行 class 字节码的过程可以分为七个阶段：加载、验证、准备、解析、初始化、使用、卸载。
-加载
-下面是对于加载过程最为官方的描述。
+            Java类加载机制的七个阶段当我们的Java代码编译完成后，会生成对应的 class 文件。接着我们运行java Demo命令的时候，我们其实是启动了JVM 虚拟机执行 class 字节码文件的内容。而 JVM 虚拟机执行 class 字节码的过程可以分为七个阶段：加载、验证、准备、解析、初始化、使用、卸载。
+加载下面是对于加载过程最为官方的描述。
 
-加载阶段是类加载过程的第一个阶段。在...
+加载阶段是类加载过程的第一个阶段。在这个...
         </div>
     </a>
     
@@ -596,7 +602,7 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
             Redis系列之数据结构篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -607,16 +613,13 @@ Redis 并没有直接使用这些数据结构来实现键值对数据库， 而�
             
 本文转自 redis 的设计与实现
 
-结构
-Redis 的 Hash 类型键使用以下两种数据结构作为底层实现:
+结构Redis 的 Hash 类型键使用以下两种数据结构作为底层实现:
 
 字典；
 压缩列表；
 
 因为压缩列表比字典更节省内存， 所以程序在创建新 Hash 键时， 默认使用压缩列表作为底层实现， 当有需要时， 程序才会将底层实现从压缩列表转换到字典。
-Dict哈希表
-Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：
-12345...
+Dict哈希表Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：12345678...
         </div>
     </a>
     
@@ -626,52 +629,9 @@ Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：
         </p>
         <div class="tags">
             
-              <a href="/tags/#分布式" title="分布式">分布式</a>
-            
               <a href="/tags/#Redis" title="Redis">Redis</a>
             
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/distributed-redis-data-structure-sds-link/">
-        <h2 class="post-title">
-            Redis系列之数据结构篇(1)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                SDS和链表
-            </h3>
-        <div class="post-content-preview">
-            概诉
-
-本文转自 redis 的设计与实现
-
-SDS
-SDS 简介
-Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。
-举个例子， 如果客户端执行命令：
-12redis&gt; SET m...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-04-26
-        </p>
-        <div class="tags">
-            
               <a href="/tags/#分布式" title="分布式">分布式</a>
-            
-              <a href="/tags/#Redis" title="Redis">Redis</a>
             
         </div>
     
@@ -791,6 +751,10 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
     <ul>
       
         <li>
+          <a href="/article/distributed-transaction-1-2/">事务详解（2）-- 再谈隔离级别</a>
+        </li>
+      
+        <li>
           <a href="/article/distributed-transaction-1/">事务详解（1）-- 隔离级别</a>
         </li>
       
@@ -806,10 +770,6 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
           <a href="/article/java-memory-model-complier-reordering/">Java内存模型(2)</a>
         </li>
       
-        <li>
-          <a href="/article/why-memory-barriers-1/">CPU缓存一致性协议</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -818,7 +778,7 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -831,14 +791,6 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
     <div class="tags">
         
             
-            <a href="/tags/#算法" title="算法" rel="5">算法</a>
-            
-        
-            
-            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
-            
-        
-            
             <a href="/tags/#JAVA" title="JAVA" rel="26">JAVA</a>
             
         
@@ -847,55 +799,7 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             
         
             
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
-            
-        
-            
-            <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
-            
-        
-            
-            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#MYSQL" title="MYSQL" rel="3">MYSQL</a>
-            
-        
-            
-            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
-            
-        
-            
-            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
-            
-        
+            <a href="/tags/#算法" title="算法" rel="5">算法</a>
             
         
             
@@ -907,6 +811,10 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             
         
             
+            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
+            
+        
+            
             <a href="/tags/#垃圾回收篇" title="垃圾回收篇" rel="8">垃圾回收篇</a>
             
         
@@ -915,13 +823,41 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             
         
             
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
+            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
+            
         
             
             <a href="/tags/#事物" title="事物" rel="3">事物</a>
             
         
             
+            <a href="/tags/#MYSQL" title="MYSQL" rel="4">MYSQL</a>
+            
+        
+            
+            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
+            
+        
+            
+        
+            
             <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
+        
+            
+            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
+            
+        
             
         
             
@@ -941,6 +877,14 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             
         
             
+        
+            
+        
+            
+            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            
+        
+            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
@@ -950,6 +894,8 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
         
             
         
+            
+            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
             
         
             
@@ -961,7 +907,21 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             
         
             
+        
+            
+            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
+            
+        
+            
             <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+            
+        
+            
+        
+            
+        
+            
+        
             
         
             
