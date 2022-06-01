@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,38 +221,46 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="为什么要有内存模型">为什么要有内存模型</span></h2><h2><span id="cpu缓存">CPU缓存</span></h2><p>我们应该都知道，计算机在执行程序的时候，每条指令都是在CPU中执行的，而执行的时候，又免不了要和数据打交道。而计算机上面的数据，是存放在主存当中的，也就是计算机的物理内存啦。</p>
+                <h2><span id="为什么要有内存模型">为什么要有内存模型</span></h2>
+<h2><span id="cpu缓存">CPU缓存</span></h2>
+<p>我们应该都知道，计算机在执行程序的时候，每条指令都是在CPU中执行的，而执行的时候，又免不了要和数据打交道。而计算机上面的数据，是存放在主存当中的，也就是计算机的物理内存。</p>
 <p><strong>当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</strong></p>
-<p>而随着CPU能力的不断提升，一层缓存就慢慢的无法满足要求了，就逐渐的衍生出多级缓存。按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（<code>L1</code>），二级缓存（<code>L3</code>），部分高端CPU还具有三级缓存（<code>L3</code>），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
+<p>而随着CPU能力的不断提升，一层缓存就慢慢的无法满足要求了，就逐渐的衍生出多级缓存。按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（<code>L1</code>），二级缓存（<code>L2</code>），部分高端CPU还具有三级缓存（<code>L3</code>），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
 <p>那么，在有了多级缓存之后，程序的执行就变成了：<strong>当CPU要读取一个数据时，首先从一级缓存中查找，如果没有找到再从二级缓存中查找，如果还是没有就从三级缓存或内存中查找。</strong>。单核CPU只含有一套L1，L2，L3缓存；如果CPU含有多个核心，即多核CPU，则每个核心都含有一套L1（甚至和L2）缓存，而共享L3（或者和L2）缓存。</p>
 <p>下图为一个单CPU双核的缓存结构。</p>
 <p><img src="/article/java-memory-model/1562587586971java-memory-model_.png" alt></p>
-<h2><span id="多线程下缓存一致性问题">多线程下缓存一致性问题</span></h2><ul>
-<li><p>单线程</p>
+<h2><span id="多线程下缓存一致性问题">多线程下缓存一致性问题</span></h2>
+<ul>
+<li>
+<p>单线程</p>
 <blockquote>
 <p>cpu核心的缓存只被一个线程访问。缓存独占，不会出现访问冲突等问题。</p>
 </blockquote>
 </li>
-<li><p>单核CPU，多线程。</p>
+<li>
+<p>单核CPU，多线程。</p>
 <blockquote>
 <p>进程中的多个线程会同时访问进程中的共享数据，CPU将某块内存加载到缓存后，不同线程在访问相同的物理地址的时候，都会映射到相同的缓存位置，这样即使发生线程的切换，缓存仍然不会失效。但由于任何时刻只能有一个线程在执行，因此不会出现缓存访问冲突。</p>
 </blockquote>
 </li>
-<li><p>多核CPU, 多线程。</p>
+<li>
+<p>多核CPU, 多线程。</p>
 <blockquote>
 <p>每个核都至少有一个L1 缓存。多个线程访问进程中的某个共享内存，且这多个线程分别在不同的核心上执行，则每个核心都会在各自的caehe中保留一份共享内存的缓冲。由于多核是可以并行的，可能会出现多个线程同时写各自的缓存的情况，而各自的cache之间的数据就有可能不同。在CPU和主存之间增加缓存，在多线程场景下就可能存在。缓存一致性问题**，也就是说，在多核CPU中，每个核的自己的缓存中，关于同一个数据的缓存内容可能不一致。</p>
 </blockquote>
 <p><img src="/article/java-memory-model/1562587658569java-memory-model_.png" alt></p>
 </li>
 </ul>
-<h2><span id="处理器优化和指令重排">处理器优化和指令重排</span></h2><p>  上面提到在在CPU和主存之间增加缓存，在多线程场景下会存在缓存一致性问题。除了这种情况，还有一种硬件问题也比较重要。那就是为了使处理器内部的运算单元能够尽量的被充分利用，处理器可能会对输入代码进行乱序执行处理。这就是处理器优化。</p>
-<p>  除了现在很多流行的处理器会对代码进行优化乱序处理，很多编程语言的编译器也会有类似的优化，比如Java虚拟机的即时编译器（JIT）也会做指令重排。</p>
-<h3><span id="编译器重排">编译器重排</span></h3><p>下面我们简单看一个编译器重排的例子：</p>
+<h2><span id="处理器优化和指令重排">处理器优化和指令重排</span></h2>
+<p>上面提到在在CPU和主存之间增加缓存，在多线程场景下会存在缓存一致性问题。除了这种情况，还有一种硬件问题也比较重要。那就是为了使处理器内部的运算单元能够尽量的被充分利用，处理器可能会对输入代码进行乱序执行处理。这就是处理器优化。除了现在很多流行的处理器会对代码进行优化乱序处理，很多编程语言的编译器也会有类似的优化，比如Java虚拟机的即时编译器（JIT）也会做指令重排。</p>
+<h3><span id="编译器重排">编译器重排</span></h3>
+<p>下面我们简单看一个编译器重排的例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">线程<span class="number">1</span>             线程 <span class="number">2</span></span><br><span class="line"><span class="number">1</span>： x2 = a ;      <span class="number">3</span>: x1 = b ;</span><br><span class="line"><span class="number">2</span>: b = <span class="number">1</span>;         <span class="number">4</span>: a = <span class="number">2</span> ;</span><br></pre></td></tr></table></figure>
-<p> 两个线程同时执行，分别有1、2、3、4四段执行代码，其中1、2属于线程1 ， 3、4属于线程2 ，从程序的执行顺序上看，似乎不太可能出现x1 = 1 和x2 = 2 的情况，但实际上这种情况是有可能发现的，因为如果编译器对这段程序代码执行重排优化后，可能出现下列情况。</p>
+<p>两个线程同时执行，分别有1、2、3、4四段执行代码，其中1、2属于线程1 ， 3、4属于线程2 ，从程序的执行顺序上看，似乎不太可能出现x1 = 1 和x2 = 2 的情况，但实际上这种情况是有可能发现的，因为如果编译器对这段程序代码执行重排优化后，可能出现下列情况。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">线程 <span class="number">1</span>              线程 <span class="number">2</span></span><br><span class="line"><span class="number">2</span>: b = <span class="number">1</span>;          <span class="number">4</span>: a = <span class="number">2</span> ; </span><br><span class="line"><span class="number">1</span>：x2 = a ;        <span class="number">3</span>: x1 = b ;</span><br></pre></td></tr></table></figure>
 <p>这种执行顺序下就有可能出现x1 = 1 和x2 = 2 的情况，这也就说明在多线程环境下，由于编译器优化重排的存在，两个线程中使用的变量能否保证一致性是无法确定的。</p>
-<h3><span id="处理器指令重排">处理器指令重排</span></h3><p>处理器重排其实氛围了两方面，一方面叫做指令重排，一方面叫做CPU缓存重排序，其两者都是伟重排。什么叫做伪重排？是因为，其本身并没有发生真正意义上的重排序，cpu依旧是按照顺序执行指令，只不过完成的时间或者其他原因导致某个后面的指令先完成。所以，处理器重排序事实上并没有对输入的指令做调整。只有编译器重排序，才会对指令进行重排序。</p>
+<h3><span id="处理器指令重排">处理器指令重排</span></h3>
+<p>处理器重排其实氛围了两方面，一方面叫做指令重排，一方面叫做CPU缓存重排序，其两者都是伟重排。什么叫做伪重排？是因为，其本身并没有发生真正意义上的重排序，cpu依旧是按照顺序执行指令，只不过完成的时间或者其他原因导致某个后面的指令先完成。所以，处理器重排序事实上并没有对输入的指令做调整。只有编译器重排序，才会对指令进行重排序。</p>
 <p>处理器重拍一共有两种</p>
 <ul>
 <li>流水线指令重排序</li>
@@ -268,19 +276,17 @@
 <li>写回 WB</li>
 </ul>
 <p>CPU在工作时，需要将上述指令分为多个步骤依次执行(注意硬件不同有可能不一样),由于每一个步会使用到不同的硬件操作，比如取指时会只有PC寄存器和存储器，译码时会执行到指令寄存器组，执行时会执行ALU(算术逻辑单元)、写回时使用到寄存器组。为了提高硬件利用率，CPU指令是按流水线技术来执行的，如下：</p>
-<p><img src="/article/java-memory-model/1562642803915java-memory-model_.png" alt></p>
+<p><img src="/article/java-memory-model/java-memory-model-1647430201468.png" alt></p>
 <p>从图中可以看出当指令1还未执行完成时，第2条指令便利用空闲的硬件开始执行，这样做是有好处的，如果每个步骤花费1ms，那么如果第2条指令需要等待第1条指令执行完成后再执行的话，则需要等待5ms，但如果使用流水线技术的话，指令2只需等待1ms就可以开始执行了，这样就能大大提升CPU的执行性能。</p>
 <p>虽然流水线技术可以大大提升CPU的性能，但不幸的是一旦出现流水中断，所有硬件设备将会进入一轮停顿期，当再次弥补中断点可能需要几个周期，这样性能损失也会很大，就好比工厂组装手机的流水线，一旦某个零件组装中断，那么该零件往后的工人都有可能进入一轮或者几轮等待组装零件的过程。</p>
 <p>因此我们需要尽量阻止指令中断的情况，指令重排就是其中一种优化中断的手段，我们通过一个例子来阐明指令重排是如何阻止流水线技术中断的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = b + c ;</span><br><span class="line">d = e + f ;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = b + c ;</span><br><span class="line">d = e - f ;</span><br></pre></td></tr></table></figure>
 <p>下面通过汇编指令展示了上述代码在CPU执行的处理过程</p>
-<p><img src="https://img-blog.csdn.net/20170611002708717?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamF2YXplamlhbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt></p>
+<p><img src="/article/java-memory-model/java-memory-model-1647430957897.png" alt></p>
 <ul>
 <li>LW指令 表示 load，其中LW R1,b表示把b的值加载到寄存器R1中</li>
-<li><p>LW R2,c 表示把c的值加载到寄存器R2中</p>
-</li>
-<li><p>ADD 指令表示加法，把R1 、R2的值相加，并存入R3寄存器中。</p>
-</li>
+<li>LW R2,c 表示把c的值加载到寄存器R2中</li>
+<li>ADD 指令表示加法，把R1 、R2的值相加，并存入R3寄存器中。</li>
 <li>SW 表示 store 即将 R3寄存器的值保持到变量a中</li>
 <li>LW R4,e 表示把e的值加载到寄存器R4中</li>
 <li>LW R5,f 表示把f的值加载到寄存器R5中</li>
@@ -290,109 +296,141 @@
 <p>上述便是汇编指令的执行过程，在某些指令上存在X的标志，X代表中断的含义，也就是只要有X的地方就会导致指令流水线技术停顿，同时也会影响后续指令的执行，可能需要经过1个或几个指令周期才可能恢复正常，那为什么停顿呢？</p>
 <p>这是因为部分数据还没准备好，如执行ADD指令时，需要使用到前面指令的数据R1，R2，而此时R2的MEM操作没有完成，即未拷贝到存储器中，这样加法计算就无法进行，必须等到MEM操作完成后才能执行，也就因此而停顿了，其他指令也是类似的情况。</p>
 <p>前面阐述过，停顿会造成CPU性能下降，因此我们应该想办法消除这些停顿，这时就需要使用到指令重排了，如下图，既然ADD指令需要等待，那我们就利用等待的时间做些别的事情，如把LW R4,e 和 LW R5,f 移动到前面执行，毕竟LW R4,e 和 LW R5,f执行并没有数据依赖关系，对他们有数据依赖关系的SUB R6,R5,R4指令在R4,R5加载完成后才执行的，没有影响，过程如下：</p>
-<p><img src="/article/java-memory-model/1562642816423java-memory-model_.png" alt></p>
+<p><img src="/article/java-memory-model/!%5B%5D(java-memory-model/1562642816423java-memory-model_.png).png" alt></p>
+<p>重排序之后：<br>
+<img src="/article/java-memory-model/java-memory-model-1647431814829.png" alt></p>
 <p>正如上图所示，所有的停顿都完美消除了，指令流水线也无需中断了，这样CPU的性能也能带来很好的提升，这就是处理器指令重排的作用。关于编译器重排以及指令重排(这两种重排我们后面统一称为指令重排)相关内容已阐述清晰了，我们必须意识到对于单线程而已指令重排几乎不会带来任何影响，比竟重排的前提是保证串行语义执行的一致性，但对于多线程环境而已，指令重排就可能导致严重的程序轮序执行问题，如下:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MixedOrder</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;</span><br><span class="line">        flag = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">int</span> i = a + <span class="number">1</span>；</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如上述代码，同时存在线程A和线程B对该实例对象进行操作，其中A线程调用写入方法，而B线程调用读取方法，由于指令重排等原因，可能导致程序执行顺序变为如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">线程A                    线程B</span><br><span class="line">writer：                 read：</span><br><span class="line">1:flag = true;           1:flag = true;</span><br><span class="line">2:a = 1;                 2: a = 0 ; //误读</span><br></pre></td></tr></table></figure>
 <p>由于指令重排的原因，线程A的flag置为true被提前执行了，而a赋值为1的程序还未执行完，此时线程B，恰好读取flag的值为true，直接获取a的值（此时B线程并不知道a为0）并执行i赋值操作，结果i的值为1，而不是预期的2，这就是多线程环境下，指令重排导致的程序乱序执行的结果。因此，请记住，指令重排只会保证单线程中串行语义的执行的一致性，但并不会关心多线程间的语义一致性。</p>
-<h2><span id="java内存模型即java-memory-model简称jmm">Java内存模型(即Java Memory Model，简称JMM)</span></h2><h2><span id="简介">简介</span></h2><p>本身是一种抽象的概念，并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中各个变量（包括实例字段，静态字段和构成数组对象的元素）的访问方式。</p>
+<h2><span id="java内存模型即java-memory-model简称jmm">Java内存模型(即Java Memory Model，简称JMM)</span></h2>
+<h2><span id="简介">简介</span></h2>
+<p>本身是一种抽象的概念，并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中各个变量（包括实例字段，静态字段和构成数组对象的元素）的访问方式。</p>
 <p>简单说：Java 为了能在不同架构的 CPU 上运行，提炼出一套自己的内存模型，定义出来 Java 程序该怎么样和这个抽象的内存模型进行交互，定义出来程序的运行过程，什么样的指令可以重排，什么样的不行，指令之间可见性如何等。相当于是规范出来了 Java 程序运行的基本规范。</p>
 <p>这个模型定义会很不容易，它要有足够弹性，以适应各种不同的硬件架构，让这些硬件在支持 JVM 时候都能满足运行规范；它又要足够严谨，让应用层代码编写者能依靠这套规范，知道程序怎么写才能在各种系统上运行都不会有歧义，不会有并发问题。</p>
 <p>综上所述：<strong>JMM（java Memory Model）屏蔽掉各种操作系统和硬件的内存访问差异，使得 java 程序在各种操作系统和硬件环境下，达到一致的内存访问效果。JMM 是一种在多样环境下对内存统一访问的模型</strong>。</p>
 <p>提到Java内存模型，一般指的是JDK 5 开始使用的新的内存模型，主要由JSR-133: JavaTM Memory Model and Thread Specification 描述。感兴趣的可以参看下这份 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/jsr133.pdf" target="_blank" rel="noopener">PDF文档</a></p>
-<h2><span id="jvm-运行时基本的线程模型">JVM 运行时基本的线程模型</span></h2><p>由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存(有些地方称为栈空间)，用于存储线程私有的数据，而Java内存模型中规定所有变量都存储在主内存，主内存是共享内存区域，所有线程都可以访问，但线程对变量的操作(读取赋值等)必须在工作内存中进行，首先要将变量从主内存拷贝的自己的工作内存空间，然后对变量进行操作，操作完成后再将变量写回主内存，不能直接操作主内存中的变量，工作内存中存储着主内存中的变量副本拷贝，前面说过，工作内存是每个线程的私有数据区域，因此不同的线程间无法访问对方的工作内存，线程间的通信(传值)必须通过主内存来完成，其简要访问过程如下图</p>
+<h2><span id="jvm-运行时基本的线程模型">JVM 运行时基本的线程模型</span></h2>
+<p>由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存(有些地方称为栈空间)，用于存储线程私有的数据，而Java内存模型中规定所有变量都存储在主内存，主内存是共享内存区域，所有线程都可以访问，但线程对变量的操作(读取赋值等)必须在工作内存中进行，首先要将变量从主内存拷贝的自己的工作内存空间，然后对变量进行操作，操作完成后再将变量写回主内存，不能直接操作主内存中的变量，工作内存中存储着主内存中的变量副本拷贝，前面说过，工作内存是每个线程的私有数据区域，因此不同的线程间无法访问对方的工作内存，线程间的通信(传值)必须通过主内存来完成，其简要访问过程如下图</p>
 <p><img src="/article/java-memory-model/1562642839101java-memory-model_.png" alt></p>
-<h2><span id="并发编程的问题">并发编程的问题</span></h2><ul>
-<li><p>JMM与Java内存区域的划分是不同的概念层次，更恰当说JMM描述的是一组规则，通过这组规则控制程序中各个变量在共享数据区域和私有数据区域的访问方式。</p>
+<h2><span id="并发编程的问题">并发编程的问题</span></h2>
+<ul>
+<li>
+<p>JMM与Java内存区域的划分是不同的概念层次，更恰当说JMM描述的是一组规则，通过这组规则控制程序中各个变量在共享数据区域和私有数据区域的访问方式。</p>
 </li>
-<li><p>JMM是围绕<strong>原子性，有序性、可见性</strong>展开的。JMM与Java内存区域唯一相似点，都存在共享数据区域和私有数据区域，在JMM中主内存属于共享数据区域，从某个程度上讲应该包括了堆和方法区，而工作内存数据线程私有数据区域，从某个程度上讲则应该包括程序计数器、虚拟机栈以及本地方法栈。或许在某些地方，我们可能会看见主内存被描述为堆内存，工作内存被称为线程栈，实际上他们表达的都是同一个含义。关于JMM中的主内存和工作内存说明如下</p>
+<li>
+<p>JMM是围绕<strong>原子性，有序性、可见性</strong>展开的。JMM与Java内存区域唯一相似点，都存在共享数据区域和私有数据区域，在JMM中主内存属于共享数据区域，从某个程度上讲应该包括了堆和方法区，而工作内存数据线程私有数据区域，从某个程度上讲则应该包括程序计数器、虚拟机栈以及本地方法栈。或许在某些地方，我们可能会看见主内存被描述为堆内存，工作内存被称为线程栈，实际上他们表达的都是同一个含义。关于JMM中的主内存和工作内存说明如下</p>
 </li>
 </ul>
 <ul>
-<li><p>主内存</p>
-<p>  主要存储的是Java实例对象，所有线程创建的实例对象都存放在主内存中，不管该实例对象是成员变量还是方法中的本地变量(也称局部变量)，当然也包括了共享的类信息、常量、静态变量。由于是共享数据区域，多条线程对同一个变量进行访问可能会发现线程安全问题。</p>
+<li>
+<p>主内存</p>
+<p>主要存储的是Java实例对象，所有线程创建的实例对象都存放在主内存中，不管该实例对象是成员变量还是方法中的本地变量(也称局部变量)，当然也包括了共享的类信息、常量、静态变量。由于是共享数据区域，多条线程对同一个变量进行访问可能会发现线程安全问题。</p>
 </li>
-<li><p>工作内存</p>
-<p>  主要存储当前方法的所有本地变量信息(工作内存中存储着主内存中的变量副本拷贝)，每个线程只能访问自己的工作内存，即线程中的本地变量对其它线程是不可见的，就算是两个线程执行的是同一段代码，它们也会各自在自己的工作内存中创建属于当前线程的本地变量，当然也包括了字节码行号指示器、相关Native方法的信息。注意由于工作内存是每个线程的私有数据，线程间无法相互访问工作内存，因此存储在工作内存的数据不存在线程安全问题。</p>
+<li>
+<p>工作内存</p>
+<p>主要存储当前方法的所有本地变量信息(工作内存中存储着主内存中的变量副本拷贝)，每个线程只能访问自己的工作内存，即线程中的本地变量对其它线程是不可见的，就算是两个线程执行的是同一段代码，它们也会各自在自己的工作内存中创建属于当前线程的本地变量，当然也包括了字节码行号指示器、相关Native方法的信息。注意由于工作内存是每个线程的私有数据，线程间无法相互访问工作内存，因此存储在工作内存的数据不存在线程安全问题。</p>
 </li>
 </ul>
 <p>对于一个实例对象中的成员方法而言，如果方法中包含本地变量是基本数据类型（<code>boolean,byte,short,char,int,long,float,double</code>），将直接存储在工作内存的帧栈结构中，但倘若本地变量是引用类型，那么该变量的引用会存储在功能内存的帧栈中，而对象实例将存储在主内存(共享数据区域，堆)中。</p>
 <p>但对于实例对象的成员变量，不管它是基本数据类型或者包装类型(Integer、Double等)还是引用类型，都会被存储到堆区。至于static变量以及类本身相关信息将会存储在主内存中。需要注意的是，在主内存中的实例对象可以被多线程共享，倘若两个线程同时调用了同一个对象的同一个方法，那么两条线程会将要操作的数据拷贝一份到自己的工作内存中，执行完成操作后才刷新到主内存。</p>
-<p>简单示意图如下所示：<br><img src="/article/java-memory-model/1562642879150java-memory-model_.png" alt></p>
-<h2><span id="jmm存在的必要性">JMM存在的必要性</span></h2><p>由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存(有些地方称为栈空间)，用于存储线程私有的数据，线程与主内存中的变量操作必须通过工作内存间接完成，主要过程是将变量从主内存拷贝的每个线程各自的工作内存空间，然后对变量进行操作，操作完成后再将变量写回主内存，如果存在两个线程同时对一个主内存中的实例对象的变量进行操作就有可能诱发线程安全问题。</p>
+<p>简单示意图如下所示：<br>
+<img src="/article/java-memory-model/1562642879150java-memory-model_.png" alt></p>
+<h2><span id="jmm存在的必要性">JMM存在的必要性</span></h2>
+<p>由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存(有些地方称为栈空间)，用于存储线程私有的数据，线程与主内存中的变量操作必须通过工作内存间接完成，主要过程是将变量从主内存拷贝的每个线程各自的工作内存空间，然后对变量进行操作，操作完成后再将变量写回主内存，如果存在两个线程同时对一个主内存中的实例对象的变量进行操作就有可能诱发线程安全问题。</p>
 <p>如下图，主内存中存在一个共享变量x，现在有A和B两条线程分别对该变量x=1进行操作，A/B线程各自的工作内存中存在共享变量副本x。假设现在A线程想要修改x的值为2，而B线程却想要读取x的值，那么B线程读取到的值是A线程更新后的值2还是更新前的值1呢？</p>
-<p>答案是，不确定，即B线程有可能读取到A线程更新前的值1，也有可能读取到A线程更新后的值2，这是因为工作内存是每个线程私有的数据区域，而线程A变量x时，首先是将变量从主内存拷贝到A线程的工作内存中，然后对变量进行操作，操作完成后再将变量x写回主内，而对于B线程的也是类似的，这样就有可能造成主内存与工作内存间数据存在一致性问题，假如A线程修改完后正在将数据写回主内存，而B线程此时正在读取主内存，即将x=1拷贝到自己的工作内存中，这样B线程读取到的值就是x=1，但如果A线程已将x=2写回主内存后，B线程才开始读取的话，那么此时B线程读取到的就是x=2，但到底是哪种情况先发生呢？这是不确定的，这也就是所谓的线程安全问题。 </p>
+<p>答案是，不确定，即B线程有可能读取到A线程更新前的值1，也有可能读取到A线程更新后的值2，这是因为工作内存是每个线程私有的数据区域，而线程A变量x时，首先是将变量从主内存拷贝到A线程的工作内存中，然后对变量进行操作，操作完成后再将变量x写回主内，而对于B线程的也是类似的，这样就有可能造成主内存与工作内存间数据存在一致性问题，假如A线程修改完后正在将数据写回主内存，而B线程此时正在读取主内存，即将x=1拷贝到自己的工作内存中，这样B线程读取到的值就是x=1，但如果A线程已将x=2写回主内存后，B线程才开始读取的话，那么此时B线程读取到的就是x=2，但到底是哪种情况先发生呢？这是不确定的，这也就是所谓的线程安全问题。</p>
 <p><img src="/article/java-memory-model/1562642895574java-memory-model_.png" alt></p>
-<h2><span id="java内存模型的承诺">Java内存模型的承诺</span></h2><ul>
-<li><p><strong>原子性</strong>：原子性指的是一个操作是不可中断的，即使是在多线程环境下，一个操作一旦开始就不会被其他线程影响。</p>
-<p>  比如对于一个静态变量int x，两条线程同时对他赋值，线程A赋值为1，而线程B赋值为2，不管线程如何运行，最终x的值要么是1，要么是2，线程A和线程B间的操作是没有干扰的，这就是原子性操作，不可被中断的特点。</p>
-<p>  有点要注意的是，对于32位系统的来说，long类型数据和double类型数据(对于基本数据类型，byte,short,int,float,boolean,char读写是原子操作)，它们的读写并非原子性的，也就是说如果存在两条线程同时对long类型或者double类型的数据进行读写是存在相互干扰的，因为对于32位虚拟机来说，每次原子读写是32位的，而long和double则是64位的存储单元，这样会导致一个线程在写时，操作完前32位的原子操作后，轮到B线程读取时，恰好只读取到了后32位的数据，这样可能会读取到一个既非原值又不是线程修改值的变量。</p>
+<h2><span id="java内存模型的承诺">Java内存模型的承诺</span></h2>
+<ul>
+<li>
+<p><strong>原子性</strong>：原子性指的是一个操作是不可中断的，即使是在多线程环境下，一个操作一旦开始就不会被其他线程影响。</p>
+<p>比如对于一个静态变量int x，两条线程同时对他赋值，线程A赋值为1，而线程B赋值为2，不管线程如何运行，最终x的值要么是1，要么是2，线程A和线程B间的操作是没有干扰的，这就是原子性操作，不可被中断的特点。</p>
+<p>有点要注意的是，对于32位系统的来说，long类型数据和double类型数据(对于基本数据类型，byte,short,int,float,boolean,char读写是原子操作)，它们的读写并非原子性的，也就是说如果存在两条线程同时对long类型或者double类型的数据进行读写是存在相互干扰的，因为对于32位虚拟机来说，每次原子读写是32位的，而long和double则是64位的存储单元，这样会导致一个线程在写时，操作完前32位的原子操作后，轮到B线程读取时，恰好只读取到了后32位的数据，这样可能会读取到一个既非原值又不是线程修改值的变量。</p>
 </li>
-<li><p><strong>可见性</strong>：理解了指令重排现象后，可见性容易了，可见性指的是当一个线程修改了某个共享变量的值，其他线程是否能够马上得知这个修改的值</p>
+<li>
+<p><strong>可见性</strong>：理解了指令重排现象后，可见性容易了，可见性指的是当一个线程修改了某个共享变量的值，其他线程是否能够马上得知这个修改的值</p>
 </li>
-<li><p><strong>有序性</strong>  有序性是指对于单线程的执行代码，我们总是认为代码的执行是按顺序依次执行的，这样的理解并没有毛病，毕竟对于单线程而言确实如此，但对于多线程环境，则可能出现乱序现象，因为程序编译成机器码指令后可能会出现指令重排现象，重排后的指令与原指令的顺序未必一致，要明白的是，在Java程序中，倘若在本线程内，所有操作都视为有序行为，如果是多线程环境下，一个线程中观察另外一个线程，所有操作都是无序的，前半句指的是单线程内保证串行语义执行的一致性，后半句则指指令重排现象和工作内存与主内存同步延迟现象。</p>
+<li>
+<p><strong>有序性</strong>  有序性是指对于单线程的执行代码，我们总是认为代码的执行是按顺序依次执行的，这样的理解并没有毛病，毕竟对于单线程而言确实如此，但对于多线程环境，则可能出现乱序现象，因为程序编译成机器码指令后可能会出现指令重排现象，重排后的指令与原指令的顺序未必一致，要明白的是，在Java程序中，倘若在本线程内，所有操作都视为有序行为，如果是多线程环境下，一个线程中观察另外一个线程，所有操作都是无序的，前半句指的是单线程内保证串行语义执行的一致性，后半句则指指令重排现象和工作内存与主内存同步延迟现象。</p>
 </li>
 </ul>
-<h2><span id="java内存模型与缓存一致性的联系">Java内存模型与缓存一致性的联系</span></h2><p>缓存一致性问题其实就是<strong>可见性问题</strong>。而<strong>处理器优化</strong>是可以导致<strong>原子性问题</strong>的，<strong>指令重排</strong>即会导致有<strong>序性问题</strong>。所以，后文将不再提起硬件层面的那些概念，而是直接使用大家熟悉的原子性、可见性和有序性。</p>
-<h2><span id="jmm解决缓存一致性问题的方案">JMM解决缓存一致性问题的方案</span></h2><p>为了保证共享内存的正确性（可见性、有序性、原子性），内存模型定义了共享内存系统中多线程程序读写操作行为的规范。<strong>通过这些规则来规范对内存的读写操作，从而保证指令执行的正确性。</strong> 它与处理器有关、与缓存有关、与并发有关、与编译器也有关。他解决了CPU多级缓存、处理器优化、指令重排等导致的内存访问问题，保证了并发场景下的一致性、原子性和有序性。</p>
+<h2><span id="java内存模型与缓存一致性的联系">Java内存模型与缓存一致性的联系</span></h2>
+<p>缓存一致性问题其实就是<strong>可见性问题</strong>。而<strong>处理器优化</strong>是可以导致<strong>原子性问题</strong>的，<strong>指令重排</strong>即会导致有<strong>序性问题</strong>。所以，后文将不再提起硬件层面的那些概念，而是直接使用大家熟悉的原子性、可见性和有序性。</p>
+<h2><span id="jmm解决缓存一致性问题的方案">JMM解决缓存一致性问题的方案</span></h2>
+<p>为了保证共享内存的正确性（可见性、有序性、原子性），内存模型定义了共享内存系统中多线程程序读写操作行为的规范。<strong>通过这些规则来规范对内存的读写操作，从而保证指令执行的正确性。</strong> 它与处理器有关、与缓存有关、与并发有关、与编译器也有关。他解决了CPU多级缓存、处理器优化、指令重排等导致的内存访问问题，保证了并发场景下的一致性、原子性和有序性。</p>
 <p>在Java内存模型中都提供一套解决方案供Java工程师在开发过程使用.</p>
 <ul>
-<li><p>原子性问题，除了JVM自身提供的对<strong>基本数据类型读写操作的原子性</strong>外，对于方法级别或者代码块级别的原子性操作，可以使用<strong>synchronized</strong>关键字或者重入锁(<strong>ReentrantLock</strong>)保证程序执行的原子性。关于<code>synchronized</code>的详解，看博主另外一篇文章( 深入理解Java并发之synchronized实现原理)。</p>
+<li>
+<p>原子性问题，除了JVM自身提供的对<strong>基本数据类型读写操作的原子性</strong>外，对于方法级别或者代码块级别的原子性操作，可以使用<strong>synchronized</strong>关键字或者重入锁(<strong>ReentrantLock</strong>)保证程序执行的原子性。关于<code>synchronized</code>的详解，看博主另外一篇文章( 深入理解Java并发之synchronized实现原理)。</p>
 </li>
-<li><p>而工作内存与主内存同步延迟现象导致的可见性问题，可以使用<code>synchronized</code>关键字或者<code>volatile</code>关键字解决，它们都可以使一个线程修改后的变量立即对其他线程可见。</p>
+<li>
+<p>而工作内存与主内存同步延迟现象导致的可见性问题，可以使用<code>synchronized</code>关键字或者<code>volatile</code>关键字解决，它们都可以使一个线程修改后的变量立即对其他线程可见。</p>
 </li>
-<li><p>对于指令重排导致的可见性问题和有序性问题，则可以利用<code>volatile</code>关键字解决，因为<code>volatile</code>的另外一个作用就是禁止重排序优化，关于<code>volatile</code>稍后会进一步分析。</p>
+<li>
+<p>对于指令重排导致的可见性问题和有序性问题，则可以利用<code>volatile</code>关键字解决，因为<code>volatile</code>的另外一个作用就是禁止重排序优化，关于<code>volatile</code>稍后会进一步分析。</p>
 </li>
 </ul>
 <p>除了靠<code>sychronized</code>和<code>volatile</code>关键字来保证原子性、可见性以及有序性外，JMM内部还定义一套<code>as-if-serial, happens-before</code> 原则来保证多线程环境下两个操作间的原子性、可见性以及有序性。</p>
-<h3><span id="as-if-serial">as-if-serial</span></h3><p>as-if-serial 语义的意思是：<strong>所有的操作均可以为了优化而被重排序，但是你必须要保证重排序后执行的结果不能被改变，编译器、runtime、处理器都必须遵守 as-if-serial 语义。注意，as-if-serial 只保证单线程环境，多线程环境下无效。</strong></p>
-<p>下面我们用一个简单的示例来说明：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span> ;      <span class="comment">// A</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span> ;      <span class="comment">// B</span></span><br><span class="line"><span class="keyword">int</span> c = a + b;   <span class="comment">// C</span></span><br></pre></td></tr></table></figure></p>
+<h3><span id="as-if-serial">as-if-serial</span></h3>
+<p>as-if-serial 语义的意思是：<strong>所有的操作均可以为了优化而被重排序，但是你必须要保证重排序后执行的结果不能被改变，编译器、runtime、处理器都必须遵守 as-if-serial 语义。注意，as-if-serial 只保证单线程环境，多线程环境下无效。</strong></p>
+<p>下面我们用一个简单的示例来说明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span> ;      <span class="comment">// A</span></span><br><span class="line"><span class="keyword">int</span> b = <span class="number">2</span> ;      <span class="comment">// B</span></span><br><span class="line"><span class="keyword">int</span> c = a + b;   <span class="comment">// C</span></span><br></pre></td></tr></table></figure>
 <p>A、B、C 三个操作存在如下关系：A、B 不存在数据依赖关系，A和C、B和C存在数据依赖关系，因此在进行重排序的时候，A、B 可以随意排序，但是必须位于 C 的前面，执行顺序可以是 A –&gt; B –&gt; C 或者 B –&gt; A –&gt; C 。但是无论是何种执行顺序最终的结果 C 总是等于 3 。</p>
 <p>as-if-serail 语义把单线程程序保护起来了，它可以保证在重排序的前提下程序的最终结果始终都是一致的。</p>
 <p>当然，上述关系还存在着 happens-before 的原则</p>
-<h3><span id="happens-before-原则">happens-before 原则</span></h3><p>根据happens-before的程序顺序规则，上面计算圆的面积的示例代码存在3个happens-before关系。</p>
+<h3><span id="happens-before-原则">happens-before 原则</span></h3>
+<p>根据happens-before的程序顺序规则，上面计算圆的面积的示例代码存在3个happens-before关系。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>） A happens-before B。</span><br><span class="line"><span class="number">2</span>） B happens-before C。</span><br><span class="line"><span class="number">3</span>） A happens-before C。</span><br></pre></td></tr></table></figure>
 <p>而这里的第3个happens-before关系，是根据happens-before的传递性推导出来的。</p>
 <p>注意：</p>
 <p><strong>这里A happens-before B，但实际执行时B却可以排在A之前执行</strong>，JMM并不要求A一定要在B之前执行。JMM仅仅要求前一个操作(执行的结果)对后一个操作可见，且前一个操作按顺序排在第二个操作之前。这里操作A的执行结果不需要对操作B可见，而且重排序操作A和操作B后的执行结果，与操作A和操作B按happens-before顺序执行的结果一致。在这种情况下，JMM会认为这种重排序并不非法，JMM允许这种重排序。</p>
 <p>倘若在程序开发中，仅靠<code>sychronized</code>和<code>volatile</code>关键字来保证原子性、可见性以及有序性，那么编写并发程序可能会显得十分麻烦，幸运的是，在Java内存模型中，还提供了happens-before 原则来辅助保证程序执行的原子性、可见性以及有序性的问题，它是判断数据是否存在竞争、线程是否安全的依据，happens-before 原则内容如下</p>
 <ul>
-<li><p><strong>程序顺序原则</strong>，即在一个线程内必须保证语义串行性，也就是说按照代码顺序执行。</p>
+<li>
+<p><strong>程序顺序原则</strong>，即在一个线程内必须保证语义串行性，也就是说按照代码顺序执行。</p>
 </li>
-<li><p><strong>锁规则</strong></p>
+<li>
+<p><strong>锁规则</strong></p>
 </li>
 </ul>
 <p>解锁(unlock)操作必然发生在后续的同一个锁的加锁(lock)之前，也就是说，如果对于一个锁解锁后，再加锁，那么加锁的动作必须在解锁动作之后(同一个锁)。</p>
 <ul>
-<li><strong>volatile规则</strong> </li>
+<li><strong>volatile规则</strong></li>
 </ul>
 <p>volatile变量的写，先发生于读，这保证了volatile变量的可见性，简单的理解就是，volatile变量在每次被线程访问时，都强迫从主内存中读该变量的值，而当该变量发生变化时，又会强迫将最新的值刷新到主内存，任何时刻，不同的线程总是能够看到该变量的最新值。</p>
 <ul>
-<li><strong>线程启动规则</strong> </li>
+<li><strong>线程启动规则</strong></li>
 </ul>
 <p>线程的start()方法先于它的每一个动作，即如果线程A在执行线程B的start方法之前修改了共享变量的值，那么当线程B执行start方法时，线程A对共享变量的修改对线程B可见</p>
 <ul>
-<li><p><strong>传递性 A先于B ，B先于C 那么A必然先于C</strong></p>
+<li>
+<p><strong>传递性 A先于B ，B先于C 那么A必然先于C</strong></p>
 </li>
-<li><p><strong>线程终止规则</strong> </p>
+<li>
+<p><strong>线程终止规则</strong></p>
 </li>
 </ul>
 <p>线程的所有操作先于线程的终结，Thread.join()方法的作用是等待当前执行的线程终止。假设在线程B终止之前，修改了共享变量，线程A从线程B的join方法成功返回后，线程B对共享变量的修改将对线程A可见。</p>
 <ul>
-<li><strong>线程中断规则</strong> </li>
+<li><strong>线程中断规则</strong></li>
 </ul>
 <p>对线程 interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过Thread.interrupted()方法检测线程是否中断。</p>
 <ul>
-<li><strong>对象终结规则 </strong></li>
+<li>**对象终结规则 **</li>
 </ul>
 <p>对象的构造函数执行，结束先于finalize()方法</p>
-<p>上述8条原则无需手动添加任何同步手段(synchronized|volatile)即可达到效果，下面我们结合前面的案例演示这8条原则如何判断线程是否安全，如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MixedOrder</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;</span><br><span class="line">        flag = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">int</span> i = a + <span class="number">1</span>；</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述8条原则无需手动添加任何同步手段(synchronized|volatile)即可达到效果，下面我们结合前面的案例演示这8条原则如何判断线程是否安全，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MixedOrder</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        a = <span class="number">1</span>;</span><br><span class="line">        flag = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            <span class="keyword">int</span> i = a + <span class="number">1</span>；</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>同样的道理，存在两条线程A和B，线程A调用实例对象的writer()方法，而线程B调用实例对象的read()方法，线程A先启动而线程B后启动，那么线程B读取到的i值是多少呢？</p>
 <p>现在依据8条原则，由于存在两条线程同时调用，因此程序次序原则不合适。writer()方法和read()方法都没有使用同步手段，锁规则也不合适。没有使用volatile关键字，volatile变量原则不适应。</p>
 <p>线程启动规则、线程终止规则、线程中断规则、对象终结规则、传递性和本次测试案例也不合适。线程A和线程B的启动时间虽然有先后，但线程B执行结果却是不确定，也是说上述代码没有适合8条原则中的任意一条，也没有使用任何同步手段，所以上述的操作是线程不安全的，因此线程B读取的值自然也是不确定的。修复这个问题的方式很简单，要么给writer()方法和read()方法添加同步手段，如synchronized或者给变量flag添加volatile关键字，确保线程A修改的值对线程B总是可见。</p>
-<h3><span id="volatile内存语义">volatile内存语义</span></h3><p>i变量的任何改变都会立马反应到其他线程中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileVisibility</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> i =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">increase</span><span class="params">()</span></span>&#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3><span id="volatile禁止重排优化">volatile禁止重排优化</span></h3><p>volatile关键字另一个作用就是禁止指令重排优化，从而避免多线程环境下程序出现乱序执行的现象，关于指令重排优化前面已详细分析过，这里主要简单说明一下volatile是如何实现禁止指令重排优化的。先了解一个概念，内存屏障(<code>Memory Barrier</code>）。</p>
+<h3><span id="volatile内存语义">volatile内存语义</span></h3>
+<p>i变量的任何改变都会立马反应到其他线程中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VolatileVisibility</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> i =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">increase</span><span class="params">()</span></span>&#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="volatile禁止重排优化">volatile禁止重排优化</span></h3>
+<p>volatile关键字另一个作用就是禁止指令重排优化，从而避免多线程环境下程序出现乱序执行的现象，关于指令重排优化前面已详细分析过，这里主要简单说明一下volatile是如何实现禁止指令重排优化的。先了解一个概念，内存屏障(<code>Memory Barrier</code>）。</p>
 <p>关于<code>Memory Barrier</code> 我会在写一篇博文详细探讨他的实现方式。只需要知道，如果在指令间插入一条Memory Barrier则会告诉编译器和CPU，不管什么指令都不能和这条Memory Barrier指令重排序，也就是说通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化。</p>
 <p><code>Memory Barrier</code>的另外一个作用是强制刷出各种CPU的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本。总之，volatile变量正是通过内存屏障实现其在内存中的语义，即可见性和禁止重排优化。下面看一个非常典型的禁止重排优化的例子DCL，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoubleCheckLock</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> DoubleCheckLock instance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DoubleCheckLock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DoubleCheckLock <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//第一次检测</span></span><br><span class="line">        <span class="keyword">if</span> (instance==<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="comment">//同步</span></span><br><span class="line">            <span class="keyword">synchronized</span> (DoubleCheckLock<span class="class">.<span class="keyword">class</span>)</span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (instance == <span class="keyword">null</span>)&#123;</span><br><span class="line">                    <span class="comment">//多线程环境下可能会出现问题的地方</span></span><br><span class="line">                    instance = <span class="keyword">new</span> DoubleCheckLock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -402,7 +440,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">memory = allocate(); <span class="comment">//1.分配对象内存空间</span></span><br><span class="line">instance = memory;   <span class="comment">//3.设置instance指向刚分配的内存地址，此时instance！=null，但是对象还没有初始化完成！</span></span><br><span class="line">instance(memory);    <span class="comment">//2.初始化对象</span></span><br></pre></td></tr></table></figure>
 <p>由于步骤2和步骤3不存在数据依赖关系，而且无论重排前还是重排后程序的执行结果在单线程中并没有改变，因此这种重排优化是允许的。但是指令重排只会保证串行语义的执行的一致性(单线程)，但并不会关心多线程间的语义一致性。所以当一条线程访问<code>instance</code>不为<code>null</code>时，由于<code>instance</code>实例未必已初始化完成，也就造成了线程安全问题。那么该如何解决呢，很简单，我们使用<code>volatile</code>禁止<code>instance</code>变量被执行指令重排优化即可。</p>
 <p>关于指令重排序，我们已经讨论了cpu流水线的重排序，接下来没问会讨论另外两种重排序，编译器重排序和缓存引起的重排序。</p>
-<h2><span id="参考">参考:</span></h2><ul>
+<h2><span id="参考">参考:</span></h2>
+<ul>
 <li><a href="https://blog.csdn.net/javazejian/article/details/72772461" target="_blank" rel="noopener">全面理解Java内存模型(JMM)及volatile关键字</a></li>
 <li><a href="http://ifeve.com/wp-content/uploads/2014/03/JSR133%E4%B8%AD%E6%96%87%E7%89%881.pdf" target="_blank" rel="noopener">JSR133中文版1.pdf</a></li>
 <li><a href="http://www.wowotech.net/kernel_synchronization/Why-Memory-Barriers.html" target="_blank" rel="noopener">Why Memory Barriers</a></li>

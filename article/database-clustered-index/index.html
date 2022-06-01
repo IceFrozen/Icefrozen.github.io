@@ -95,9 +95,9 @@
                             
                               <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                             
-                              <a class="tag" href="/tags/#事物" title="事物">事物</a>
-                            
                               <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                            
+                              <a class="tag" href="/tags/#事物" title="事物">事物</a>
                             
                         </div>
                         <h1>数据库原理篇(1)</h1>
@@ -151,14 +151,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,29 +221,40 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="索引概诉">索引概诉</span></h2><p><img src="/article/database-clustered-index/1575439752430database-clustered-index_.png" alt></p>
-<h2><span id="索引详解">索引详解</span></h2><h2><span id="常见的索引算法">常见的索引算法</span></h2><p><img src="/article/database-clustered-index/1575459371999database-clustered-index_.png" alt></p>
-<h3><span id="平衡二叉树索引">平衡二叉树索引</span></h3><p>二叉树的查找的时间复杂度是O(log2N)，其查找效率与深度有关，而普通的二叉树可能由于内部节点排列问题退化成链表，这样查找效率就会很低。因此平衡二叉树是更好的选择，因为它保持平衡，即通过旋转调整结构保持最小的深度。其查找的时间复杂度也是O(log2N)。</p>
+                <h2><span id="索引概诉">索引概诉</span></h2>
+<p><img src="/article/database-clustered-index/1575439752430database-clustered-index_.png" alt></p>
+<h2><span id="索引详解">索引详解</span></h2>
+<h2><span id="常见的索引算法">常见的索引算法</span></h2>
+<p><img src="/article/database-clustered-index/1575459371999database-clustered-index_.png" alt></p>
+<h3><span id="平衡二叉树索引">平衡二叉树索引</span></h3>
+<p>二叉树的查找的时间复杂度是O(log2N)，其查找效率与深度有关，而普通的二叉树可能由于内部节点排列问题退化成链表，这样查找效率就会很低。因此平衡二叉树是更好的选择，因为它保持平衡，即通过旋转调整结构保持最小的深度。其查找的时间复杂度也是O(log2N)。</p>
 <p>但实际上，数据库中索引的结构也并非AVL树或更优秀的红黑树，尽管它的查询的时间复杂度很低。</p>
-<h3><span id="那为什么平衡二叉树不适合作为索引呢">那为什么平衡二叉树不适合作为索引呢？</span></h3><p>索引是存在于索引文件中，是存在于磁盘中的。因为索引通常是很大的，因此无法一次将全部索引加载到内存当中，因此每次只能从磁盘中读取一个磁盘页的数据到内存中。而这个磁盘的读取的速度较内存中的读取速度而言是差了好几个级别。</p>
+<h3><span id="那为什么平衡二叉树不适合作为索引呢">那为什么平衡二叉树不适合作为索引呢？</span></h3>
+<p>索引是存在于索引文件中，是存在于磁盘中的。因为索引通常是很大的，因此无法一次将全部索引加载到内存当中，因此每次只能从磁盘中读取一个磁盘页的数据到内存中。而这个磁盘的读取的速度较内存中的读取速度而言是差了好几个级别。</p>
 <p>注意，我们说的平衡二叉树结构，指的是逻辑结构上的平衡二叉树，其物理实现是数组。然后<strong>由于在逻辑结构上相近的节点在物理结构上可能会差很远</strong>。因此，每次读取的磁盘页的数据中有许多是用不上的。因此，查找过程中要进行许多次的磁盘读取操作。</p>
 <p>而适合作为索引的结构应该是尽可能少的执行磁盘IO操作，因为执行磁盘IO操作非常的耗时。因此，平衡二叉树并不适合作为索引结构。</p>
-<h3><span id="为什么-二叉树物理结构上可能相差很远">为什么 二叉树物理结构上可能相差很远？</span></h3><p>举个例子：</p>
+<h3><span id="为什么-二叉树物理结构上可能相差很远">为什么 二叉树物理结构上可能相差很远？</span></h3>
+<p>举个例子：</p>
 <p><img src="/article/database-clustered-index/1575457059710database-clustered-index_.png" alt></p>
 <p>二叉树就物理结构来分可以分成：<strong>顺序存储</strong>结构和<strong>链式存储</strong>结构。</p>
 <ul>
-<li><p><strong>1. 顺序存储结构</strong>：</p>
-<p>  顺序存储结构，顾名思义就是二叉树的数据元素存放在一组连续的存储单元中。其主要有一下几个特点：</p>
+<li>
+<p><strong>1. 顺序存储结构</strong>：</p>
+<p>顺序存储结构，顾名思义就是二叉树的数据元素存放在一组连续的存储单元中。其主要有一下几个特点：</p>
 <ul>
-<li>① 逻辑上相邻的两个元素在物理位置上也是相邻的；</li>
-<li>② 操作删除和插入的时候，需要整体移动元素；</li>
-<li><p>③ 需要预先分配空间，不能动态增长；</p>
+<li>
+<p>① 逻辑上相邻的两个元素在物理位置上也是相邻的；</p>
+</li>
+<li>
+<p>② 操作删除和插入的时候，需要整体移动元素；</p>
+</li>
+<li>
+<p>③ 需要预先分配空间，不能动态增长；</p>
 <p>例如：</p>
 </li>
 </ul>
 </li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -257,7 +268,7 @@
 <th>7</th>
 <th>8</th>
 <th>9</th>
-<th>10 </th>
+<th>10</th>
 </tr>
 </thead>
 <tbody>
@@ -276,21 +287,27 @@
 </tr>
 </tbody>
 </table>
-</div>
 <ul>
-<li><p><strong>1. 链式存储结构：</strong></p>
+<li>
+<p><strong>1. 链式存储结构：</strong></p>
 <p>链式存储结构中二叉树的每个结点至少包含三个域：数据域、左指针域和右指针域。其二叉树是通过指针实现，链式存储结构有以下几个特点：</p>
 <ul>
-<li>① 逻辑上相邻的两个元素在物理位置上不一定是相邻的；</li>
-<li>② 操作删除和插入的时候，不需要整体移动元素；只需要修改相应的指针即可；</li>
-<li>③ 不需要预先分配空间；</li>
-<li><p>④ 存储指针本身会消耗一定的存储的空间；</p>
+<li>
+<p>① 逻辑上相邻的两个元素在物理位置上不一定是相邻的；</p>
+</li>
+<li>
+<p>② 操作删除和插入的时候，不需要整体移动元素；只需要修改相应的指针即可；</p>
+</li>
+<li>
+<p>③ 不需要预先分配空间；</p>
+</li>
+<li>
+<p>④ 存储指针本身会消耗一定的存储的空间；</p>
 <p>基本数据如下：</p>
 </li>
 </ul>
 </li>
 </ul>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -309,12 +326,11 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>树的保存如下：</p>
 <p><img src="/article/database-clustered-index/1575457965850database-clustered-index_.png" alt></p>
-<p>由于索引是有序的， 所有我们可以假定 左子树小于右子树<br>即 <code>B &lt; A &lt; C ， D &lt; B &lt; E</code></p>
+<p>由于索引是有序的， 所有我们可以假定 左子树小于右子树<br>
+即 <code>B &lt; A &lt; C ， D &lt; B &lt; E</code></p>
 <p>如果也强制用数组表示的话：如下（0 表示为空）</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -347,79 +363,105 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>所有,如果我要查找H 这个字符，当我们判断到到 <code>H &lt; D</code> 的时候，因为H D相差不是很大， 但是在数组存贮相差甚远。</p>
 <p>所以当我们加载 1 - 6 的数据块的时候，H所在的 7 - 10 数据库就无法加载到内存当中。 所以，当找到D 的时候，我们需要再次进行一次io 将7 - 10 的数据块加载到内存当中。额外消耗了一次io。</p>
-<h3><span id="b树索引">B树索引</span></h3><p>B树是平衡多叉树，解决了查找深度的问题。红黑树（平衡二叉树）没能充分利用磁盘预读功能，而B树是为了充分利用磁盘预读功能来而创建的一种数据结构，也就是说B树就是为了作为索引才被发明出来的的。</p>
+<h3><span id="b树索引">B树索引</span></h3>
+<p>B树是平衡多叉树，解决了查找深度的问题。红黑树（平衡二叉树）没能充分利用磁盘预读功能，而B树是为了充分利用磁盘预读功能来而创建的一种数据结构，也就是说B树就是为了作为索引才被发明出来的的。</p>
 <p>局部性原理与磁盘预读：</p>
 <blockquote>
-<p>由于存储介质的特性，磁盘本身存取就比主存慢很多，再加上机械运动耗费，磁盘的存取速度往往是主存的几百分分之一，因此为了提高效率，要尽量减少磁盘I/O。为了达到这个目的，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。这样做的理论依据是计算机科学中著名的局部性原理：<br>当一个数据被用到时，其附近的数据也通常会马上被使用。</p>
-<p>程序运行期间所需要的数据通常比较集中。<br>由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此对于具有局部性的程序来说，预读可以提高I/O效率。</p>
+<p>由于存储介质的特性，磁盘本身存取就比主存慢很多，再加上机械运动耗费，磁盘的存取速度往往是主存的几百分分之一，因此为了提高效率，要尽量减少磁盘I/O。为了达到这个目的，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。这样做的理论依据是计算机科学中著名的局部性原理：<br>
+当一个数据被用到时，其附近的数据也通常会马上被使用。</p>
+</blockquote>
+<blockquote>
+<p>程序运行期间所需要的数据通常比较集中。<br>
+由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此对于具有局部性的程序来说，预读可以提高I/O效率。</p>
 </blockquote>
 <p>B树的每个节点可以存储多个关键字，它将节点大小设置为磁盘页的大小，充分利用了磁盘预读的功能。每次读取磁盘页时就会读取一整个节点。也正因每个节点存储着非常多个关键字，树的深度就会非常的小。进而要执行的磁盘读取操作次数就会非常少，更多的是在内存中对读取进来的数据进行查找。</p>
 <p>B 树的索引结构：</p>
 <p><img src="/article/database-clustered-index/1575516048252database-clustered-index_.png" alt></p>
-<h3><span id="b树的索引">B+树的索引</span></h3><p>B+树的关键字全部存放在叶子节点中，非叶子节点用来做索引，而叶子节点中有一个指针指向一下个叶子节点。做这个优化的目的是为了提高区间访问的性能。而正是这个特性决定了B+树更适合用来存储外部数据</p>
+<h3><span id="b树的索引">B+树的索引</span></h3>
+<p>B+树的关键字全部存放在叶子节点中，非叶子节点用来做索引，而叶子节点中有一个指针指向一下个叶子节点。做这个优化的目的是为了提高区间访问的性能。而正是这个特性决定了B+树更适合用来存储外部数据</p>
 <p>B+树索引结构</p>
 <p><img src="/article/database-clustered-index/1575516240587database-clustered-index_.png" alt></p>
-<h3><span id="b树索引-vs-b树索引">B+树索引 VS B树索引</span></h3><ul>
+<h3><span id="b树索引-vs-b树索引">B+树索引 VS B树索引</span></h3>
+<ul>
 <li>B树必须用中序遍历的方法按序扫库。</li>
 <li>而B+树直接从叶子结点挨个扫一遍就完了，</li>
 <li>B+树支持range-query非常方便，而B树不支持。这是数据库选用B+树的最主要原因。</li>
 <li>B+树非叶子节点不存数据，这样可以使得每一页能存贮更多的索引，是的树高减少。</li>
 </ul>
 <p>数据库索引采用B+树的主要原因是B树在提高了磁盘IO性能的同时并没有解决元素遍历的效率低下的问题。正是为了解决这个问题，B+树应运而生。B+树只要遍历叶子节点就可以实现整棵树的遍历。而且在数据库中基于范围的查询是非常频繁的，而B树不支持这样的操作（或者说效率太低）。</p>
-<h2><span id="索引的种类">索引的种类</span></h2><p>按照索数据的组织方式，我们可以分<strong>聚簇索引，非聚簇索引（辅助索引）</strong><br>按照索引的作用 可以分为 <strong>主键索引，唯一索引，单建索引，复合索引，全文索</strong>引等。</p>
-<h3><span id="主键索引">主键索引</span></h3><ul>
+<h2><span id="索引的种类">索引的种类</span></h2>
+<p>按照索数据的组织方式，我们可以分<strong>聚簇索引，非聚簇索引（辅助索引）</strong><br>
+按照索引的作用 可以分为 <strong>主键索引，唯一索引，单建索引，复合索引，全文索</strong>引等。</p>
+<h3><span id="主键索引">主键索引</span></h3>
+<ul>
 <li>概念：主键索引是唯一的，通常以表的ID设置为主键索引,一个表只能有一个主键索引，这是他跟唯一索引的区别。</li>
 </ul>
 <p>在 InnoDB 内部，表数据是优化主键快速查询而排列分布的，其查找速度是最快的，该索引中键值的逻辑顺序决定了表中相应行的物理顺序。即使表中没有适合做主键的列，也推荐采用一个自动增长的整数主键(代理键)，那么这个表在增加数据的时候是顺序存放的，而且后续在别的表参考该外键查询的时候也会得到优化。</p>
 <ul>
-<li><p>主键的选择：</p>
+<li>
+<p>主键的选择：</p>
 <ul>
 <li>显示的定义主键</li>
 <li>如果没有，则非空的唯一索引（Unique NOT NULL</li>
 <li>InnoDB 存储引擎自动创建一个 6 个字节大小的指针，用户不能查看或访问。</li>
 </ul>
 </li>
-<li><p>主键的插入：<br>主键的推荐是使用自增的ID, 自增 ID 在插入的时候可以保证相邻的两条记录可能在同一个数据块,在插入的时候，由于要维持id的有序性，当自增的ID在物理上也连续，那么可以有效的减少磁盘块的加载次数。</p>
+<li>
+<p>主键的插入：<br>
+主键的推荐是使用自增的ID, 自增 ID 在插入的时候可以保证相邻的两条记录可能在同一个数据块,在插入的时候，由于要维持id的有序性，当自增的ID在物理上也连续，那么可以有效的减少磁盘块的加载次数。</p>
 </li>
 </ul>
 <p><img src="/article/database-clustered-index/1575601089292database-clustered-index_.png" alt></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`uid`</span> <span class="built_in">int</span>,</span><br><span class="line"> primary <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-<h3><span id="唯一索引">唯一索引</span></h3><ul>
+<h3><span id="唯一索引">唯一索引</span></h3>
+<ul>
 <li>概念：唯一索引主要用于业务上的唯一约束</li>
 <li>和主键的区别：他跟主键索引的区别是，一个表可以有多个唯一索引</li>
-<li>创建语句：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`uid`</span> <span class="built_in">int</span>,</span><br><span class="line"><span class="string">`age`</span> <span class="built_in">int</span>,</span><br><span class="line"> <span class="keyword">unique</span> <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-</li>
+<li>创建语句：</li>
 </ul>
-<h3><span id="单键索">单键索</span></h3><ul>
-<li>概念：以某一个字段为索引<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`uid`</span> <span class="built_in">int</span>,</span><br><span class="line"><span class="string">`age`</span> <span class="built_in">int</span>,</span><br><span class="line"> <span class="keyword">unique</span> <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`uid`</span> <span class="built_in">int</span>,</span><br><span class="line"><span class="string">`age`</span> <span class="built_in">int</span>,</span><br><span class="line"> <span class="keyword">unique</span> <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3><span id="单键索">单键索</span></h3>
+<ul>
+<li>概念：以某一个字段为索引</li>
 </ul>
-<h3><span id="联合索引">联合索引</span></h3><ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`uid`</span> <span class="built_in">int</span>,</span><br><span class="line"><span class="string">`age`</span> <span class="built_in">int</span>,</span><br><span class="line"> <span class="keyword">unique</span> <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3><span id="联合索引">联合索引</span></h3>
+<ul>
 <li>概念：两个或两个以上字段联合组成一个索引</li>
-<li><p>比如我们有表 如下 </p>
+<li>比如我们有表 如下</li>
+</ul>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">User</span>(</span><br><span class="line"><span class="string">`a`</span> <span class="built_in">int</span>,</span><br><span class="line"><span class="string">`b`</span> <span class="built_in">int</span>,</span><br><span class="line"> <span class="keyword">unique</span> <span class="keyword">key</span>(<span class="string">`uid`</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 <p><img src="/article/database-clustered-index/1575611856923database-clustered-index_.png" alt></p>
 <p>我们可以看到， 联合索引的结构依然是一个B+ 数的结构，只不过每一个节点存放的值并不是单个值，而是多个值。 节点的排序是先按照第一个索引的顺存放，然后再按照第二个索引大小的值存放，因此在叶子节点的排列应该是</p>
-<blockquote>
-<p>(1,1) (1, 2) (2, 1) (2, 4) (3,1) (3,2)</p>
-</blockquote>
-</li>
-<li><p>最左前缀 </p>
-<p>因此 对于查询 </p>
-<p><code>SELECT * FROM USER where a=xxx and b=xxx</code> </p>
-<p>我们当然可以通过索引查找对应的数值，因为 a最左边的索引，如果我们想要查<br><code>SELECT * FROM USER where b=xxx</code> 的时候，我们发现 b 在两个叶子节点数据分别为  1 2 1  和 4 1 3  完全无序， 那么因此，就不可以索引查询。因此这句话的查询索引就失效了。 </p>
+<pre><code>&gt; (1,1) (1, 2) (2, 1) (2, 4) (3,1) (3,2)
+</code></pre>
+<ul>
+<li>
+<p>最左前缀</p>
+<p>因此 对于查询</p>
+<p><code>SELECT * FROM USER where a=xxx and b=xxx</code></p>
+<p>我们当然可以通过索引查找对应的数值，因为 a最左边的索引，如果我们想要查<br>
+<code>SELECT * FROM USER where b=xxx</code> 的时候，我们发现 b 在两个叶子节点数据分别为  1 2 1  和 4 1 3  完全无序， 那么因此，就不可以索引查询。因此这句话的查询索引就失效了。</p>
 <p>这就是最左匹配原则。</p>
 </li>
-<li><p>上述的联合索引还有什么好处。因为我们的a b 是联合有序，那么在a 已经确定的情况下，我们可以直接利用索引，返回b的有序结合，不需要额外的二次排序。<br>比如如下语句 </p>
-<p><code>SELECT * FROM USER where a=xxx order by b desc limit 3</code> </p>
+<li>
+<p>上述的联合索引还有什么好处。因为我们的a b 是联合有序，那么在a 已经确定的情况下，我们可以直接利用索引，返回b的有序结合，不需要额外的二次排序。<br>
+比如如下语句</p>
+<p><code>SELECT * FROM USER where a=xxx order by b desc limit 3</code></p>
 <p>在a确定的情况下 b 已经是有序的了，所以不需要回表查询。</p>
 </li>
 </ul>
-<h3><span id="全文索引">全文索引</span></h3><p>通过数值比较、范围过滤等就可以完成绝大多数我们需要的查询，但是，如果希望通过关键字的匹配来进行查询过滤，那么就需要基于相似度的查询，而不是原来的精确数值比较。全文索引就是为这种场景设计的。<br>开始之前，先说一下全文索引的版本、存储引擎、数据类型的支持情况<br>MySQL 5.6 以前的版本，只有 MyISAM 存储引擎支持全文索引；<br>MySQL 5.6 及以后的版本，MyISAM 和 InnoDB 存储引擎均支持全文索引;<br>只有字段的数据类型为 char、varchar、text 及其系列才可以建全文索引。<br>测试或使用全文索引时，要先看一下自己的 MySQL 版本、存储引擎和数据类型是否支持全文索引。</p>
-<h3><span id="索引的使用场景">索引的使用场景</span></h3><ol>
+<h3><span id="全文索引">全文索引</span></h3>
+<p>通过数值比较、范围过滤等就可以完成绝大多数我们需要的查询，但是，如果希望通过关键字的匹配来进行查询过滤，那么就需要基于相似度的查询，而不是原来的精确数值比较。全文索引就是为这种场景设计的。<br>
+开始之前，先说一下全文索引的版本、存储引擎、数据类型的支持情况<br>
+MySQL 5.6 以前的版本，只有 MyISAM 存储引擎支持全文索引；<br>
+MySQL 5.6 及以后的版本，MyISAM 和 InnoDB 存储引擎均支持全文索引;<br>
+只有字段的数据类型为 char、varchar、text 及其系列才可以建全文索引。<br>
+测试或使用全文索引时，要先看一下自己的 MySQL 版本、存储引擎和数据类型是否支持全文索引。</p>
+<h3><span id="索引的使用场景">索引的使用场景</span></h3>
+<ol>
 <li>当数据多且字段值有相同的值得时候用普通索引。</li>
 <li>当字段多且字段值没有重复的时候用唯一索引。</li>
 <li>当有多个字段名都经常被查询的话用复合索引。</li>
@@ -433,7 +475,8 @@
 <li>更新太频繁地字段不适合创建索引。</li>
 <li>不会出现在where条件中的字段不该建立索引。</li>
 </ol>
-<h3><span id="索引组织方式">索引组织方式：</span></h3><ul>
+<h3><span id="索引组织方式">索引组织方式：</span></h3>
+<ul>
 <li>聚簇索引</li>
 </ul>
 <p>InnoDB 可以看做是聚集索引，因为它的 B+ 树的叶结点包含了完整的数据记录。InnoDB 的数据文件本身就是索引文件，表数据文件本身就是按 B+Tree 组织的一个索引结构，这棵树的叶节点 data 域保存了完整的数据记录。这个索引的 key 是数据表的主键，因此 InnoDB 表数据文件本身就是主索引。InnoDB 的辅助索引 data 域存储相应记录主键的值而不是地址。换句话说，<strong>InnoDB 的所有辅助索引都引用主键作为 data 域</strong>。</p>
@@ -441,10 +484,12 @@
 <li>非聚簇索引（辅助索引）</li>
 </ul>
 <p>而 MyISAM 方式 B+ 树的叶结点只是存储了数据的地址，故称为非聚集索引。MyISAM 引擎使用 B+Tree 作为索引结构，叶节点的 data 域存放的是数据记录的地址；在 MyISAM 中，主索引和辅助索引（Secondary key）在结构上没有任何区别，只是主索引要求 key 是唯一的，而辅助索引的 key 可以重复。</p>
-<h3><span id="区别和用法">区别和用法</span></h3><p><img src="/article/database-clustered-index/1575614217485database-clustered-index_.png" alt></p>
+<h3><span id="区别和用法">区别和用法</span></h3>
+<p><img src="/article/database-clustered-index/1575614217485database-clustered-index_.png" alt></p>
 <p>聚簇索引根据主键来构建，叶子节点存放的是该主键对应的这一行记录，根据主键查询可以直接利用聚簇索引定位到所在记录。</p>
 <p>而普通索引根据申明这个索引时候的列来构建，<strong>叶子节点存放的是这一行记录对应的主键的值，根据普通索引查询需要先在普通索引上找到对应的主键的值，然后根据主键值去聚簇索引上查找记录，俗称回表。</strong> 如果我们查询一整行记录的话，一定要去聚簇索引上查找，而如果我们只需要根据普通索引查询主键的值，由于这些值在普通索引上已经存在，所以并不需要回表，这个称为索引覆盖，在一定程度上可以提高查询效率。</p>
-<h2><span id="参考">参考</span></h2><ul>
+<h2><span id="参考">参考</span></h2>
+<ul>
 <li><a href="https://blog.csdn.net/weixin_30531261/article/details/79312676" target="_blank" rel="noopener">一步步分析为什么B+树适合作为索引的结构</a></li>
 <li><a href="https://juejin.im/post/5cf3d550f265da1b76388a34" target="_blank" rel="noopener">MySQL 索引的原理与应用：索引类型，存储结构与锁</a></li>
 </ul>
@@ -546,9 +591,9 @@
                        
                           <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                         
-                          <a class="tag" href="/tags/#事物" title="事物">事物</a>
-                        
                           <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                        
+                          <a class="tag" href="/tags/#事物" title="事物">事物</a>
                         
                     </div>
                 </section>

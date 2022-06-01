@@ -8,6 +8,38 @@
     </url>
 
     <url>
+        <loc>http://yoursite.com/article/distributed-transaction-cap/</loc>
+        <lastmod>2022-06-01T06:08:38.927Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-concurrence-3/</loc>
+        <lastmod>2022-03-21T03:54:39.345Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-memory-model/</loc>
+        <lastmod>2022-03-17T02:24:40.662Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://yoursite.com/article/java-volatile/</loc>
+        <lastmod>2022-03-14T10:11:38.786Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://yoursite.com/article/distributed-transaction-1-2/</loc>
         <lastmod>2022-03-07T14:01:52.806Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -58,14 +90,6 @@
     <url>
         <loc>http://yoursite.com/article/spikability-applications-ability-to/</loc>
         <lastmod>2021-08-01T23:21:51.616Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-volatile/</loc>
-        <lastmod>2021-07-29T08:24:15.426Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -162,22 +186,6 @@
     <url>
         <loc>http://yoursite.com/article/java-synchronized/</loc>
         <lastmod>2021-07-16T05:39:16.647Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-memory-model/</loc>
-        <lastmod>2021-07-16T05:39:16.646Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://yoursite.com/article/java-concurrence-3/</loc>
-        <lastmod>2021-07-16T05:39:16.635Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -552,7 +560,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
+        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -560,7 +568,7 @@
     </url>
 
     <url>
-        <loc>http://yoursite.com/article/Java_garbage_collection_analysis/</loc>
+        <loc>http://yoursite.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.785Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

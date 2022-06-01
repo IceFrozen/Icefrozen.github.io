@@ -93,9 +93,9 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
-                            
                               <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
+                            
+                              <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
                             
                         </div>
                         <h1>Redis系列之数据结构篇(2)</h1>
@@ -149,14 +149,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -222,86 +222,127 @@
                 <blockquote>
 <p>本文转自 <a href="http://redisbook.com/" target="_blank" rel="noopener">redis 的设计与实现</a></p>
 </blockquote>
-<h2><span id="结构">结构</span></h2><p>Redis 的 Hash 类型键使用以下两种数据结构作为底层实现:</p>
+<h2><span id="结构">结构</span></h2>
+<p>Redis 的 Hash 类型键使用以下两种数据结构作为底层实现:</p>
 <ul>
 <li>字典；</li>
 <li>压缩列表；</li>
 </ul>
 <p>因为压缩列表比字典更节省内存， 所以程序在创建新 Hash 键时， 默认使用压缩列表作为底层实现， 当有需要时， 程序才会将底层实现从压缩列表转换到字典。</p>
-<h2><span id="dict哈希表">Dict哈希表</span></h2><p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line"></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure></p>
+<h2><span id="dict哈希表">Dict哈希表</span></h2>
+<p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line"></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。</p>
+<li>
+<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。</p>
 </li>
-<li><p>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。</p>
+<li>
+<p>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。</p>
 </li>
-<li><p>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。</p>
+<li>
+<p>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。</p>
 </li>
 </ul>
-<p>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br><img src="/article/distributed-redis-data-structure-dict/1561628837627distributed-redis-data-structure-dict_.png" alt></p>
-<h2><span id="dict节点">Dict节点</span></h2><p>哈希表节点使用 dictEntry 结构表示， 每个 dictEntry 结构都保存着一个键值对：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">    <span class="comment">// 键</span></span><br><span class="line">    <span class="keyword">void</span> *key;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="keyword">void</span> *val;</span><br><span class="line">        <span class="keyword">uint64_t</span> u64;</span><br><span class="line">        <span class="keyword">int64_t</span> s64;</span><br><span class="line">    &#125; v;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure></p>
+<p>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br>
+<img src="/article/distributed-redis-data-structure-dict/1561628837627distributed-redis-data-structure-dict_.png" alt></p>
+<h2><span id="dict节点">Dict节点</span></h2>
+<p>哈希表节点使用 dictEntry 结构表示， 每个 dictEntry 结构都保存着一个键值对：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">    <span class="comment">// 键</span></span><br><span class="line">    <span class="keyword">void</span> *key;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="keyword">void</span> *val;</span><br><span class="line">        <span class="keyword">uint64_t</span> u64;</span><br><span class="line">        <span class="keyword">int64_t</span> s64;</span><br><span class="line">    &#125; v;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">&#125; dictEntry;</span><br></pre></td></tr></table></figure>
 <p>举个例子， 图 4-2 就展示了如何通过 next 指针， 将两个索引值相同的键 k1 和 k0 连接在一起。</p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561630405037distributed-redis-data-structure-dict_.png" alt></p>
-<h2><span id="dict-结构">Dict 结构</span></h2><p>Redis 中的字典由 dict.h/dict 结构表示：</p>
+<h2><span id="dict-结构">Dict 结构</span></h2>
+<p>Redis 中的字典由 dict.h/dict 结构表示：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型特定函数</span></span><br><span class="line">    dictType *type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 私有数据</span></span><br><span class="line">    <span class="keyword">void</span> *privdata;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表</span></span><br><span class="line">    dictht ht[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// rehash 索引</span></span><br><span class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></span><br><span class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></span><br><span class="line"></span><br><span class="line">&#125; dict;</span><br></pre></td></tr></table></figure>
 <p>type 属性和 privdata 属性是针对不同类型的键值对， 为创建多态字典而设置的：</p>
 <blockquote>
-<p>type 属性是一个指向 dictType 结构的指针， 每个 dictType 结构保存了一簇用于操作特定类型键值对的函数， Redis 会为用途不同的字典设置不同的类型特定函数。<br>而 privdata 属性则保存了需要传给那些类型特定函数的可选参数。</p>
+<p>type 属性是一个指向 dictType 结构的指针， 每个 dictType 结构保存了一簇用于操作特定类型键值对的函数， Redis 会为用途不同的字典设置不同的类型特定函数。<br>
+而 privdata 属性则保存了需要传给那些类型特定函数的可选参数。</p>
 </blockquote>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictType</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算哈希值的函数</span></span><br><span class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="title">int</span> <span class="params">(*hashFunction)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 复制键的函数</span></span><br><span class="line">    <span class="keyword">void</span> *(*keyDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 复制值的函数</span></span><br><span class="line">    <span class="keyword">void</span> *(*valDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *obj);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对比键的函数</span></span><br><span class="line">    <span class="keyword">int</span> (*keyCompare)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key1, <span class="keyword">const</span> <span class="keyword">void</span> *key2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 销毁键的函数</span></span><br><span class="line">    <span class="keyword">void</span> (*keyDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 销毁值的函数</span></span><br><span class="line">    <span class="keyword">void</span> (*valDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *obj);</span><br><span class="line"></span><br><span class="line">&#125; dictType;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>ht 属性是一个包含两个项的数组， 数组中的每个项都是一个 dictht 哈希表， 一般情况下， 字典只使用 ht[0] 哈希表， ht[1] 哈希表只会在对 ht[0] 哈希表进行 rehash 时使用。</p>
+<li>
+<p>ht 属性是一个包含两个项的数组， 数组中的每个项都是一个 dictht 哈希表， 一般情况下， 字典只使用 ht[0] 哈希表， ht[1] 哈希表只会在对 ht[0] 哈希表进行 rehash 时使用。</p>
 </li>
-<li><p>除了 ht[1] 之外， 另一个和 rehash 有关的属性就是 rehashidx ： 它记录了 rehash 目前的进度， 如果目前没有在进行 rehash ， 那么它的值为 -1 。</p>
+<li>
+<p>除了 ht[1] 之外， 另一个和 rehash 有关的属性就是 rehashidx ： 它记录了 rehash 目前的进度， 如果目前没有在进行 rehash ， 那么它的值为 -1 。</p>
 </li>
 </ul>
 <p>图 4-3 展示了一个普通状态下（没有进行 rehash）的字典：</p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561630558107distributed-redis-data-structure-dict_.png" alt></p>
-<h2><span id="哈希算法以及解决冲突">哈希算法以及解决冲突</span></h2><ul>
-<li><p>哈希算法</p>
+<h2><span id="哈希算法以及解决冲突">哈希算法以及解决冲突</span></h2>
+<ul>
+<li>哈希算法</li>
+</ul>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用字典设置的哈希函数，计算键 key 的哈希值</span></span><br><span class="line">hash = dict-&gt;type-&gt;hashFunction(key);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用哈希表的 sizemask 属性和哈希值，计算出索引值</span></span><br><span class="line"><span class="comment"># 根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span></span><br><span class="line">index = hash &amp; dict-&gt;ht[x].sizemask;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>解决冲突</p>
-<p>  在哈希表实现中， 当两个不同的键拥有相同的哈希值时， 称这两个键发生碰撞（collision）， 而哈希表实现必须想办法对碰撞进行处理。</p>
-<p>  字典哈希表所使用的碰撞解决方法被称之为链地址法： 这种方法使用链表将多个哈希值相同的节点串连在一起， 从而解决冲突问题。</p>
-<p>  <img src="/article/distributed-redis-data-structure-dict/1561631101522distributed-redis-data-structure-dict_.png" alt></p>
+<ul>
+<li>
+<p>解决冲突</p>
+<p>在哈希表实现中， 当两个不同的键拥有相同的哈希值时， 称这两个键发生碰撞（collision）， 而哈希表实现必须想办法对碰撞进行处理。</p>
+<p>字典哈希表所使用的碰撞解决方法被称之为链地址法： 这种方法使用链表将多个哈希值相同的节点串连在一起， 从而解决冲突问题。</p>
+<p><img src="/article/distributed-redis-data-structure-dict/1561631101522distributed-redis-data-structure-dict_.png" alt></p>
 </li>
 </ul>
-<h2><span id="rehash">rehash</span></h2><h3><span id="rehash-发生的原因">rehash 发生的原因</span></h3><p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。</p>
+<h2><span id="rehash">rehash</span></h2>
+<h3><span id="rehash-发生的原因">rehash 发生的原因</span></h3>
+<p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。</p>
 <p>其中哈希表的负载因子可以通过公式：</p>
-<p><strong>负载因子 = 哈希表已保存节点数量 / 哈希表大小</strong><br><code>load_factor = ht[0].used / ht[0].size</code><br>计算得出。<br>比如说， 对于一个大小为 4 ， 包含 4 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
-<p><code>load_factor = 4 / 4 = 1</code><br>又比如说， 对于一个大小为 512 ， 包含 256 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
+<p><strong>负载因子 = 哈希表已保存节点数量 / 哈希表大小</strong><br>
+<code>load_factor = ht[0].used / ht[0].size</code><br>
+计算得出。<br>
+比如说， 对于一个大小为 4 ， 包含 4 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
+<p><code>load_factor = 4 / 4 = 1</code><br>
+又比如说， 对于一个大小为 512 ， 包含 256 个键值对的哈希表来说， 这个哈希表的负载因子为：</p>
 <p><code>load_factor = 256 / 512 = 0.5</code></p>
 <p>根据 <code>BGSAVE</code> 命令或 <code>BGREWRITEAOF</code> 命令是否正在执行， 服务器执行扩展操作所需的负载因子并不相同， 这是因为在执行 <code>BGSAVE</code> 命令或 <code>BGREWRITEAOF</code> 命令的过程中， <code>Redis</code> 需要创建当前服务器进程的子进程， 而大多数操作系统都采用写时复制<code>（copy-on-write）</code>技术来优化子进程的使用效率， 所以在子进程存在期间， 服务器会提高执行扩展操作所需的负载因子， 从而尽可能地避免在子进程存在期间进行哈希表扩展操作， 这可以避免不必要的内存写入操作， 最大限度地节约内存。</p>
 <p>另一方面， 当哈希表的负载因子小于 0.1 时， 程序自动开始对哈希表执行收缩操作。</p>
-<h3><span id="rehash-过程">rehash 过程</span></h3><ul>
-<li>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）：</li>
-<li><p>如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂）；<br>如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n 。</p>
+<h3><span id="rehash-过程">rehash 过程</span></h3>
+<ul>
+<li>
+<p>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）：</p>
 </li>
-<li><p>将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</p>
+<li>
+<p>如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂）；<br>
+如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n 。</p>
 </li>
-<li><p>当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。<br>举个例子， 假设程序要对图 4-8 所示字典的 ht[0] 进行扩展操作， 那么程序将执行以下步骤：</p>
+<li>
+<p>将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</p>
 </li>
-<li><p>ht[0].used 当前的值为 4 ， 4 * 2 = 8 ， 而 8 （2^3）恰好是第一个大于等于 4 的 2 的 n 次方， 所以程序会将 ht[1] 哈希表的大小设置为 8 。 图 4-9 展示了 ht[1] 在分配空间之后， 字典的样子。</p>
+<li>
+<p>当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。<br>
+举个例子， 假设程序要对图 4-8 所示字典的 ht[0] 进行扩展操作， 那么程序将执行以下步骤：</p>
 </li>
-<li>将 ht[0] 包含的四个键值对都 rehash 到 ht[1] ， 如图 4-10 所示。</li>
-<li>释放 ht[0] ，并将 ht[1] 设置为 ht[0] ，然后为 ht[1] 分配一个空白哈希表，如图 4-11 所示。</li>
+<li>
+<p>ht[0].used 当前的值为 4 ， 4 * 2 = 8 ， 而 8 （2^3）恰好是第一个大于等于 4 的 2 的 n 次方， 所以程序会将 ht[1] 哈希表的大小设置为 8 。 图 4-9 展示了 ht[1] 在分配空间之后， 字典的样子。</p>
+</li>
+<li>
+<p>将 ht[0] 包含的四个键值对都 rehash 到 ht[1] ， 如图 4-10 所示。</p>
+</li>
+<li>
+<p>释放 ht[0] ，并将 ht[1] 设置为 ht[0] ，然后为 ht[1] 分配一个空白哈希表，如图 4-11 所示。</p>
+</li>
 </ul>
 <p>至此， 对哈希表的扩展操作执行完毕， 程序成功将哈希表的大小从原来的 4 改为了现在的 8 。</p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561631365627distributed-redis-data-structure-dict_.png" alt></p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561631373754distributed-redis-data-structure-dict_.png" alt></p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561631382607distributed-redis-data-structure-dict_.png" alt></p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561631389393distributed-redis-data-structure-dict_.png" alt></p>
-<h2><span id="渐进式rehash">渐进式rehash</span></h2><p>在上一节，我们了解了字典的 rehash 过程， 需要特别指出的是， rehash 程序并不是在激活之后，就马上执行直到完成的， 而是分多次、渐进式地完成的。</p>
+<h2><span id="渐进式rehash">渐进式rehash</span></h2>
+<p>在上一节，我们了解了字典的 rehash 过程， 需要特别指出的是， rehash 程序并不是在激活之后，就马上执行直到完成的， 而是分多次、渐进式地完成的。</p>
 <p>假设这样一个场景：在一个有很多键值对的字典里， 某个用户在添加新键值对时触发了 rehash 过程， 如果这个 rehash 过程必须将所有键值对迁移完毕之后才将结果返回给用户， 这样的处理方式将是非常不友好的。</p>
 <p>另一方面， 要求服务器必须阻塞直到 rehash 完成， 这对于 Redis 服务器本身也是不能接受的。</p>
 <p>为了解决这个问题， Redis 使用了渐进式（incremental）的 rehash 方式： 通过将 rehash 分散到多个步骤中进行， 从而避免了集中式的计算。</p>
 <p>渐进式 rehash 主要由 <code>_dictRehashStep</code> 和 <code>dictRehashMilliseconds</code> 两个函数进行：</p>
-<p><code>_dictRehashStep</code> 用于对数据库字典、以及哈希键的字典进行被动 rehash ；<br><code>dictRehashMilliseconds</code> 则由 Redis 服务器常规任务程序（server cron job）执行，用于对数据库字典进行主动 rehash ；<br><code>_dictRehashStep</code><br>每次执行 <code>_dictRehashStep</code> ， ht[0]-&gt;table 哈希表第一个不为空的索引上的所有节点就会全部迁移到 ht[1]-&gt;table 。</p>
+<p><code>_dictRehashStep</code> 用于对数据库字典、以及哈希键的字典进行被动 rehash ；<br>
+<code>dictRehashMilliseconds</code> 则由 Redis 服务器常规任务程序（server cron job）执行，用于对数据库字典进行主动 rehash ；<br>
+<code>_dictRehashStep</code><br>
+每次执行 <code>_dictRehashStep</code> ， ht[0]-&gt;table 哈希表第一个不为空的索引上的所有节点就会全部迁移到 ht[1]-&gt;table 。</p>
 <p>在 rehash 开始进行之后（d-&gt;rehashidx 不为 -1）， 每次执行一次添加、查找、删除操作， <code>_dictRehashStep</code> 都会被执行一</p>
 <p><img src="/article/distributed-redis-data-structure-dict/1561631651242distributed-redis-data-structure-dict_.png" alt></p>
 <p>因为在进行渐进式 rehash 的过程中， 字典会同时使用 ht[0] 和 ht[1] 两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。</p>
 <p>另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1] 里面， 而 ht[0] 则不再进行任何添加操作： 这一措施保证了 ht[0] 包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</p>
-<h2><span id="字典的收缩">字典的收缩</span></h2><p>扩展 rehash 和收缩 rehash 执行完全相同的过程， 一个 rehash 是扩展还是收缩字典， 关键在于新分配的 ht[1]-&gt;table 的大小<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 检查字典的使用率是否低于系统允许的最小比率</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 是的话返回 1 ，否则返回 0 。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">htNeedsResize</span><span class="params">(dict *dict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> size, used;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    size = dictSlots(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表已用节点数量</span></span><br><span class="line">    used = dictSize(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当哈希表的大小大于 DICT_HT_INITIAL_SIZE</span></span><br><span class="line">    <span class="comment">// 并且字典的填充率低于 REDIS_HT_MINFILL 时</span></span><br><span class="line">    <span class="comment">// 返回 1</span></span><br><span class="line">    <span class="keyword">return</span> (size &amp;&amp; used &amp;&amp; size &gt; DICT_HT_INITIAL_SIZE &amp;&amp;</span><br><span class="line">            (used*<span class="number">100</span>/size &lt; REDIS_HT_MINFILL));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2><span id="字典的收缩">字典的收缩</span></h2>
+<p>扩展 rehash 和收缩 rehash 执行完全相同的过程， 一个 rehash 是扩展还是收缩字典， 关键在于新分配的 ht[1]-&gt;table 的大小</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 检查字典的使用率是否低于系统允许的最小比率</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 是的话返回 1 ，否则返回 0 。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">htNeedsResize</span><span class="params">(dict *dict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> size, used;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    size = dictSlots(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表已用节点数量</span></span><br><span class="line">    used = dictSize(dict);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当哈希表的大小大于 DICT_HT_INITIAL_SIZE</span></span><br><span class="line">    <span class="comment">// 并且字典的填充率低于 REDIS_HT_MINFILL 时</span></span><br><span class="line">    <span class="comment">// 返回 1</span></span><br><span class="line">    <span class="keyword">return</span> (size &amp;&amp; used &amp;&amp; size &gt; DICT_HT_INITIAL_SIZE &amp;&amp;</span><br><span class="line">            (used*<span class="number">100</span>/size &lt; REDIS_HT_MINFILL));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在默认情况下， <code>REDIS_HT_MINFILL</code> 的值为 <code>10</code> ， 也即是说， 当字典的填充率低于 <code>10%</code> 时， 程序就可以对这个字典进行收缩操作了。</p>
 <p>字典收缩和字典扩展的一个区别是：</p>
 <ul>
@@ -313,7 +354,9 @@
 <li>当字典用于实现哈希键的时候， 每次从字典中删除一个键值对， 程序就会执行一次 <code>htNeedsResize</code> 函数， 如果字典达到了收缩的标准， 程序将立即对字典进行收缩；</li>
 <li>当字典用于实现数据库键空间（key space）的时候， 收缩的时机由 redis.c/tryResizeHashTables 函数决定。</li>
 </ul>
-<h2><span id="字典的迭代">字典的迭代</span></h2><p>字典带有自己的迭代器实现 —— 对字典进行迭代实际上就是对字典所使用的哈希表进行迭代：<br>迭代器首先迭代字典的第一个哈希表，然后，如果 rehash 正在进行的话，就继续对第二个哈希表进行迭代。</p>
+<h2><span id="字典的迭代">字典的迭代</span></h2>
+<p>字典带有自己的迭代器实现 —— 对字典进行迭代实际上就是对字典所使用的哈希表进行迭代：<br>
+迭代器首先迭代字典的第一个哈希表，然后，如果 rehash 正在进行的话，就继续对第二个哈希表进行迭代。</p>
 <ul>
 <li>当迭代哈希表时，找到第一个不为空的索引，然后迭代这个索引上的所有节点。</li>
 <li>当这个索引迭代完了，继续查找下一个不为空的索引，如此反覆，直到整个哈希表都迭代完为止。</li>
@@ -325,8 +368,10 @@
 <li>安全迭代器：在迭代进行过程中，可以对字典进行修改。</li>
 <li>不安全迭代器：在迭代进行过程中，不对字典进行修改。</li>
 </ul>
-<p>以下是迭代器的数据结构定义<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * 字典迭代器</span><br><span class="line"> */</span><br><span class="line">typedef struct dictIterator &#123;</span><br><span class="line"></span><br><span class="line">    dict *d;                // 正在迭代的字典</span><br><span class="line"></span><br><span class="line">    int table,              // 正在迭代的哈希表的号码（<span class="number">0</span> 或者 <span class="number">1</span>）</span><br><span class="line">        index,              // 正在迭代的哈希表数组的索引</span><br><span class="line">        safe;               // 是否安全？</span><br><span class="line"></span><br><span class="line">    dictEntry *entry,       // 当前哈希节点</span><br><span class="line">              *nextEntry;   // 当前哈希节点的后继节点</span><br><span class="line"></span><br><span class="line">&#125; dictIterator;</span><br></pre></td></tr></table></figure></p>
-<h2><span id="api">API</span></h2><table border="1" class="docutils">
+<p>以下是迭代器的数据结构定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * 字典迭代器</span><br><span class="line"> */</span><br><span class="line">typedef struct dictIterator &#123;</span><br><span class="line"></span><br><span class="line">    dict *d;                // 正在迭代的字典</span><br><span class="line"></span><br><span class="line">    int table,              // 正在迭代的哈希表的号码（<span class="number">0</span> 或者 <span class="number">1</span>）</span><br><span class="line">        index,              // 正在迭代的哈希表数组的索引</span><br><span class="line">        safe;               // 是否安全？</span><br><span class="line"></span><br><span class="line">    dictEntry *entry,       // 当前哈希节点</span><br><span class="line">              *nextEntry;   // 当前哈希节点的后继节点</span><br><span class="line"></span><br><span class="line">&#125; dictIterator;</span><br></pre></td></tr></table></figure>
+<h2><span id="api">API</span></h2>
+<table border="1" class="docutils">
 <colgroup>
 <col width="21%">
 <col width="47%">
@@ -371,18 +416,22 @@
 </tr>
 </tbody>
 </table>
-
-
-<h3><span id="skiplist与平衡树-哈希表的比较">skiplist与平衡树、哈希表的比较</span></h3><ul>
-<li><p>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。因此，在哈希表上只能做单个key的查找，不适宜做范围查找。所谓范围查找，指的是查找那些大小在指定的两个值之间的所有节点。</p>
+<h3><span id="skiplist与平衡树-哈希表的比较">skiplist与平衡树、哈希表的比较</span></h3>
+<ul>
+<li>
+<p>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。因此，在哈希表上只能做单个key的查找，不适宜做范围查找。所谓范围查找，指的是查找那些大小在指定的两个值之间的所有节点。</p>
 </li>
-<li><p>在做范围查找的时候，平衡树比skiplist操作要复杂。在平衡树上，我们找到指定范围的小值之后，还需要以中序遍历的顺序继续寻找其它不超过大值的节点。如果不对平衡树进行一定的改造，这里的中序遍历并不容易实现。而在skiplist上进行范围查找就非常简单，只需要在找到小值之后，对第1层链表进行若干步的遍历就可以实现。</p>
+<li>
+<p>在做范围查找的时候，平衡树比skiplist操作要复杂。在平衡树上，我们找到指定范围的小值之后，还需要以中序遍历的顺序继续寻找其它不超过大值的节点。如果不对平衡树进行一定的改造，这里的中序遍历并不容易实现。而在skiplist上进行范围查找就非常简单，只需要在找到小值之后，对第1层链表进行若干步的遍历就可以实现。</p>
 </li>
-<li><p>平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而skiplist的插入和删除只需要修改相邻节点的指针，操作简单又快速。</p>
+<li>
+<p>平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而skiplist的插入和删除只需要修改相邻节点的指针，操作简单又快速。</p>
 </li>
-<li><p>从内存占用上来说，skiplist比平衡树更灵活一些。一般来说，平衡树每个节点包含2个指针（分别指向左右子树），而skiplist每个节点包含的指针数目平均为1/(1-p)，具体取决于参数p的大小。如果像Redis里的实现一样，取p=1/4，那么平均每个节点包含1.33个指针，比平衡树更有优势。</p>
+<li>
+<p>从内存占用上来说，skiplist比平衡树更灵活一些。一般来说，平衡树每个节点包含2个指针（分别指向左右子树），而skiplist每个节点包含的指针数目平均为1/(1-p)，具体取决于参数p的大小。如果像Redis里的实现一样，取p=1/4，那么平均每个节点包含1.33个指针，比平衡树更有优势。</p>
 </li>
-<li><p>查找单个key，skiplist和平衡树的时间复杂度都为O(log n)，大体相当；而哈希表在保持较低的哈希值冲突概率的前提下，查找时间复杂度接近O(1)，性能更高一些。所以我们平常使用的各种Map或dictionary结构，大都是基于哈希表实现的。</p>
+<li>
+<p>查找单个key，skiplist和平衡树的时间复杂度都为O(log n)，大体相当；而哈希表在保持较低的哈希值冲突概率的前提下，查找时间复杂度接近O(1)，性能更高一些。所以我们平常使用的各种Map或dictionary结构，大都是基于哈希表实现的。</p>
 </li>
 </ul>
 <p>从算法实现难度上来比较，skiplist比平衡树要简单得多。</p>
@@ -482,9 +531,9 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
-                        
                           <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
+                        
+                          <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
                         
                     </div>
                 </section>

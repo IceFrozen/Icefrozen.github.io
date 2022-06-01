@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          分布式事务一 - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/distributed-transaction-cap/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>分布式事务一</h1>
+                        <h2 class="subheading">CAP和BASE理论</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2022-04-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="基础理论">基础理论</span></h2>
+<h1><span id="cap-理论">CAP 理论</span></h1>
+<p>CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也称为 Brewer 定理，起源于在 2000 年 7 月，是加州大学伯克利分校的 Eric Brewer 教授于“ACM 分布式计算原理研讨会（PODC）”上提出的一个猜想。两年之后，麻省理工学院的 Seth Gilbert 和 Nancy Lynch 以严谨的数学推理证明了 CAP 猜想。自此，CAP 正式从猜想变为分布式计算领域所公认的著名定理。这个定理里描述了一个分布式的系统中，涉及共享数据问题时，以下三个特性最多只能同时满足其中两个：</p>
+<h1><span id="cap理论的取舍">CAP理论的取舍</span></h1>
+<p><img src="/article/distributed-transaction-cap/distributed-transaction-cap-1650615795111.png" alt></p>
+<p>上述就是比较著名的CAP理论中的CAP的概念。当然，在理想的情况下，CAP的特性都是分布式系统所要追求的方向，但实时是，在分布式的环境下CAP不可能同时满足。</p>
+<h2><span id="cap的定义">CAP的定义</span></h2>
+<p>布鲁尔在提出CAP猜想的时候，并没有详细定义<strong>Consistency、Availability、Partition Tolerance</strong> 三个单词的明确含义，因此如果初学者去查询CAP定义的时候会感到比较困惑，因为不同的资料对CAP的详细定义有一些细微的差别。</p>
+<h3><span id="ibm-cloud-docs">IBM Cloud Docs:</span></h3>
+<blockquote>
+<p>Consistency,where all nodes see the same data at the same time.<br>
+Availability,which guarantees that every request receives a response about whether it succeeded or failed.<br>
+Partition tolerance,where the system continues to operate even if any one part of the system is lost or fails.</p>
+</blockquote>
+<h3><span id="维基百科">维基百科：</span></h3>
+<blockquote>
+<p>Consistency:Every read receivesthe most recent write or an error Availability:Every request receives a(non-error)response-without guarantee that it contains the most recent write Partition tolerance:The system continues to operate despite an arbitrary number of messages being dropped(or delayed)by the network between nodes</p>
+</blockquote>
+<h3><span id="silverback">Silverback:</span></h3>
+<blockquote>
+<p>Consistency:all nodes have access to the same data simultaneously Availability:a promise that every request receives a response,at minimum whether the request succeeded or failed Partition tolerance:the system will continue to work even if some arbitrary node goes offline or can’t communicate</p>
+</blockquote>
+<p>为了更好地解释CAP理论，下面挑选了Robert Greiner的文章作为参考基础。有趣的是，Robert Greiner对CAP的理解也经历了一个过程，他写了两篇文章来阐述CAP理论，第一篇被标记为“outdated”（有一些中文翻译文章正好参考了第一篇），下面将对比前后两篇解释的差异点，通过对比帮助你更加深入地理解CAP理论。</p>
+<h3><span id="cap定理">CAP定理</span></h3>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>英文定义</th>
+<th>翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一版</td>
+<td>any distributed system cannot guaranty C,A,and P simultaneously。</td>
+<td>对于一个分布式计算系统，不可能同时满足一致性（Consistence）、可用性（Availability）、分区容错性（Partition Tolerance）三个设计约束。</td>
+</tr>
+<tr>
+<td>第二版</td>
+<td>in a distributed system (a collection of interconnected nodes that share data.),you can only have two out of the following three guarantees across a write/read pair:Consistency,Availability,and Partition Tolerance-one of them must be sacrificed。</td>
+<td>在一个分布式系统（指互相连接并共享数据的节点的集合）中，当涉及读写操作时，只能保证一致性（Consistence）、可用性（Availability）、分区容错性（Partition Tolerance） 三者中的两个，另外一个必须被牺牲。</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>（1）第二版定义了什么才是CAP理论探讨的分布式系统，强调了两点：interconnected 和share data，为何要强调这两点呢？因为分布式系统并不一定会互联和共享数据。最简单的例如Memcache的集群，相互之间就没有连接和共享数据，因此Memcache集群这类分布式系统就不符合CAP理论探讨的对象；而MySQL集群就是互联和进行数据复制的，因此是CAP理论探讨的对象。</li>
+<li>（2）第二版强调了 write／read pair，这点其实和第1条差异点是一脉相承的。也就是说，CAP关注的是对数据的读写操作，而不是分布式系统的所有功能。例如，ZooKeeper的选举机制就不是CAP探讨的对象。</li>
+</ul>
+<p>相比来说，第二版的定义更加精确。虽然第二版的定义和解释更加严谨，但内容相比第一版来说更加难记一些，所以现在大部分技术人员谈论CAP理论时，更多还是按照第一版的定义和解释来说的，因为第一版虽然不严谨，但非常简单和容易记住。</p>
+<h3><span id="一致性">一致性</span></h3>
+<ul>
+<li><strong>一致性（Consistency）</strong>：直观的解释为：代表数据在任何时刻、任何分布式节点中所看到的都是符合预期的。我来解释一下。也就是说，当一个数据状态改变命令（这里可以理解为写操作，写操作可以有任何方式，比如说一个客户端请求，一个数据库的更新等等）发生并且成功后，系统对外承诺改变化已经生效并且改数据对外的任何状态都是改变完成后的状态。这里的一致性强调的是数据状态。</li>
+</ul>
+<p>官方解释有两个版本：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>英文定义</th>
+<th>翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一版</td>
+<td>All nodes see the same data at the same time。</td>
+<td>所有节点在同一时刻都能看到相同的数据。</td>
+</tr>
+<tr>
+<td>第二版</td>
+<td>A read is guaranteed to returm the most recent write for a given client</td>
+<td>对某个指定的客户端来说，读操作保证能够返回最新的写操作结果。</td>
+</tr>
+</tbody>
+</table>
+<p>第一版解释和第二版解释的主要差异点表现在以下几个方面：</p>
+<ul>
+<li>第一版从节点node的角度描述，第二版从客户端client的角度描述。相比来说，第二版更加符合我们观察和评估系统的方式，即站在客户端的角度来观察系统的行为和特征。</li>
+<li>第一版的关键词是see，第二版的关键词是read。第一版解释中的see，其实并不确切，因为节点node是拥有数据而不是看到数据，即使要描述也是用have：第二版从客户端client的读写角度来描述一致性，定义更加精确。</li>
+<li>第一版强调同一时刻拥有相同数据（same time＋same data），第二版并没有强调这点。<br>
+这就意味着实际上对于节点来说，可能同一时刻拥有不同数据（same tim ＋differentdata），这和我们通常理解的一致性是有差异的，为何做这样的改动呢？其实在第一版的详细解释中已经提到了，具体内容如下：</li>
+</ul>
+<blockquote>
+<p>A system has consistency if a transaction starts with the system in a consistent state, and ends with the system in a consistent state. In this model,a system can (and does) shift into an inconsistent state during a transaction,but the entire transaction gets rolled back if there is anerror during any stage in the process.</p>
+</blockquote>
+<p>参考上述的解释，对于系统执行事务来说，在事务执行过程中，系统其实处于一个不一致的状态，不同的节点的数据并不完全一致。因此第一版的解释“All nodes see the same data at the same time”是不严谨的，而第二版强调client 读操作能够获取最新的写结果就没有问题。因为事务在执行过程中，client是无法读取到未提交的数据的，只有等到事务提交后，client才能读取到事务写入的数据，而如果事务失败则会进行回滚，client也不会读取到事务中间写入的数据。</p>
+<h3><span id="可用性">可用性</span></h3>
+<ul>
+<li><strong>可用性（Availability）</strong>：直观解释：代表系统不间断地提供服务的能力</li>
+</ul>
+<p>官方两个版本的解释：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>英文定义</th>
+<th>翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一版</td>
+<td>Every request gets a response on success/failure.</td>
+<td>每个请求都能得到成功或失败的响应。</td>
+</tr>
+<tr>
+<td>第二版</td>
+<td>A non-failing node will retum a reasonable response within a reasonable amount of time (no error or timeout).</td>
+<td>非故障的节点在合理的时间内返回合理的响应（不是错误和超时的响应）。</td>
+</tr>
+</tbody>
+</table>
+<p>简单理解为：非故障的节点在合理的时间内返回合理的响应（不是错误和超时的响应）。理解可用性要先理解与其密切相关两个指标：<strong>可靠性（Reliability）和可维护性（Serviceability）</strong>。</p>
+<ul>
+<li>可靠性使用平均无故障时间（Mean Time Between Failure，MTBF）来度量；</li>
+<li>可维护性使用平均可修复时间（Mean Time To Repair，MTTR）来度量。</li>
+<li>可用性衡量系统可以正常使用的时间与总时间之比，其表征为：A=MTBF/（MTBF+MTTR），即可用性是由可靠性和可维护性计算得出的比例值，譬如 99.9999%可用，即代表平均年故障修复时间为 32 秒。</li>
+</ul>
+<p>第一版解释和第二版解释主要差异点表现在以下几个方面：</p>
+<ul>
+<li>第一版是 every request，第二版强调了 A non-failing node。</li>
+<li>第一版的every request是不严谨的，因为只有非故障节点才能满足可用性要求，如果节点本身就故障了，发给节点的请求不一定能得到一个响应。</li>
+<li>第一版的response分为success和failure，第二版用了两个reasonable：reasonable response 和reasonable time，而且特别强调了 no error or timeout。</li>
+</ul>
+<p>第一版的success／failure的定义太泛了，几乎任何情况，无论是否符合CAP理论，我们都可以说请求成功和失败，因为超时也算失败，错误也算失败，异常也算失败，结果不正确也算失败；即使是成功的响应，也不一定是正确的。例如，本来应该返回100，但实际上返回了90，这就是成功的响应，但并没有得到正确的结果。相比之下，第二版的解释明确了不能超时，不能出错，结果是合理的，注意没有说“正确”的结果。例如，应该返回100但实际上返回了90，肯定是不正确的结果，但可以是一个合理的结果。</p>
+<h3><span id="分区容忍性">分区容忍性</span></h3>
+<p><strong>分区容忍性（Partition Tolerance）</strong>：代表分布式环境中部分节点因网络原因而彼此失联后，即与其他节点形成“网络分区”时，系统仍能正确地提供服务的能力。</p>
+<p>官方的两个解释如下：</p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>英文定义</th>
+<th>翻译</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一版</td>
+<td>System continues to work despite message loss or partial failure.</td>
+<td>尽管出现消息丢失或分区错误，但系统能够继续运行</td>
+</tr>
+<tr>
+<td>第二版</td>
+<td>The system will continue to function when network partitions occur.</td>
+<td>当出现网络分区后，系统能够继续“履行职责”</td>
+</tr>
+</tbody>
+</table>
+<p>第一版解释和第二版解释主要差异点表现在以下几个方面。</p>
+<ul>
+<li>
+<p>第一版用的是work,第二版用的是function。work强调“运行”，只要系统不宕机，我们都可以说系统在work:返回错误也是work,拒绝服务也是work:而function强调“发挥作用”“履行职责”，这点和可用性是一脉相承的。也就是说，只有返回reasonable response才是function。相比之下，第二版解释更加明确。</p>
+</li>
+<li>
+<p>第一版描述分区用的是message loss or partial failure,第二版直接用network partitions。.相比之下，第一版是直接说原因，即message loss造成了分区，但message loss的定义有点狭隘，因为通常我们说的message loss(丢包)，只是网络故障中的一种：第二版直接说现象，即发生了分区现象，不管是什么原因，可能是丢包，也可能是连接中断，还可能是拥塞，只要导致了网络分区，就通通算在里面。</p>
+</li>
+</ul>
+<h1><span id="cap理论的应用">CAP理论的应用</span></h1>
+<h3><span id="cap关注的粒度是数据-而不是整个系统">CAP关注的粒度是数据， 而不是整个系统</span></h3>
+<p>CAP 理论的定义和解释中，用的都是 system、 node 这类系统级的概念，这就给很多人造成了很大的误导，认为我们在进行架构设计时，整个系统要么选择 CP，要么选择 AP。但在实际 设计过程中，每个系统不可能只处理一种数据，而是包含多种类型的数据，有的数据必须选择 CP，有的数据必须选择 AP。 而如果我们做设计时，从整个系统的角度去选择。还是川，就 会发现顾此失彼，无论怎么做都是有问题的。</p>
+<p>以一个最简单 的用户 管理系统为例 ，用户管理系统包含用户账号数据(用户 ID、密码)、 用户信息数据(昵称、兴趣、爱好、性别、自我介绍等) 。 通常情况下，用户账号数据会选择 CP，而用户信息数据会选择 AP，如果限定整个系统为 CP，则不符合用户信息数据的应用场景: 如果限定整个系统为 AP，则又不符合用户账号数据的应用场景 。<br>
+所以在 CAP 理论落地实践时，我们需要将系统内的数据按照不同的应用场 景和要求进行分类，每类数据选择不同的策略 （CP 还是 AP)，而不是直接限定整个系统所有数据都是同一策略。</p>
+<h3><span id="cap-是忽略网络延迟的">CAP 是忽略网络延迟的</span></h3>
+<p>这是一个非常隐含的假设，布鲁尔在定义一致性时，并没有将延迟考虑进去。也就是说， 当事务提交时，数据能够瞬间复制到所有节点。但实际情况下，从节点 A 复制数据到节点 B, 总是需要花费一定时间的。如果是相同机房，耗费时间可能是几毫秒;</p>
+<p>如果是跨不同地点的 机房，例如，北京机房同步到广州|机房，耗费的时间就可能是几十毫秒 。 这就 意味着， CAP 理论中的 C 在实践中是不可能完美实现的，在数据复制的过程中，节点 A 和节点 B 的数据并 不一致。不要小看了这几毫秒或几十 毫秒 的不 一致，对于某些严苛的 业务场 景，例如和金钱相关 的 用户余额、和抢购相关的商品库存，技术上是无法做到分布式场景下完美的一致性的。而业务 上必须要求一致性，因此单个用户的余额、单个商品的库存，理论上要求选择 CP 而实际上 CP 都做不到，只能选择 CA。也就是说，只能单点写入，其他节点做备份，无法做到分布式情况 下多点写入。</p>
+<p>需要注意的是，这并不意味着这类系统无法应用分布式架构，只是说“单个用户余额、单个商品库存”无法做分布式，但系统整体还是可以应用分布式架构的，例如</p>
+<p><img src="/article/distributed-transaction-cap/distributed-transaction-cap-1652691250858.png" alt></p>
+<p>我们可以将用户 id 为 0 ~ 100 的数据存储在 Node 1，将用户 id 为 101 ~ 200 的数据存储在 Node 2, Client 根据用户 id 来决定访问哪个 Node。 对于单个用户来说，读写操作都只能在某个 节点上进行;对所有用户来说，有 一部分用户的读写操作在 Node l 上，有一部分用户的读写操 作在 Node2上。<br>
+这样的设计有 一个很明显的问题就是某个节点故障时，这个节点上的用户就无法进行读写 操作了，但站在整体上来看，这种设计可以降低节点故障时受影响的用户的数量和范围，毕竟 只影响 20%的用户肯定要比影响所有用户要好 。 这也是为什么挖掘机挖断光缆后，支付宝只有 一部分用户会出现业务异常，而不是所有用户业务异常的原因 。</p>
+<h3><span id="正常运行情况下不存在cp和ap的选择-可以同时满足ca">正常运行情况下，不存在CP和AP的选择， 可以同时满足CA</span></h3>
+<p>CAP 理论告诉我们分布式系统只能选择 CP 或 AP，但其实这里的前提是系统发生了“分区” 现象。如果系统没有发生分区现象，也就是说 P 不存在的时候(节点间的网络连接一切正常)， 我们没有必要放弃 C 或 A，应该 C 和 A 都可以保证，这就要求架构设计的时候既要考虑分区发 生时选择 CP 还是 AP，也要考虑分区没有发生时如何保证 CA。<br>
+同样以用户管理系统为例，即使是实现 CA，不同的数据实现方式也可能不一样: 用户账 号数据可以采用“消息队列”的方式来实现 CA，因为消息队列可以比较好地控制实时性，但 实 现起来就复杂 一 些:而用户信息数据可以采用“数据 库 同步”的方式来实现 CA，因为数据 库的方式虽然在某些场景下可能延迟较高，但使用起来简单 。</p>
+<p><code>ACID</code> 中讨论的一致性称为“<strong>强一致性</strong>”（Strong Consistency），有时也称为“<strong>线性一致性</strong>”（Linearizability，通常是在讨论共识算法的场景中），而把牺牲了 C 的 AP 系统又要尽可能获得正确的结果的行为称为追求“弱一致性”。</p>
+<p>在弱一致性里，人们又总结出了一种稍微强一点的特例，被称为“<strong>最终一致性</strong>”（Eventual Consistency），它是指：如果数据在一段时间之内没有被另外的操作所更改，那它最终将会达到与强一致性过程相同的结果，有时候面向最终一致性的算法也被称为“<strong>乐观复制算法</strong>”。</p>
+<h3><span id="放弃并不等于什么都不做需要为分区恢复后做准备">放弃并不等于什么都不做，需要为分区恢复后做准备。</span></h3>
+<p>CAP理论告诉我们三者只能取两个，需要“牺牲(sacrificed)”另外一个，这里的“牺牲” 是有一定误导作用的，因为“牺牲”让很多人理解为什么都不做。实际上， CAP 理论的“牺牲” 只是说在分区过程中我们无法保证 C 或 A，但并不意味着我们什么都不做。</p>
+<p>因为在系统整个运 行周期中，大部分时间都是正常的，发生分区现象的时间并不长。 例如， 99.99%可用性(俗称 4个9)的系统，一年运行下来，不可用的时间只有 50分钟， 99.999% (俗称 5个 9)可用性的 系统，一年运行下来， 不可用的时间只有5分钟。 分区期间放弃C或 A，并不意味着永远放弃 C 和 A，我们可以在分区期间进行一些操作，从而让分区故障解决后，系统能够重新达到 CA 的状态。</p>
+<p>最典型的就是在分区期间记录一些日志，当分区故障解决后 ，系统根据日志进行数据恢复， 使得重新达到CA状态。 同样以用户管理系统为例，对于用户账号数据，假设我们选择了CP, 则分区发生后，节点 l 可以继续注册新用户，节点 2 无法注册新用户(这里就是不符合 A 的原 因，因为节点 2 收到注册请求后会返回巳盯or)，此时节点 l 可以将新注册但未同步到节点 2 的 用户记录到日志中 。 当分区恢复后，节点 l 读取日志中的记录，同步给节点 2，当同步完成后， 节点 l 和节点 2 就达到了同时满足 CA 的状态。</p>
+<p>而对于用户信息数据，假设我们选择了 AP，则分区发生后，节点 l 和节点 2 都可以修改用<br>
+户信息，但两边可能修改不一样。例如，用户在节点 l 中将爱好改为“旅游，美食、跑步飞然 后用户在节点 2 中将爱好改为“美食、游戏”，节点 l 和节点 2 都记录了未同步的爱好数据，当 分区恢复后，系统按照某个规则来合并数据。例如，按照“最后修改优先规则”将用户爱好修 改为“美食、游戏”，按照“字数最多优先规 则”则 将用户爱好修改为“旅游，美食、跑步”， 也可以完全将数据冲突报告出来，由人工来选择具体应该采用哪 一条 。</p>
+<h1><span id="base-理论">Base 理论</span></h1>
+<p>BASE理论是指，Basically Available（基本可用）、Soft-state（ 软状态/柔性事务）、Eventual Consistency（最终一致性）。是基于CAP定理演化而来，是对CAP中一致性和可用性权衡的结果。核心思想：即使无法做到强一致性，但每个业务根据自身的特点，采用适当的方式来使系统达到最终一致性。</p>
+<ul>
+<li>1、基本可用  BA：（Basically Available ）：</li>
+</ul>
+<p>指分布式系统在出现故障的时候，允许损失部分可用性，保证核心可用。但不等价于不可用。比如：搜索引擎0.5秒返回查询结果，但由于故障，2秒响应查询结果；网页访问过大时，部分用户提供降级服务等。简单来说就是基本可用。</p>
+<ul>
+<li>2、软状态  S：（ Soft State）：</li>
+</ul>
+<p>软状态是指允许系统存在中间状态，并且该中间状态不会影响系统整体可用性。即允许系统在不同节点间副本同步的时候存在延时。简单来说就是状态可以在一段时间内不同步。</p>
+<ul>
+<li>3、最终一致性  E：（Eventually Consistent ）：</li>
+</ul>
+<p>系统中的所有数据副本经过一定时间后，最终能够达到一致的状态，不需要实时保证系统数据的强一致性。最终一致性是弱一致性的一种特殊情况。BASE理论面向的是大型高可用可扩展的分布式系统，通过牺牲强一致性来获得可用性。ACID是传统数据库常用的概念设计，追求强一致性模型。简单来说就是在一定的时间窗口内， 最终数据达成一致即可。</p>
+<p>BASE理论本质上是对 CAP 的延伸和补充，更具体地说，是对 CAP 中 AP方案的一个补充。 前面在剖析 CAP 理论时，提到了其实和 BASE 相关的两点:</p>
+<ul>
+<li>
+<p>（1) CAP 理论是忽略延时的，而实际应用中延时是无法避免的。这一点就意味着完美的 CP 场景是不存在的，即使是几毫秒的数据复制延迟，在这几毫秒 时间间隔内，系统是不符合 CP 要求的 。 因此 CAP 中的 CP 方案，实际上也是实现了最终一致 性，只是“一定时间”是指几毫秒而己 。</p>
+</li>
+<li>
+<p>(2) AP 方案中牺牲一致性只是指分区期间，而不是永远放弃一致性。这一点其实就是 BASE 理论延伸的地方，分区期间牺牲一致性，但分区故障恢复后，系统应该达到最终一致性 。</p>
+</li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-transaction-1-2/" data-toggle="tooltip" data-placement="top" title="事务详解（2）-- 再谈隔离级别">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基础理论</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">CAP 理论</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">CAP理论的取舍</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">CAP的定义</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">IBM Cloud Docs:</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">维基百科：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">Silverback:</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">CAP定理</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">一致性</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">可用性</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.7.</span> <span class="toc-nav-text">分区容忍性</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">CAP理论的应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.1.</span> <span class="toc-nav-text">CAP关注的粒度是数据， 而不是整个系统</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.2.</span> <span class="toc-nav-text">CAP 是忽略网络延迟的</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.3.</span> <span class="toc-nav-text">正常运行情况下，不存在CP和AP的选择， 可以同时满足CA</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">0.4.</span> <span class="toc-nav-text">放弃并不等于什么都不做，需要为分区恢复后做准备。</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">Base 理论</span></a>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2022 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -232,12 +232,45 @@
 
 <div class="post-preview">
 
+    <a href="/article/distributed-transaction-cap/">
+        <h2 class="post-title">
+            分布式事务一
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                CAP和BASE理论
+            </h3>
+        <div class="post-content-preview">
+            基础理论
+CAP 理论
+CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也称为 Brewer 定理，起源于在 2000 年 7 月，是加州大学伯克利分校的 Eric Brewer 教授于“ACM 分布式计算原理研讨会（PODC）”上提出的一个猜想。两年之后，麻省理工学院的 Seth Gilbert 和 Nancy Ly...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2022-04-01
+        </p>
+        <div class="tags">
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/distributed-transaction-1-2/">
         <h2 class="post-title">
             事务详解（2）-- 再谈隔离级别
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/30/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/25/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -245,7 +278,9 @@
                 基于锁调度的隔离级别
             </h3>
         <div class="post-content-preview">
-            前言在上一篇文章当中，我们讨论了事务的一般理论以及事务的隔离级别的起源，并讨论了SQL-92标准的问题的修正的论文 「A Critique of ANSI SQL Isolation Levels」。改论文在标准的基础上推广出了异常现象P1-P3广义的解释，然后根据A1-A3的容忍度补充了标准内的隔离级别P0的个隔离级别。本文继续讨论 「A Critique of ANSI SQL Isol...
+            前言
+在上一篇文章当中，我们讨论了事务的一般理论以及事务的隔离级别的起源，并讨论了SQL-92标准的问题的修正的论文 「A Critique of ANSI SQL Isolation Levels」。
+改论文在标准的基础上推广出了异常现象P1-P3广义的解释，然后根据A1-A3的容忍度补充了标准内的隔离级别P0的个隔离级别。本文继续讨论 「A Critique of ANSI SQL Is...
         </div>
     </a>
     
@@ -257,9 +292,9 @@
             
               <a href="/tags/#数据库" title="数据库">数据库</a>
             
-              <a href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
-            
               <a href="/tags/#事务" title="事务">事务</a>
+            
+              <a href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
             
         </div>
     
@@ -274,7 +309,7 @@
             事务详解（1）-- 隔离级别
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -282,8 +317,11 @@
                 【A Critique of ANSI SQL Isolation Levels】详解
             </h3>
         <div class="post-content-preview">
-            概要本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。
-事务概述什么是事务事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生...
+            概要
+本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。
+事务概述
+什么是事务
+事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步...
         </div>
     </a>
     
@@ -295,9 +333,9 @@
             
               <a href="/tags/#数据库" title="数据库">数据库</a>
             
-              <a href="/tags/#事物" title="事物">事物</a>
-            
               <a href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+            
+              <a href="/tags/#事物" title="事物">事物</a>
             
         </div>
     
@@ -312,7 +350,7 @@
             开源重试组件Attempt
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/4/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/18/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -320,8 +358,10 @@
                 
             </h3>
         <div class="post-content-preview">
-            开源想做开源软件很久了，奈何一直没有启动起来。一来是没有契机，二来也没有想法。2020年由于一些变故，我从某团离职后来到了新公司。负责一个To B业务, 由于并发量和我以前负责的项目没法比，同时又是个to B的项目，因此省去了火急火燎的去处理线上问题的时间。因此，更多的时间我拿来思考和总结。
-同时也参加了软件架构师的培训中。虽然各大互联网企业对软考证书似乎并不care，但是我的目的不仅仅如此...
+            开源
+想做开源软件很久了，奈何一直没有启动起来。一来是没有契机，二来也没有想法。2020年由于一些变故，我从某团离职后来到了新公司。负责一个To B业务, 由于并发量和我以前负责的项目没法比，同时又是个to B的项目，因此
+省去了火急火燎的去处理线上问题的时间。因此，更多的时间我拿来思考和总结。
+同时也参加了软件架构师的培训中。虽然各大互联网企业对软考证书似乎并不care，但是我的目的不仅仅...
         </div>
     </a>
     
@@ -344,7 +384,7 @@
             Java并发编程之volatile关键字
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -352,8 +392,9 @@
                 从Hotspot分析volatile的实现原理
             </h3>
         <div class="post-content-preview">
-            概述volatile关键字是Java 并发编程当中不可或缺的一环，维序着Java共享变量的可见性和有序性。。当中由于volatile关键字是与Java的内存模型有关的，因此在讲述volatile关键之前，我们先来回顾一下volatile的应用场景。
-Java是跨平台的，因此针对于不同平台的实现方式，但是必遵循一定的规范，来统一Java编程的基本原则，这个规范被成为Java虚拟机规范。Java...
+            概述
+volatile关键字是Java并发编程当中不可或缺的一环，维序着Java共享变量的可见性和有序性。由于volatile关键字是与Java的内存模型有关的，因此在讲述volatile关键之前，我们先来回顾一下volatile的应用场景。
+Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不同，但是必遵循一定的规范，来统一Java编程的基本原则，这个规范被成为Java虚拟机规范...
         </div>
     </a>
     
@@ -380,7 +421,7 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
             Java内存模型(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/37/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/21/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -388,13 +429,16 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
                 编译器重排序
             </h3>
         <div class="post-content-preview">
-            前言在我的Java内存模型(1)JMM是什么 中我已经阐述了JMM是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
-内存模型在JVM的应用首先，我们再来重温一下，三种重排序。
-重排序指令重排序:在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
+            前言
+在我的Java内存模型(1)JMM是什么 中我已经阐述了JMM是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
+内存模型在JVM的应用
+首先，我们再来重温一下，三种重排序。
+重排序
+指令重排序:在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
 
 编译器优化的重排序
 
-编译器在不改变单线程程序语义的前提下（代码中不包含s...
+编译器在不改变单线程程序语义的前提下（代码中不...
         </div>
     </a>
     
@@ -423,7 +467,7 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
             CPU缓存一致性协议
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/54/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/17/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -431,7 +475,12 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
                 深入理解内存屏障
             </h3>
         <div class="post-content-preview">
-            CPU 结构现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。CPU缓存有多级缓存，比如L1, L2, L3等：L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。L2容量比L1大，速度比L1慢，每个核都有L2缓存。L3容量最...
+            CPU 结构
+现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。
+CPU缓存有多级缓存，比如L1, L2, L3等：
+L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。
+L2容量比L1大，速度比L1慢，每个核都有L2缓存。
+...
         </div>
     </a>
     
@@ -462,7 +511,7 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
             KeepAlived 详解
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/28/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/38/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -470,7 +519,9 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
                 
             </h3>
         <div class="post-content-preview">
-            概诉Keepalived 作用keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动实现...
+            概诉
+Keepalived 作用
+keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动...
         </div>
     </a>
     
@@ -493,7 +544,7 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
             Spring Framework 源码分析（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/62/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/45/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -501,9 +552,12 @@ Java是跨平台的，因此针对于不同平台的实现方式，但是必遵�
                 基础概念
             </h3>
         <div class="post-content-preview">
-            概诉Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
+            概诉
+Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
 一 、Spring IOC (控制反转)
-IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中.Bea...
+
+
+IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中....
         </div>
     </a>
     
@@ -513,9 +567,9 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
         </p>
         <div class="tags">
             
-              <a href="/tags/#源码分析" title="源码分析">源码分析</a>
-            
               <a href="/tags/#spring" title="spring">spring</a>
+            
+              <a href="/tags/#源码分析" title="源码分析">源码分析</a>
             
         </div>
     
@@ -530,7 +584,7 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
             负载均衡（3）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/2/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/66/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -538,13 +592,16 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
                 LVS服务的搭建机及其高级应用
             </h3>
         <div class="post-content-preview">
-            概诉根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
-LVS服务的搭建ipvsadm安装：
+            概诉
+根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
+LVS服务的搭建
+ipvsadm
+安装：
 1sudo yum  ipvsadm  -y
 
 ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
 
-1234567891011ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [ti...
+1234567891011ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p ...
         </div>
     </a>
     
@@ -553,49 +610,6 @@ ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
             2021-01-24
         </p>
         <div class="tags">
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/Net-wrok-DNS-2/">
-        <h2 class="post-title">
-            DNS服务(2)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/39/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                DNS服务的搭建（Bind）
-            </h3>
-        <div class="post-content-preview">
-            DNS 服务简介
-接上篇 DNS服务(1) 简述了DNS的诞生和结构，本节来实际操作一遍，搭建一个DNS服务器。
-
-DNS 服务单台服务器DNS 服务器准备
-CentOS7 ip 为 192.168.100.10 
-user 用户为root 用户。
-
-安装Bind
-查看本机内bind 软件情况
-
-12345678[root@CentOS7 ~]# rpm -qa | grep ^bindbi...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2021-01-11
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#网络" title="网络">网络</a>
             
         </div>
     
@@ -711,6 +725,10 @@ user 用户为root 用户。
     <ul>
       
         <li>
+          <a href="/article/distributed-transaction-cap/">分布式事务一</a>
+        </li>
+      
+        <li>
           <a href="/article/distributed-transaction-1-2/">事务详解（2）-- 再谈隔离级别</a>
         </li>
       
@@ -726,10 +744,6 @@ user 用户为root 用户。
           <a href="/article/java-volatile/">Java并发编程之volatile关键字</a>
         </li>
       
-        <li>
-          <a href="/article/java-memory-model-complier-reordering/">Java内存模型(2)</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -738,7 +752,7 @@ user 用户为root 用户。
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -751,6 +765,14 @@ user 用户为root 用户。
     <div class="tags">
         
             
+            <a href="/tags/#算法" title="算法" rel="5">算法</a>
+            
+        
+            
+            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            
+        
+            
             <a href="/tags/#JAVA" title="JAVA" rel="26">JAVA</a>
             
         
@@ -759,7 +781,55 @@ user 用户为root 用户。
             
         
             
-            <a href="/tags/#算法" title="算法" rel="5">算法</a>
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
+            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
+            
+        
+            
+            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#MYSQL" title="MYSQL" rel="4">MYSQL</a>
+            
+        
+            
+            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
+            
+        
+            
+            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
+            
+        
+            
+            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
+            
+        
             
         
             
@@ -771,10 +841,6 @@ user 用户为root 用户。
             
         
             
-            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
-            
-        
-            
             <a href="/tags/#垃圾回收篇" title="垃圾回收篇" rel="8">垃圾回收篇</a>
             
         
@@ -783,41 +849,13 @@ user 用户为root 用户。
             
         
             
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
-            
-        
-            
-            <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
-            
         
             
             <a href="/tags/#事物" title="事物" rel="3">事物</a>
             
         
             
-            <a href="/tags/#MYSQL" title="MYSQL" rel="4">MYSQL</a>
-            
-        
-            
-            <a href="/tags/#分布式" title="分布式" rel="6">分布式</a>
-            
-        
-            
-        
-            
             <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
-            
-        
-            
-            <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
-            
-        
             
         
             
@@ -835,16 +873,6 @@ user 用户为root 用户。
             
         
             
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
-            
-        
-            
             <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
             
         
@@ -855,7 +883,9 @@ user 用户为root 用户。
             
         
             
-            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
+        
+            
+        
             
         
             
@@ -865,23 +895,7 @@ user 用户为root 用户。
             
         
             
-        
-            
-        
-            
-            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
-            
-        
-            
             <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
-            
-        
-            
-        
-            
-        
-            
-        
             
         
             
