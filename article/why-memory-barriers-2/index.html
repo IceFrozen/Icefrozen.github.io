@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          CPU缓存一致性协议（2） - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/why-memory-barriers-2/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>CPU缓存一致性协议（2）</h1>
+                        <h2 class="subheading">缓存一致性性模型</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2021-06-28
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="内存模型">内存模型</span></h2>
+<h1><span id="内存模型的分类">内存模型的分类</span></h1>
+<p>内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。</p>
+<p>在分析之前，我们先定义一个基本的内存模型，以这个内存模型为基础进行分析：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> CPU0   CPU1</span><br><span class="line">  |      |</span><br><span class="line"> L1     L1</span><br><span class="line">  |      |</span><br><span class="line"> ----L2----</span><br><span class="line">  |      |</span><br><span class="line">--main memory-</span><br></pre></td></tr></table></figure>
+<p>上图是现代CPU的基本内存模型，CPU内部有多级缓存来提高CPU的load/store访问速度（因为对于CPU而言，主存的访问速度太慢了，上百个时钟周期的内存访问延迟会极大的降低CPU的使用效率，所以CPU内部往往使用多级缓存来提升内存访问效率。）</p>
+<p>C1与C2是CPU的2个核心，这两个核心有私有缓存L1，以及共享缓存L2。最后一级存储器才是主存。后面的顺序一致性模型（SC）中，我们会以这个为基础进行描述（在完全存储定序、部分存储定序和宽松内存模型里会有所区别，后面会描述相关的部分）</p>
+<p>了简化描述的复杂性，在下面的内存一致性模型描述里，会先将缓存一致性（cache coherence）简单化，认为缓存一致性是完美的（假设多核cache间的数据同步与单核cache一样，没有cache引起的数据一致性问题），以减少描述的复杂性。</p>
+<p>目前有多种内存一致性模型：</p>
+<h2><span id="顺序存储模型sequential-consistency-modelsc模型">顺序存储模型（sequential consistency model）(SC模型)</span></h2>
+<p>顺序存储模型是最简单的存储模型，也称为强定序模型。CPU会按照代码来执行所有的load与store动作，即按照它们在程序的顺序流中出现的次序来执行。从主存储器和CPU的角度来看，load和store是顺序地对主存储器进行访问。</p>
+<h2><span id="完全存储定序total-store-ordertso模型">完全存储定序（total store order）（TSO模型）</span></h2>
+<p>为了提高CPU的性能，芯片设计人员在CPU中包含了一个存储缓存区（store buffer），它的作用是为store指令提供缓冲，使得CPU不用等待存储器的响应。<br>
+首先我们需要对上面的基础内存模型做一些修改，表示这种新的内存模型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> CPU0                    CPU1</span><br><span class="line">  | -store buffer        | - store buffer</span><br><span class="line"> L1                      L1</span><br><span class="line">  |                      |</span><br><span class="line"> -------------L2-------------------</span><br><span class="line">  |                      |</span><br><span class="line">-----------main memory-------------</span><br></pre></td></tr></table></figure>
+<p>相比于以前的内存模型而言，store的时候数据会先被放到store buffer里面，然后再被写到L1 cache里。</p>
+<p>首先我们思考单核上的两条指令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">S1：store flag= set</span><br><span class="line">S2：load r1=data</span><br><span class="line">S3：store b=set</span><br></pre></td></tr></table></figure>
+<p>如果在顺序存储模型中，S1肯定会比S2先执行。但是如果在加入了store buffer之后，S1将指令放到了store buffer后会立刻返回，这个时候会立刻执行S2。</p>
+<p>S2是read指令，CPU必须等到数据读取到r1后才会继续执行。这样很可能S1的store flag=set指令还在store buffer上，而S2的load指令可能已经执行完（特别是data在cache上存在，而flag没在cache中的时候。这个时候CPU往往会先执行S2，这样可以减少等待时间）</p>
+<p>这里就可以看出再加入了store buffer之后，内存一致性模型就发生了改变。</p>
+<p>如果我们定义store buffer必须严格按照FIFO的次序将数据发送到主存（所谓的FIFO表示先进入store buffer的指令数据必须先于后面的指令数据写到存储器中），这样S3必须要在S1之后执行，CPU能够保证store指令的存储顺序，这种内存模型就叫做完全存储定序（TSO）。</p>
+<p>在store buffer被引入之后，内存一致性模型已经发生了变化（从SC模型变为了TSO模型），会出现store-load乱序的情况，这就造成了代码执行逻辑与我们预先设想不相同的情况。<br>
+在我的上一篇博文<a href="https://icefrozen.github.io/article/why-memory-barriers-1/" target="_blank" rel="noopener">CPU缓存一致性协议</a> 有详细的说明引入 store buffer 之后所带来的影响</p>
+<h2><span id="部分存储定序part-store-orderpso模型">部分存储定序（part store order）（PSO模型）</span></h2>
+<p>芯片设计人员并不满足TSO带来的性能提升，于是他们在TSO模型的基础上继续放宽内存访问限制，允许CPU以非FIFO来处理store buffer缓冲区中的指令。CPU只保证地址相关指令在store buffer中才会以FIFO的形式进行处理，而其他的则可以乱序处理，所以这被称为部分存储定序（PSO）。</p>
+<h2><span id="宽松存储模型relax-memory-orderrmo模型">宽松存储模型（relax memory order）（RMO模型）</span></h2>
+<p>为了榨取更多的性能，在PSO的模型的基础上，更进一步的放宽了内存一致性模型，不仅允许store-load，store-store乱序。还进一步允许load-load，load-store乱序， 只要是地址无关的指令，在读写访问的时候都可以打乱所有load/store的顺序，这就是宽松内存模型（RMO）。这里不再做详细展开了。</p>
+<h1><span id="解决内存模型">解决内存模型</span></h1>
+<p>芯片设计人员为了尽可能的榨取CPU的性能，引入了乱序的内存一致性模型，这些内存模型在多线程的情况下很可能引起软件逻辑问题。为了解决在有些一致性模型上可能出现的内存访问乱序问题，芯片设计人员提供给了内存屏障指令，用来解决这些问题。</p>
+<p>内存屏障的最根本的作用就是提供一个机制，要求CPU在这个时候必须以顺序存储一致性模型的方式来处理load与store指令，这样才不会出现内存访问不一致的情况。</p>
+<p>对于TSO和PSO模型，内存屏障只需要在store-load/store-store时需要（写内存屏障），最简单的一种方式就是内存屏障指令必须保证store buffer数据全部被清空的时候才继续往后面执行，这样就能保证其与SC模型的执行顺序一致。</p>
+<p>而对于RMO，在PSO的基础上又引入了load-load与load-store乱序。RMO的读内存屏障就要保证前面的load指令必须先于后面的load/store指令先执行，不允许将其访问提前执行。</p>
+<h2><span id="内存模型实现">内存模型实现</span></h2>
+<p><img src="/article/why-memory-barriers-2/why-memory-barriers-2-1624937957786.png" alt></p>
+<p>不同的处理器平台，本身的内存模型有强(Strong)弱(Weak)之分。实际实现的时候由于某些指令集之间的关系使得 memory barrier 的实现不可能做到最优，很多常见的平台都使用了简单粗暴的 bus 锁（x86、amd64、armv7）</p>
+<p><strong>Weak Memory Model（弱内存模型）</strong>: 如DEC Alpha是弱内存模型，它可能经历所有的四种内存乱序(LoadLoad, LoadStore, StoreLoad, StoreStore)，任何Load和Store操作都能与任何其它的Load或Store操作乱序，只要其不改变单线程的行为。</p>
+<p><strong>Weak With Date Dependency Ordering（Weak With Data Dependency Ordering）</strong>: 如ARM, PowerPC, Itanium，在Aplpha的基础上，支持数据依赖排序，如C/C++中的A-&gt;B，它能保证加载B时，必定已经加载最新的A</p>
+<p><strong>Strong Memory Models（强内存模型）</strong>: 最强的一致性，理想中的模型，在这种内存模型中，没有乱序的存在。如今很难找到一个硬件体系结构支持顺序一致性，因为它会严重限制硬件对CPU执行效率的优化(对寄存器/Cache/流水线的使用)。</p>
+<p>你不太可能在现代多核处理器硬件内存模型中获得顺序一致性的保证。一般来说，你会在软件内存模型中寻求顺序一致性：如在java中使用volatile、在C++11中使用memory_order_seq_cst，这些高级编程语言会限制编译重排序以及发出特定CPU指令来限制内存重排序，以达到模仿顺序一致性的效果。</p>
+<p><strong>Strong Memory Model</strong>: 如X86/64，强内存模型能够保证每条指令acquire and release语义，换句话说，它使用了LoadLoad/LoadStore/StoreStore三种内存屏障，即避免了四种乱序中的三种，仍然保留StoreLoad的重排，</p>
+<blockquote>
+<p>每个机器执行指令，默认地包含acquire、release语义。<br>
+这意味着，当某个cpu A执行一连串的写动作时，对于其他CPU，它们看到的写入顺序应该与A执行的一致。</p>
+</blockquote>
+<h2><span id="x86-内存模型">x86 内存模型</span></h2>
+<p>x86/64系统架构提供了三种内存屏障指令：(1) sfence; (2) lfence; (3) mfence。</p>
+<ul>
+<li>
+<p>sfence ，实现Store Barrior 会将store buffer中缓存的修改刷入L1 cache中，使得其他cpu核可以观察到这些修改，而且之后的写操作不会被调度到之前，即sfence之前的写操作一定在sfence完成且全局可见；</p>
+</li>
+<li>
+<p>lfence ，实现Load Barrior 会将invalidate queue失效，强制读取入L1 cache中，而且lfence之后的读操作不会被调度到之前，即lfence之前的读操作一定在lfence完成（并未规定全局可见性）；</p>
+</li>
+<li>
+<p>mfence ，实现Full Barrior 同时刷新store buffer和invalidate queue，保证了mfence前后的读写操作的顺序，同时要求mfence之后写操作结果全局可见之前，mfence之前写操作结果全局可见；</p>
+</li>
+</ul>
+<ul>
+<li>Lock</li>
+</ul>
+<p>Lock前缀，Lock不是一种内存屏障，但是它能完成类似内存屏障的功能。Lock会对CPU总线和高速缓存加锁，可以理解为CPU指令级的一种锁。它后面可以跟ADD, ADC, AND, BTC, BTR, BTS, CMPXCHG, CMPXCH8B, DEC, INC, NEG, NOT, OR, SBB, SUB, XOR, XADD, and XCHG等指令。</p>
+<p>Lock前缀实现了类似的能力.</p>
+<ol>
+<li>
+<p>它先对总线/缓存加锁，然后执行后面的指令，最后释放锁后会把高速缓存中的脏数据全部刷新回主内存。</p>
+</li>
+<li>
+<p>在Lock锁住总线的时候，其他CPU的读写请求都会被阻塞，直到锁释放。Lock后的写操作会让其他CPU相关的cache line失效，从而从新从内存加载最新的数据。这个是通过缓存一致性协议做的。</p>
+</li>
+</ol>
+<p><strong>这里也引申出关于内存屏障的两个常用语义</strong>:</p>
+<ul>
+<li>
+<p>acquire语义：Load 之后的读写操作无法被重排至 Load 之前。即 相当于LoadLoad和LoadStore屏障。</p>
+</li>
+<li>
+<p>release语义：Store 之前的读写操作无法被重排至 Store 之后。即 相当于LoadStore和StoreStore屏障。</p>
+</li>
+</ul>
+<p>对于x86架构来说，store buffer是FIFO，因此不会存在乱序，写入顺序就是刷入cache的顺序。但是对于ARM/Power架构来说，store buffer并未保证FIFO，因此先写入store buffer的数据，是有可能比后写入store buffer的数据晚刷入cache的。从这点上来说，store buffer的存在会让ARM/Power架构出现乱序的可能。store barrier存在的意义就是将store buffer中的数据，刷入cache。</p>
+<p>在某些cpu中，存在invalid queue。invalid queue用于缓存cache line的失效消息，也就是说，当cpu0写入W0(x, 1)，并从store buffer将修改刷入cache，此时cpu1读取R1(x, 0)仍是允许的。因为使cache line失效的消息被缓冲在了invalid queue中，还未被应用到cache line上。这也是一种会使得指令乱序的可能。load barrier存在的意义就是将invalid queue缓冲刷新。</p>
+<p>对于x86架构的cpu来说，在单核上来看，其保证了Sequential consistency，因此对于开发者，我们可以完全不用担心单核上的乱序优化会给我们的程序带来正确性问题。在多核上来看，其保证了x86-tso模型，使用mfence就可以将store buffer中的数据，写入到cache中。而且，由于x86架构下，store buffer是FIFO的和不存在invalid queue，mfence能够保证多核间的数据可见性，以及顺序性。</p>
+<p>对于arm和power架构的cpu来说，编程就变得危险多了。除了存在数据依赖，控制依赖以及地址依赖等的前后指令不能被乱序之外，其余指令间都有可能存在乱序。而且，它们的store buffer并不是FIFO的，而且还可能存在invalid queue，这些也同样让并发编程变得困难重重。因此需要引入不同类型的barrier来完成不同的需求。</p>
+<p>我们接下来着重讨论 X86 平台下，Java volatile 关键字是如何实现防止指令重排序的。<br>
+这里不再展开，细节请参见<a href="https://icefrozen.github.io/article/java-volatile/" target="_blank" rel="noopener">Java并发编程之volatile关键字</a></p>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzUzMDk3NjM3Mg==&amp;mid=2247483755&amp;idx=1&amp;sn=50f80e73f46fab04d8a799e8731432c6&amp;chksm=fa48da70cd3f5366d9658277cccd9e36fca540276f580822d41aef7d8af4dda480fc85e3bde4&amp;token=1422563498&amp;lang=zh_CN&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">从 Java 内存模型看内部细节</a></p>
+</li>
+<li>
+<p><a href="https://blog.csdn.net/CringKong/article/details/99759216?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_v2~rank_aggregation-1-99759216.pc_agg_rank_aggregation&amp;utm_term=%E7%BC%96%E8%AF%91%E5%99%A8%E9%87%8D%E6%8E%92%E5%BA%8F&amp;spm=1000.2123.3001.4430" target="_blank" rel="noopener">编译器重排序</a></p>
+</li>
+<li>
+<p><a href="https://blog.csdn.net/CringKong/article/details/99759216" target="_blank" rel="noopener">synchronized 关键字实现细节</a></p>
+</li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/why-memory-barriers-1/" data-toggle="tooltip" data-placement="top" title="CPU缓存一致性协议">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/keepalived-1/" data-toggle="tooltip" data-placement="top" title="KeepAlived 详解">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">内存模型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">内存模型的分类</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">顺序存储模型（sequential consistency model）(SC模型)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">完全存储定序（total store order）（TSO模型）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">部分存储定序（part store order）（PSO模型）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">宽松存储模型（relax memory order）（RMO模型）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">解决内存模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">内存模型实现</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">x86 内存模型</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2022 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

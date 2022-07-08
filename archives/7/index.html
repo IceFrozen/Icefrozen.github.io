@@ -139,14 +139,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -232,12 +232,50 @@
 
 <div class="post-preview">
 
+    <a href="/article/reduce-cache-contention/">
+        <h2 class="post-title">
+            Java8使用@sun.misc.Contended避免伪共享
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/100/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                
+            </h3>
+        <div class="post-content-preview">
+            
+什么是伪共享
+缓存系统中是以缓存行（cache line）为单位存储的。缓存行是2的整数幂个连续字节，一般为32-256个字节。最常见的缓存行大小是64个字节。当多线程修改互相独立的变量时，如果这些变量共享同一个缓存行，就会无意中影响彼此的性能，这就是伪共享。
+缓存行上的写竞争是运行在SMP系统中并行线程实现可伸缩性最重要的限制因素。有人将伪共享描述成无声的性能杀手，因为从代码中很难看清楚...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2019-05-13
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
+            
+              <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/java-class-loader/">
         <h2 class="post-title">
             Java类加载机制
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/54/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -277,7 +315,7 @@
             Redis系列之数据结构篇(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/57/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -324,7 +362,7 @@ Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：
             Redis系列之数据结构篇(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/90/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/88/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -367,7 +405,7 @@ Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾�
             源码分析系列(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/38/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/95/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -409,7 +447,7 @@ foreach循环
             JAVA多线程之AQS分析(1)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/89/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/8/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -447,7 +485,7 @@ foreach循环
             稳定性保证
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/21/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/51/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -489,7 +527,7 @@ foreach循环
             MQ可以解决哪些实际问题?
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/94/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/76/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -524,7 +562,7 @@ foreach循环
             深入理解java泛型
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/100/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/63/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -562,7 +600,7 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
             JVM 替换PermGem 为 Meta Space
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/65/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -592,47 +630,6 @@ ArrayList就是个泛型类，我们通过设定不同的类型，可以往集�
               <a href="/tags/#JVM" title="JVM">JVM</a>
             
               <a href="/tags/#垃圾回收篇" title="垃圾回收篇">垃圾回收篇</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/my_blog_begin/">
-        <h2 class="post-title">
-            新的开始
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/21/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                使用 Hexo 搭建博客的新的体验
-            </h3>
-        <div class="post-content-preview">
-            Hexo
-
-Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭建、构建，发布过程，让很多人望之却步.转而使用了传统的WordPress等博客程序，抛开维护成本不说，本着折腾一切的心态
-最终研究出了一套完善的自动部署方案。
-如何实现优雅的发布
-
-就目前而言，Hexo发布的方式有以下几种：
-
-原始方式，即在本地搭建相关环境，编写md文件后，手动hexo g生成静态文件，然后通过hexo ...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2019-03-04
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#随笔" title="随笔">随笔</a>
             
         </div>
     
@@ -779,7 +776,7 @@ Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭�
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -800,17 +797,17 @@ Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭�
             
         
             
+        
+            
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
+            
+        
+            
             <a href="/tags/#JAVA" title="JAVA" rel="26">JAVA</a>
             
         
             
             <a href="/tags/#JVM" title="JVM" rel="21">JVM</a>
-            
-        
-            
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
@@ -914,9 +911,9 @@ Hexo被称为是最佳的静态博客程序之一，然而其繁琐的环境搭�
             
         
             
-        
-            
             <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
+            
+        
             
         
             
