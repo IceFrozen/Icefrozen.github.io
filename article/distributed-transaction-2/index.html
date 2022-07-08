@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          分布式事务二 - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://yoursite.com/article/distributed-transaction-2/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+
+    <link rel="stylesheet" href="/css/search.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>分布式事务二</h1>
+                        <h2 class="subheading">分布式事务概述</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2022-04-01
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="基础理论">基础理论</span></h2>
+<h1><span id="分布式事务">分布式事务</span></h1>
+<p>单机的事务我已经在我的隔离级别系列文章中总结过，分布式事务是针对分布式系统中对数据的修改发生的逻辑上满足事务特性的操作序列的要求。</p>
+<p>分布式事务指的是事务的参与者、事务所在的服务器、涉及的资源服务器以及事务管理器等分别位于不同分布式系统的不同服务或数据库节点上。简单来说，分布式事务就是一个在不同环境(比如不同的数据库、不同的服务器)下运行的整体事务。这个整体事务包含一个或者多个分支事务，并且整体事务中的所有分支事务要么全部提交成功，要么全部提交失败。</p>
+<p>例如，在电商系统的下单减库存业务中，订单业务所在的数据库为事务A的节点，库存业务所在的数据库为事务B的节点。事务A和事务B组成了一个具备ACID特性的分布式事务，要么全部提交成功，要么全部提交失败。</p>
+<h1><span id="刚性事务和柔性事务">刚性事务和柔性事务</span></h1>
+<ul>
+<li>刚性事务满足ACID理论
+<ul>
+<li>DTP模型（XA规范，2PC, 3PC协议）</li>
+</ul>
+</li>
+<li>柔性事务满足BASE理论（基本可用，最终一致）</li>
+<li>柔性事务分为：
+<ul>
+<li>两阶段型</li>
+<li>补偿型</li>
+<li>异步确保型</li>
+<li>最大努力通知型</li>
+</ul>
+</li>
+</ul>
+<h2><span id="强一致性解决方案">强一致性解决方案</span></h2>
+<h1><span id="dtp-模型">DTP 模型</span></h1>
+<p>DTP全称是Distributed Transaction Process，即分布式事务模型。该模型是X／Open组织定义的一套分布式事务标准，这套标准主要定义了实现分布式事务的规范和API，具体的实现则交给相应的广商来实现。</p>
+<ul>
+<li><strong>AP(ApplicationProgram)</strong>: 应用程序，例如：订单服务、库存服务</li>
+<li><strong>RM(Resource Manager)</strong>: 资源管理器，可以理解为一个数据库，AP通过RM对资源控制，资源必须实现XA定义的接口</li>
+<li><strong>TM(Transaction Manager)</strong>: 事务管理器，负责分配事务的唯一标识，监控事务执行进度，负责事务的提交与回滚</li>
+</ul>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1650616428694.png" alt></p>
+<h1><span id="xa规范">XA规范</span></h1>
+<p>在DTO模型中，我们先来了解一下XA规范。DTP分布式事务模型中，XA规范定义了RM-TM交互的接口（TM与数据库之间的接口规范），TM用它来通知数据库事务的开始结束以及提交回滚等。XA接口函数有数据库厂商提供（mysql、oracle）</p>
+<h2><span id="2pc-模型协议">2PC 模型（协议）</span></h2>
+<p>二阶段提交(Two-phaseCommit 即 2PC)是指，在计算机网络以及数据库领域内，为了使基于分布式系统架构下的所有节点在进行事务提交时保持一致性而设计的一种算法(<strong>Algorithm</strong>)。通常，二阶段提交也被称为是一种协议(<strong>Protocol</strong>))。</p>
+<p>在分布式系统中，每个节点虽然可以知晓自己的操作时成功或者失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点时，为了保持事务的ACID特性，需要引入一个作为协调者的组件来统一掌控所有节点(称作参与者)的操作结果并最终指示这些节点是否要把操作结果进行真正的提交(比如将更新后的数据写入磁盘等等)。</p>
+<p>因此，二阶段提交的算法思路可以概括为：</p>
+<ul>
+<li>1、参与者将操作成败通知协调者；</li>
+<li>2、再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</li>
+</ul>
+<p>所谓的两个阶段是指：</p>
+<ul>
+<li>第一阶段：<strong>准备阶段(投票阶段)</strong></li>
+<li>第二阶段：<strong>提交阶段（执行阶段）</strong></li>
+</ul>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1652350414613.png" alt></p>
+<h3><span id="1-准备阶段">１、准备阶段</span></h3>
+<p>事务协调者(事务管理器)给每个参与者(资源管理器)发送Prepare消息，每个参与者要么直接返回失败(如权限验证失败)，要么在本地执行事务，写本地的redo和undo日志，但不提交，到达一种“万事俱备，只欠东风”的状态。</p>
+<p>可以进一步将准备阶段分为以下三个步骤：</p>
+<ul>
+<li>1）协调者节点向所有参与者节点询问是否可以执行提交操作(vote)，并开始等待各参与者节点的响应。</li>
+<li>2）参与者节点执行询问发起为止的所有事务操作，并将Undo信息和Redo信息写入日志。（注意：若成功这里其实每个参与者已经执行了事务操作）</li>
+<li>3）各参与者节点响应协调者节点发起的询问。如果参与者节点的事务操作实际执行成功，则它返回一个”同意”消息；如果参与者节点的事务操作实际执行失败，则它返回一个”中止”消息。</li>
+</ul>
+<h3><span id="2-提交阶段">2、 提交阶段</span></h3>
+<p>如果协调者收到了参与者的失败消息或者超时，直接给每个参与者发送回滚(Rollback)消息；否则，发送提交(Commit)消息；参与者根据协调者的指令执行提交或者回滚操作，释放所有事务处理过程中使用的锁资源。(注意:必须在最后阶段释放锁资源)</p>
+<p>接下来分两种情况分别讨论提交阶段的过程。</p>
+<h4><span id="成功提交">成功提交</span></h4>
+<p>当协调者节点从所有参与者节点获得的相应消息都为”同意”时：</p>
+<ul>
+<li>1）协调者节点向所有参与者节点发出”正式提交(commit)”的请求。</li>
+<li>2）参与者节点正式完成操作，并释放在整个事务期间内占用的资源。</li>
+<li>3）参与者节点向协调者节点发送”完成”消息。</li>
+<li>4）协调者节点受到所有参与者节点反馈的”完成”消息后，完成事务。</li>
+</ul>
+<h3><span id="回滚提交">回滚提交</span></h3>
+<p>如果任一参与者节点在第一阶段返回的响应消息为”中止”，或者 协调者节点在第一阶段的询问超时之前无法获取所有参与者节点的响应消息时：</p>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1652350484930.png" alt></p>
+<ul>
+<li>1）协调者节点向所有参与者节点发出”回滚操作(rollback)”的请求。</li>
+<li>2）参与者节点利用之前写入的Undo信息执行回滚，并释放在整个事务期间内占用的资源。</li>
+<li>3）参与者节点向协调者节点发送”回滚完成”消息。</li>
+<li>4）协调者节点受到所有参与者节点反馈的”回滚完成”消息后，取消事务。</li>
+</ul>
+<p>不管最后结果如何，第二阶段都会结束当前事务。</p>
+<h3><span id="2pc协议的问题">2PC协议的问题</span></h3>
+<p>值得注意的是，2PC模型存在着如下的缺点。</p>
+<ul>
+<li>1）同步阻塞问题：事务的执行过程中，所有参与事务的节点都会对其占用的公共资源加锁，导致其他访问公共资源的进程或者线程阻塞。</li>
+</ul>
+<blockquote>
+<p>本地事务在prepare阶段锁定资源，比如账户服务要扣减xiaoming这个账户的金额100元，那必须把xiaoming这个账户先锁定。这样如果有其他事务也要修改xiaoming这个账户，就必须等待前面的事务完成。这样就造成了延迟和性能下降。</p>
+</blockquote>
+<ul>
+<li>2）单点故障问题：如果事务管理器发生故障，则资源管理器会一直阻塞。</li>
+</ul>
+<blockquote>
+<p>协调节点是单节点的，如果发生故障，整个事务会一直阻塞。比如第一个阶段prepare成功了，但是第二个阶段协调节点发出commit指令之前宕机了，所有服务的数据资源处于锁定状态，后面的事务只能等待。</p>
+</blockquote>
+<ul>
+<li>3）数据不一致问题：如果在Commit阶段，由于网络或者部分资源管理器发生故障，导致部分资源管理器没有接收到事务管理器发送过来的Commit消息，会引起数据不一致的问题。</li>
+</ul>
+<blockquote>
+<p>如果第一阶段prepare成功了，但是第二阶段commit的时候，如果协调节点通知库存服务失败了，这样就相当于生成了订单，扣减了账户，但是没有扣减库存。这导致了数据的不一致。</p>
+</blockquote>
+<h2><span id="3pc-模型协议">3PC 模型（协议）</span></h2>
+<p>3PC模型是指三阶段提交模型，是在2PC模型的基础上改进的版本。3PC模型把2PC模型中的Prepare阶段一分为二，最终形成3个阶段：CanCommit阶段、PreCommit阶段和 doCommit或者 doRollback 阶段。3PC模型的流程同样分为事务执行成功和事务执行失败两种情况。</p>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1655359556736.png" alt></p>
+<h3><span id="cancommit阶段">CanCommit阶段</span></h3>
+<p>3PC的CanCommit阶段其实和2PC的准备阶段很像。协调者向参与者发送catCommit请求，参与者如果可以提交就返回Yes响应，否则返回No响应。</p>
+<ul>
+<li>
+<p>1.事务协调者（Coordinator）向参与者（Partcipant）发送CanCommit请求。询问是否可以执行事务提交操作。然后开始等待参与者的响应。</p>
+</li>
+<li>
+<p>2.响应反馈：参与者接到CanCommit请求之后，正常情况下，如果其自身认为可以顺利执行事务，则返回Yes响应，并进入预备状态。否则反馈No。</p>
+</li>
+</ul>
+<h3><span id="precommit阶段">PreCommit阶段</span></h3>
+<p>协调者（Coordinator）根据参与者（Partcipant）的反应情况来决定是否可以记性事务的PreCommit操作。根据响应情况，有以下两种可能。</p>
+<ol>
+<li>假如协调者从所有的参与者获得的反馈都是Yes响应，那么就会执行事务的预执行。</li>
+<li>发送预提交请求： 协调者向参与者发送PreCommit请求，并进入Prepared阶段。</li>
+<li>事务预提交 ：参与者接收到PreCommit请求后，会执行事务操作，并将undo和redo信息记录到事务日志中。</li>
+</ol>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1655359659347.png" alt></p>
+<ol start="4">
+<li>响应反馈： 如果参与者成功的执行了事务操作，则返回ACK响应，同时开始等待最终指令。假如有任何一个参与者向协调者发送了No响应，或者等待超时之后，协调者都没有接到参与者的响应。那么就执行事务的中断。发送中断请求： 协调者向所有参与者发送abort请求。</li>
+<li>中断事务： 参与者收到来自协调者的abort请求之后（或超时之后，仍未收到协调者的请求），执行事务的中断。</li>
+</ol>
+<h3><span id="docommit阶段">doCommit阶段</span></h3>
+<p>该阶段进行真正的事务提交，也可以分为以下两种情况。</p>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1655359694207.png" alt></p>
+<h4><span id="执行提交">执行提交</span></h4>
+<ol>
+<li>发送提交请求： 协调接收到参与者发送的ACK响应，那么他将从预提交状态进入到提交状态。并向所有参与者发送doCommit请求。</li>
+<li>事务提交： 参与者接收到doCommit请求之后，执行正式的事务提交。并在完成事务提交之后释放所有事务资源。</li>
+<li>响应反馈： 事务提交完之后，向协调者发送Ack响应。</li>
+<li>完成事务： 协调者接收到所有参与者的ack响应之后，完成事务。</li>
+</ol>
+<p><img src="/article/distributed-transaction-2/distributed-transaction-2-1655359741901.png" alt></p>
+<h4><span id="中断事务">中断事务。</span></h4>
+<p>协调者没有接收到参与者发送的ACK响应（可能是接受者发送的不是ACK响应，也可能响应超时），那么就会执行中断事务。</p>
+<ul>
+<li>发送中断请求： 协调者向所有参与者发送abort请求</li>
+<li>事务回滚： 参与者接收到abort请求之后，利用其在阶段二记录的undo信息来执行事务的回滚操作，并在完成回滚之后释放所有的事务资源。</li>
+<li>反馈结果 ：参与者完成事务回滚之后，向协调者发送ACK消息</li>
+<li>中断事务： 协调者接收到参与者反馈的ACK消息之后，执行事务的中断。</li>
+</ul>
+<p>在doCommit阶段，如果参与者无法及时接收到来自协调者的doCommit或者rebort请求时，会在等待超时之后，会继续进行事务的提交。（其实这个应该是基于概率来决定的，当进入第三阶段时，说明参与者在第二阶段已经收到了PreCommit请求，那么协调者产生PreCommit请求的前提条件是他在第二阶段开始之前，收到所有参与者的CanCommit响应都是Yes。一旦参与者收到了PreCommit，意味他知道大家其实都同意修改了）</p>
+<p>所以，一句话概括就是，当进入第三阶段时，由于网络超时等原因，虽然参与者没有收到commit或者abort响应，但是他有理由相信：成功提交的几率很大。 ）</p>
+<p>增加了一个询问阶段，询问阶段可以确保尽可能早的发现无法执行操作而需要中止的行为，但是它并不能发现所有的这种行为，只会减少这种情况的发生在准备阶段以后，协调者和参与者执行的任务中都增加了超时，一旦超时，协调者和参与者都继续提交事务，默认为成功，这也是根据概率统计上超时后默认成功的正确性最大。</p>
+<p>三阶段提交协议与两阶段提交协议相比，具有如上的优点，但是一旦发生超时，系统仍然会发生不一致，只不过这种情况很少见罢了，好处就是至少不会阻塞和永远锁定资源。</p>
+<h3><span id="区别和联系">区别和联系</span></h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DTP模型</td>
+<td>规定了分布式事务中的角色模型，并在其中指定了全局事务的控制需要使用 2PC 协议来保证数据的一致性。</td>
+</tr>
+<tr>
+<td>2/3PC</td>
+<td>二/三阶段提交，是计算机网络尤其是数据库领域内，为了保证分布式系统架构下所有节点在进行事务处理过程中能够保证原子性和一致性而设计的一种算法。同时，2PC 也被认为是一种一致性协议，用来保证分布式系统数据的一致性</td>
+</tr>
+<tr>
+<td>XA 规范</td>
+<td>X/Open 组织提出的分布式事务处理规范，XA 规范定义了 2PC（两阶段提交协议）中需要用到的接口，也就是上图中 RM 和 TM 之间的交互。2PC 和 XA 两者最容易混淆，可以这么理解，DTP 模型定义 TM 和 RM 之间通讯的接口规范叫 XA，然后 关系数据库（比如MySQL）基于 X/Open 提出的的 XA 规范（核心依赖于 2PC 算法）被称为 XA 方案</td>
+</tr>
+</tbody>
+</table>
+<h2><span id="参考">参考</span></h2>
+<ul>
+<li><a href="https://baiyp.ren/JAVA%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A105.html" target="_blank" rel="noopener">JAVA中的分布式事务05</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/article/distributed-transaction-cap/" data-toggle="tooltip" data-placement="top" title="分布式事务一">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">基础理论</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">分布式事务</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">刚性事务和柔性事务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">强一致性解决方案</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">DTP 模型</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#null"><span class="toc-nav-number"></span> <span class="toc-nav-text">XA规范</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">2PC 模型（协议）</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">１、准备阶段</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">2、 提交阶段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">成功提交</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">回滚提交</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">2PC协议的问题</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">3PC 模型（协议）</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">CanCommit阶段</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">PreCommit阶段</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">doCommit阶段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.1.</span> <span class="toc-nav-text">执行提交</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.3.2.</span> <span class="toc-nav-text">中断事务。</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">区别和联系</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#null"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">参考</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2022 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+<!-- Custom Theme search -->
+<script src="/js/search.js"></script>
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://yoursite.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://yoursite.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>
