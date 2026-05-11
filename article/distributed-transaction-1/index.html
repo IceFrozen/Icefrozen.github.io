@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          事务详解（1）-- 隔离级别 - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/article/distributed-transaction-1/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS --> 
+    
+<link rel="stylesheet" href="/css/beantech.min.css">
+
+
+    
+<link rel="stylesheet" href="/css/donate.css">
+
+
+    
+<link rel="stylesheet" href="/css/search.css">
+
+    
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/widget.css">
+
+
+    
+<link rel="stylesheet" href="/css/rocket.css">
+
+
+    
+<link rel="stylesheet" href="/css/signature.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script>
+<meta name="generator" content="Hexo 8.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                            
+                              <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                            
+                              <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                            
+                        </div>
+                        <h1>事务详解（1）-- 隔离级别</h1>
+                        <h2 class="subheading">【A Critique of ANSI SQL Isolation Levels】详解</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2022-01-22
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="概要">概要</h2>
+<p>本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。</p>
+<h2 id="事务概述">事务概述</h2>
+<h1>什么是事务</h1>
+<p>事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。</p>
+<h1>事务的四大特性ACID</h1>
+<h2 id="原子性（Atomicity）"><strong>原子性（Atomicity）</strong>:</h2>
+<p>事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。</p>
+<h2 id="一致性（Consistency）"><strong>一致性（Consistency）</strong> :</h2>
+<p>一致性是指事务必须使数据库从一个一致性状态变成另一个一致性状态，也就是事务执行前后必须处于一致性状态。</p>
+<h2 id="隔离性（Isolation）"><strong>隔离性（Isolation）</strong>:</h2>
+<p>一个事务所做的修改在最终提交以前，对其他事务是不可见，当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其它的事务操作所干扰，多个并发事务之间要相互隔离。</p>
+<h2 id="持久性（Durability-："><strong>持久性（Durability)</strong>：</h2>
+<p>持久性是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即使在数据库系统遇到故障的情况下也不会丢失提交事务的操作。</p>
+<h1>事务的隔离级别</h1>
+<h2 id="事务并发的问题">事务并发的问题</h2>
+<h3 id="【1】脏读（读取未提交数据）">【1】脏读（读取未提交数据）</h3>
+<p>当前事务(A)中可以读到其他事务(B)未提交的数据（脏数据），这种现象是脏读。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>转账事务A</th>
+<th>取款事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td></td>
+<td>查询余额1000</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td></td>
+<td>取出 500 余额为 500</td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td>查询账户余额 500</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>出错，撤销事务 余额为1000</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>汇入100 余额 600</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">8</td>
+<td>提交事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照逻辑，转账事务读取了B 撤销后的事务出现脏读</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="【2】不可重复读（前后多次读取，数据内容不一致）">【2】不可重复读（前后多次读取，数据内容不一致）</h3>
+<p>在事务A中先后两次读取同一个数据，两次读取的结果不一样，这种现象称为不可重复读。脏读与不可重复读的区别在于：前者读到的是其他事务未提交的数据，后者读到的是其他事务已提交的数据</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>第一次查询余额 100</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td>其他操作</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td></td>
+<td>消费30 余额 变为 70</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>第二次查询 余额为70</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照正确的逻辑，事务A前后两次读取的数据应该一致</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="【3】幻读（前后多次读取，数据总量不一致）">【3】幻读（前后多次读取，数据总量不一致）</h3>
+<p>在事务A中按照某个条件先后两次查询数据库，两次查询结果的条数不同，这种现象称为幻读。不可重复读与幻读的区别可以通俗的理解为：前者是数据变了，后者是数据的行数变了。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间顺序</th>
+<th>统计金额事务</th>
+<th>转账事务 B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1</td>
+<td></td>
+<td>开始事务</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">3</td>
+<td>统计金额为（100个账户）10000</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">4</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">5</td>
+<td></td>
+<td>新增一个存款账户，余额为100</td>
+</tr>
+<tr>
+<td style="text-align:left">6</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td style="text-align:left">7</td>
+<td>再次统计存款 为 10100 元</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">备注</td>
+<td>按照正确的逻辑，统计事务后出现了幻读（数据行发生了变化）</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="数据库的隔离级别">数据库的隔离级别</h2>
+<p>为了解决多个事务并发会引发的问题，进行并发控制。数据库系统提供了四种事务隔离级别供用户选择。</p>
+<h3 id="Read-Uncommitted-读未提交："><strong>Read Uncommitted 读未提交</strong>：</h3>
+<p>即允许当前会话事务读取到其他会话中未提交事务修改的数据，可能导致脏读。</p>
+<h3 id="Read-Committed-读已提交："><strong>Read Committed 读已提交</strong>：</h3>
+<p>只能读取到已成功提交事务的数据，因此可以避免发生脏读，但是读取数据的事务允许其他事务的访问该行数据，因此会出现不可重复读的情况。即事务前后两次读取的数据不一致。</p>
+<h3 id="Repeatable-Read-重复读"><strong>Repeatable Read 重复读</strong></h3>
+<p>重复读 在该级别下，读事务禁止写事务，但允许读事务，因此不会出现同一事务两次读到不同的数据的情况（不可重复读），且写事务禁止其他一切事务。但可能出现幻读。（这里为什么会出现幻读，参见后面的文章）</p>
+<h3 id="Serializable-可串行化："><strong>Serializable 可串行化</strong>：</h3>
+<p>所有的增删改查串行执行。(这里强调可串行化，而非真生意义上的串行化。读写操作是并发的，但是其效果等价于串行化执行，因此这里用可串行化来表述)</p>
+<h2 id="隔离级别的本质">隔离级别的本质</h2>
+<p>上一个章节，对事务公共认知做了一个简单的介绍，这些认知是基于大众的普遍知识。你可能意识到，上一节的只是事实上来说并不完全，因为似乎少了某些异常情况。例如说，丢失更新等。<br>
+事实上，你的感觉并没有错，因为确实在异常中有很多不尽如人意的地方，这都取决于这套标准的制定。接下来，我将展开一些对着写公共认知更为细节的问题来讨论。</p>
+<h2 id="标准的提出">标准的提出</h2>
+<p>我们知道，这些知识在任何一部MySql教程中都有不少的介绍。即便如此，这些隔离级别其实并不是由MySql定制的，而是由一个组织名叫ANSI的组织制定的。</p>
+<blockquote>
+<p>ANSI：美国国家标准学会（AMERICAN NATIONAL STANDARDS INSTITUTE: ANSI）成立于1918年。当时，美国的许多企业和专业技术团体，已开始了标准化工作，但因彼此间没有协调，存在不少矛盾和问题。为了进一步提高效率，数百个科技学会、协会组织和团体，均认为有必要成立一个专门的标准化机构，并制订统一的通用标准。</p>
+</blockquote>
+<p>要了解隔离级别的标准，我们必须要知道隔离级别的本质，也即是说我们为什么要设定隔离级别。</p>
+<h2 id="隔离级别的本质-2">隔离级别的本质</h2>
+<p>在第一章节中，我们给出的事务四个特性ACID并不严谨，本文我们引用了数据库领域的大神Jim Gray对其的定义,Jim Gray是事务处理方面的大师，本文中很多内容都来自他的专著和论文。为避免翻译引入的歧义，这里我们直接引用原文。</p>
+<ul>
+<li>
+<p>Atomicity: Either all the changes from the transaction occur (writes, and messages sent), or none occur.</p>
+</li>
+<li>
+<p>Consistency: The transaction preserves the integrity of stored information.</p>
+</li>
+<li>
+<p>Isolation: Concurrently executing transactions see the stored information as if they were running<br>
+erially (one after another).</p>
+</li>
+<li>
+<p>Durability: Once a transaction commits, the changes it made (writes and messages sent) survive any system failures.</p>
+</li>
+</ul>
+<p>在上述隔离性（Isolation）的定义中，我们可以发现其目标是使并发事务的执行效果与串行一致。并从一致性（Consistency）定义中知道，事务是需要将数据状态从一个变成另一个状态。假设我们有数据x = 1，经过若干事务之后，我们需要让x = x’。</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758703747.png" alt></p>
+<p>注意事务的顺序，当顺序确定之后，对于事务对数据的改变就是原子性的。也就是说事务2不可以在事务1前面更改数据状态，必须从事务A1结束后的状态开始执行。<br>
+但我们知道，事务中会包含对数据的Read操作和Wirte操作。Read操作不会影响数据的状态，但是Wirte则会影响数据的状态。<br>
+我们假设x的初始值是x = 1,事务A由（Read(x), Wirte(x, x =2), Read(x), Wirte(x, x =1) 的操作序列组成。那么对x的状态变化如下图：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758868868.png" alt></p>
+<p>假如，此时有个事务2，序列为(Read(x), Wirte(x,x + 1)),状态为下图：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645758966889.png" alt></p>
+<p>假设我们事务执行的顺序为[事务A, 事务B],则会出现这样一个串行化的序列：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759042722.png" alt></p>
+<p>这里的某种调度就是 Read 和Wirte 的排序方式。<br>
+​但是事实是，现代操作系统中，多核cpu已经普及，为了提高事务执行的效率，不同的事务操作可能会分配到不同的核心。但是这样做，就有可能破坏事务的一致性。因为事务的执行顺序不能随心所欲，必须要串行化执行，那怎么样才能利用多核cpu让事务并发执行且满足事务的串行化效果呢？答案就是串行化理论。</p>
+<p>串行化调度和可串行化理论：</p>
+<blockquote>
+<p>为了提高数据库的执行效率，显然我们需要并发的执行各个事务，如果存在调度S，对于数据库的任何状态，其执行结果完全等价于另一个串行调度S’，称这样的调度S为可串行化调度（serializable schedule）。</p>
+</blockquote>
+<blockquote>
+<p>对比串行调度，等价的可串行化调度可就多了（比如：最终等价，视图等价冲突等价），并发度大幅提升，但我们又该如何实现并发控制才能校验出一个调度是可串行化的？总不能先按串行调度执行，再对比结果吧？我们需要一个更加易于验证的条件，并且保证满足这个条件的调度是一定是可串行化的，这就是可串行化理论。</p>
+</blockquote>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759263475.png" alt></p>
+<p>​根据观察，我们只要让事务B的每个操作起始状态和串行化的起始状态保持一致，其他的时间阻塞等待就可以实现串行化的效果。例如：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645759339734.png" alt></p>
+<p>因为事务B在串行执行的时候，第一个Read操作的起始状态为Ax=1，那么，我将这个操作提前到事务A相同的区间开始，事务B Wirte操作起始状态不满足的情况下阻塞等待。这样一来，我们就可以通过一个并行调度来降低事务A + 事务B的总执行时间。因此，我们称这个调度是可串行化调度。</p>
+<p>串行化的理论很复杂，包括：两阶段锁协议（2PL）, 独占/共享锁（Lock）, 视图等价（view equivalence），冲突等价（conflict equivalence）,History 等等概念和复杂的数学公式，以及可串行化的条件和证明。很多数据库中的实现都会有这个理论的影子，由于太过复杂，这里我们不在展开。这里提出这个概念，是想告诉读者，事务的并发控制的解决方案，是经过一系列的科学的理论证明的，不是一拍脑门就决定的。本文系列文章尽量用可以理解的方式告诉读者这个理论的原理。</p>
+<p>回到主题，事实上，大多时候我们无法控制事务B的开始时间（随机出现的）。​但是我们可以通过阻塞或者其他合理调度来提高效率。有时候，提高了效率却又会出现错误状态。​</p>
+<p>事务B的起始时间可能在事务A区间的任何时候，如果不进行阻塞那么就会破坏事务的一致性要求。例如下图，x最后等于3：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760135914.png" alt></p>
+<p>我们称这种破坏一致性的现象成为异常现象（Phenomenon）<br>
+​<br>
+所以，可串行化但在具体技术实现上往往需要在并发能力和串行化效果之间进行平衡，很难两者兼顾。平衡的结果就是会出现违反串行效果的现象，即异常现象（Phenomenon）。</p>
+<p>通常来说，隔离级别的提出就是性能和正确性的平衡，隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降，两者负相关。</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1645760232142.png" alt></p>
+<h2 id="隔离级别起源">隔离级别起源</h2>
+<p>在上一个章节中，我们讨论了隔离级别的本质，所谓隔离级别就是事务为了保证串行化效果的前提下均衡性能和一致性要求的结果。隔离级别越高，串行化效果越强，同时也伴随着并发能力的下降并同时出现异常现象（Phenomenon）,两者负相关。接下来我们来讨论个隔离级别的起源。</p>
+<h1>隔离级别标准的提出</h1>
+<p>首先，我们对比MysqlInnoDB引擎中的提供的四个隔离级别来入手。分别是：</p>
+<ul>
+<li>1）READ UNCOMMITTED (读未提交)；</li>
+<li>2）READ COMMITTED （读已提交）；</li>
+<li>3）REPEATABLE READ （可重复度）；</li>
+<li>4）SERIALIZABLE （串行化执行）。</li>
+</ul>
+<p>这些知识在任何一部MySql教程中都有不少的介绍。这个标准是如何来的呢？ 事实上这些隔离级别其实并不是由MySql指定的，而是由一个组织名叫<strong>ANSI</strong>的组织制定的<strong>SQL-92</strong>标准。</p>
+<p><strong>ANSI SQL-92</strong> 标准的第一版发布于 1986 年，之后又陆续发布了多个主版本和修订版本。不过，其影响最广泛的版本仍然是1992年发布的<strong>SQL-92</strong>，在这个版本中，<strong>ANSI</strong>组织总结了各种并发情况下可能出现的异常现象（<strong>Phenomenon</strong>），并给出了平衡的结果，并根据这些异常现象的容忍程度，这就是在上文提到的隔离级别。</p>
+<p>这些隔离级别都是基于经典的序列化理论和是否允许三种异常现象（<strong>Phenomenon</strong>）（中文翻译就是我们熟知的脏读，不可重复度和幻读，注意这里是异常现象，并不是隔离级别）。这些现象有：</p>
+<ul>
+<li>(P1) Dirty Read （脏读）</li>
+<li>(P2) Non-Repeatable Read （不可重复度）</li>
+<li>(P3) Phantom （幻读）</li>
+</ul>
+<p>因此，根据对这些异常现象的容忍程度，给出了如下表格：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt><br>
+(可以暂时认为P=A)</p>
+<h1>被质疑SQL-92标准</h1>
+<h2 id="标准的缺陷">标准的缺陷</h2>
+<p><strong>ANSI SQL-92</strong> 标准的出是想构建一个与实现无关，全面，理论话的标准，单是这个想法失败了。虽然针对于上述的三种异常现象<strong>ANSI SQL-92</strong> 给出了明确的定义。并且以这三种异常现象的有无来定义隔离级别。这显然是有些问题的。</p>
+<ul>
+<li>原因1：<strong>ANSI SQL-92</strong> 对这些异常现象给出的定义不够清晰和全面。</li>
+</ul>
+<p>作为标准，本应该由各大数据库厂商遵循并实现，但遗憾的是，在实际在实现过程中出现的异常现象远多于<strong>QL-92</strong>定义的现象，那么因此给出的隔离级别也会有所缺陷，甚至是错误。也正是因此，<strong>SQL-92</strong>的标准也开始被质疑。</p>
+<ul>
+<li>
+<p>原因2：<strong>SQL-92</strong> 只考虑了数据是单个版本的情况下可能出现问题，并没有考数据可以有多个版本的情况。</p>
+</li>
+<li>
+<p>原因3： <strong>ANSI SQL-92</strong> 是根据现象的容忍程度来定义标准，这显然是不符合理论的。</p>
+</li>
+</ul>
+<p>上一篇文章我们从串行化理论入手来分析事务运行中的调度，来得出不同的调度会引起不同的异常现象。因此，想要定义完整的隔离级别，就必须从事务调度历史的依赖关系通过模型化的分析，才能得到科学全面的各级离别。<br>
+比如：<strong>ANSI SQL-92</strong>  规定避免P1、P2、P3异常现象就可以称之为可串行化了（what? 串行化理论够出一套教科书了，你告诉我避免P1-3就是串行化了？太儿戏了吧？）</p>
+<p>即便如此，<strong>ANSI SQL-92</strong> 提出的观点至今为止仍然是应用最广的隔离级别定义, 但无论是当时还是后来都没有被各大数据库厂商严格遵循，部分原因可能是标准过于简化与实际应用有一定程度的脱离，这也是现在各大数据库厂商在隔离级别上的混乱的源头。</p>
+<blockquote>
+<p>如果想知道各大 RDBMS 厂商对事务隔离机制的实现的情况将参见:<a href="https://github.com/ept/hermitage">https://github.com/ept/hermitage</a></p>
+</blockquote>
+<h2 id="标准的批判">标准的批判</h2>
+<p>由于这个标准的各种不足，随后一篇著名的论文：<strong>「A Critique of ANSI SQL Isolation Levels」</strong> （以下简称<strong>Critique</strong>）横空出世，这篇文章提出了上述的三种缺陷，并对其做出了补充。（现在好多书籍，都是以这个论文提出的概念来讲解事务的。）但是并没有从本质上解决隔离级别定义的​局限性。</p>
+<p>随后，2000 **「Generalized Isolation Level Definitions」**这篇文章，指出了此前对隔离级别定义重度依赖数据库的实现，并且提出了与实现无关的隔离级别定义。这篇文章并没有从并发执行的事务产生的异常这个入手点分析，而是回归本质，通过事物之间的调度关系，从数学模型层面给出了科学的隔离级别的定义标准。这也是我们第一篇文章的理论依据。至此，隔离级别的争论才慢慢平息了下来。</p>
+<p>但是，隔离级别的本质没有变化，还是性能和正确性之间的权衡。随着隔离级别多元化的理论发展下，各个数据库厂商的同名隔离级实现也大相径庭，没有做到标准规定那样。比如，MySQL 的 <strong>REPEATABLE READ</strong> 无法避免丢失更新（P4），(A5)读写偏序的问题（这两异常现象随后介绍），MVCC的实现也无法完全避免幻读（P3）异常等。也正因为如此，Mysql InnoDB的<strong>REPEATABLE READ</strong>被人狠狠的吐槽。</p>
+<h2 id="标准的修订之路">标准的修订之路</h2>
+<p>接下来，我将用大量的篇幅介绍 <strong>「A Critique of ANSI SQL Isolation Levels」</strong>  这篇著名的论文，带你体会严谨的学术态度和数学建模的魅力所在。</p>
+<p><strong>「Critique」</strong> 论文中，对<strong>SQL-92</strong>的隔离级别标准做了批判</p>
+<p>第一，**异常现象（Phenomenon）**定义的模糊性：首先是自然语言方式界定的异常现象并不严格导致一些同质化的异常现象被遗漏；<br>
+第二、**异常现象（Phenomenon）**总结的不全面性。</p>
+<p>ANSI当初制定标准时，依据的是<strong>single version（单版本）</strong> 和**Lock schedule（锁调度）**的思路，从最严格的 **Serializable（由2PL实现）**开始减少锁的数量、种类，放宽 <strong>release lock（释放锁）</strong> 的时机等，从而定义了4种隔离级别。但是事实上，在实现层面（Mysql）有类似多版本的实现方案（MVCC）。因此，仅仅从这两个方面定义的异常现象必定有所缺失。</p>
+<p>因此，<strong>「Critique」</strong> 文中对<strong>SQL-92</strong>的三种异常现象由原来的（P1,P2,P3）重新将其编号为（A1/A2/A3）同时用公式来重新定义了A1,A2,A3并命名为新的（P1,P2,P3），又从中引申出了P0现象。并增加了两种锁实现中的可能异常（P4C和P4）和两种多版本并发控制实现中可能出现的异常（A5A和A5B），最后将所有这些异常组合在一起，并增加了两种隔离级别：<strong>Cursor Stability</strong>和 <strong>Snapshot</strong>。</p>
+<p>接下来，我会深度分析 <strong>ANSI SQL-92</strong>，以及 <strong>「Critique」</strong> 中对其的补充修订。</p>
+<h1>对SQL-92标准中的异常定义规范化</h1>
+<h2 id="ANSI-SQL-92-对Phantom的重新定义">ANSI SQL-92 对Phantom的重新定义</h2>
+<p>再次强调，ANSI当初制定标准时，依据的是<strong>single version</strong> 和<strong>Lock schedule</strong>的思路，不存在多版本的情况。先来看<strong>ANSI SQL-92</strong> 标准中的可能导致三种数据出现的问题：</p>
+<blockquote>
+<ol>
+<li>P1 (“Dirty read”): SQL-transaction T1 modifies a row. SQL-<br>
+transaction T2 then reads that row before T1 performs a COMMIT.<br>
+If T1 then performs a ROLLBACK, T2 will have read a row that was<br>
+never committed and that may thus be considered to have never<br>
+existed.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2">
+<li>P2 (“Non-repeatable read”): SQL-transaction T1 reads a row. SQL-<br>
+transaction T2 then modifies or deletes that row and performs<br>
+a COMMIT. If T1 then attempts to reread the row, it may receive<br>
+the modified value or discover that the row has been deleted.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3">
+<li>P3 (“Phantom”): SQL-transaction T1 reads the set of rows N<br>
+that satisfy some . SQL-transaction T2 then<br>
+executes SQL-statements that generate one or more rows that<br>
+satisfy the used by SQL-transaction T1. If<br>
+SQL-transaction T1 then repeats the initial read with the same<br>
+, it obtains a different collection of rows.</li>
+</ol>
+</blockquote>
+<p>这一冗长的打算不容易理解，我们用公式化来理解。</p>
+<p>为了能更清晰的表述事务之间的操作关系，我们将操作简化为 w(write)， r(read) ，每个操作的数字w1,r2代表执行操作的事务，例如  r1代表事务1读， w2代表事务2写。紧跟着操作的中括号[]的内容代表当前操作所涉及的资源，例如 w1[x] 代表事务1写入了资源x， r2[P] 代表事务2读取了满足谓词P的资源。最后，使用  c(commit) 和 a (abort) 来表示提交与回滚。</p>
+<p>因此我们就可以用一连串的操作来表示一段操作历史：</p>
+<blockquote>
+<p>w1[x] … r2[x]…(a1 and c2 in any order): 可以按照顺序表述：</p>
+</blockquote>
+<ul>
+<li>事务1执行w1[x]操作，</li>
+<li>事务2执行r2[x]操作：</li>
+<li>最后事务1回滚或事务2提交，且操作顺序无要求。</li>
+</ul>
+<p>因此，上述的P1-P3的定义为：</p>
+<ul>
+<li>P1: Dirty Read：w1[x] … r2[x] … (a1 and c2 in any order)</li>
+<li>P2: Fuzzy Read：r1[x] … w2[x] … c2 … r1[x] … c1</li>
+<li>p3: Phantom Read：r1[P] … w2[y in P] … c2 … r1[P] … c1</li>
+</ul>
+<p>这就是上文所对应的脏读，可重复度和幻读三个概念了。针对这个定义，我们来看一下其中的概念。</p>
+<ul>
+<li>r1[P]表示事务1按照谓词P的条件读取若干条记录</li>
+<li>w1[y in P]表示事务1写入记录y满足谓词P的条件</li>
+</ul>
+<blockquote>
+<p>谓词（predicate）虽然之前我们没有提及谓词这个概念，但其实大家已经使用过了。例如，=、&lt;、&gt;、&lt;&gt; 等比较运算符，其正式的名称就是比较谓词。 我们可以简单理解为 SQL 语句Where 后面的表达式就好了。</p>
+</blockquote>
+<blockquote>
+<p>通俗来讲谓词就是 各种各样的函数 中介绍的函数中的一种，是需要满足特定条件的函数，该条件就是返回值是真值。对通常的函数来说，返回值有可能是数字、字符串或者日期等，但是谓词的返回值全都是真值（TRUE/FALSE/UNKNOWN）。这也是谓词和函数的最大区别。</p>
+</blockquote>
+<p>根据定义，我们看到了P1的定义是T2读取提交后，T1恰好回滚之后，T2读取的值必定是T1回滚前的脏值。那么问题来了，异常的出现，我们一定要强调T1的回滚？其实不然，看一下的例子：</p>
+<p>转账的例子：<strong>: x = 50; y = 50  Txn1 从x向y转账40</strong></p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r1[x, 50]<br> w1[x = 10](x - 40)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>r2[x = 10] <br> r2[y = 50]</td>
+</tr>
+<tr>
+<td>r1[y = 50] <br>w1[y = 90](y = y + 40)</td>
+<td></td>
+</tr>
+<tr>
+<td>abort</td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，无论Txn1是否提交或者回滚，在某段时间范围内，不论Txn2是否提交或者回滚，读取到x + y ！= 100。因此，对于P1的定义过于严格。</p>
+<h2 id="重新定义P1、P2、P3">重新定义P1、P2、P3</h2>
+<p>因为 <strong>ANSI SQL-92</strong> 定义P1,P2,P3只有语言上的描述，没有准确的定义这些异常，所以 <strong>「Critique」</strong> 对其做了两种解释，用 P表明可能发生异常的现象，用 A 表示已经发生的异常。我举个栗子就明白了。<strong>SQL-92</strong>定P1的时候过于严格，当出现定义中满足的条件的时候，错误已经发生。<br>
+因此，我们将P1的定义用A1来描述，A1（一定出问题的意思）。 那么我对A1进行扩大解释，新的定义来替换原来的P1(表示可能发生异常)。 根据A1出问题的原因，我们不强调脏读一定发生在（提交，回滚）之后， 因此 这个P1的定义就出来了，我们对比A1来看下：</p>
+<ul>
+<li>P1: w1[x]…r2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
+<li>A1: w1[x]…r2[x]…(a1 and c2 in any order)</li>
+</ul>
+<blockquote>
+<p>解释一下： 无论你T1提交还是回滚 T2在回滚和提交前，我已经读到你的脏值了，那么问题就会产生。</p>
+</blockquote>
+<p>还是上面转账的例子：</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r1[x, 50]<br> w1[x = 10](x - 40)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>r2[x = 10] <br> r2[y = 50]</td>
+</tr>
+<tr>
+<td>r1[y = 50] <br>w1[y = 90](y = y + 40)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>只要Txn2读到x = 10(x =10 是 Txn1中未提交的修改)就算脏读，不论是否有没有提交或者回滚。</p>
+<p>根据这个规则，我们对原来的P2 和 P3 也类似的解释：</p>
+<ul>
+<li>
+<p>P2: r1[x]…w2[x]…((c1 or a1) and (c2 or a2) in any order)</p>
+</li>
+<li>
+<p>A2: r1[x]…w2[x]…c2…r1[x]…c1</p>
+</li>
+<li>
+<p>P3: r1[P]…w2[y in P]…((c1 or a1) and (c2 or a2) any order)</p>
+</li>
+<li>
+<p>A3: r1[P]…w2[y in P]…c2…r1[P]…c1</p>
+</li>
+</ul>
+<p>有些文章将A系列(<strong>ANSI SQL-92</strong> 定义的异常现象)叫做狭义解释（严格解释），把P系列（ <strong>Critique</strong> 优化A系列定义的异常现象）叫做广义解释（宽泛解释）。</p>
+<h2 id="P3（幻读的坑）的补充">P3（幻读的坑）的补充</h2>
+<p>A3名叫幻读，在幻读问题上，它和P2有着混淆的一个概念，首先我们先来看 <strong>ANSI SQL-92</strong> 定义的幻读:</p>
+<blockquote>
+<p>(“Phantom”): SQL-transaction T1 reads the set of rows N<br>
+that satisfy some . SQL-transaction T2 then<br>
+executes SQL-statements that generate one or more rows that<br>
+satisfy the used by SQL-transaction T1. If<br>
+SQL-transaction T1 then repeats the initial read with the same<br>
+, it obtains a different collection of rows.</p>
+</blockquote>
+<p>翻译一下：</p>
+<ul>
+<li>事务 T1 读取一组满足某些 &lt;搜索条件&gt; 的数据。</li>
+<li>事务 T2 创建了满足 T1 的 &lt;搜索条件&gt; 的数据项并提交。</li>
+<li>如果 T1 用相同的&lt;搜索条件&gt;再次读取，得到一组不同于第一次读取的数据。这就叫幻读。</li>
+</ul>
+<p>例子如下:</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,3,4]</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>insert into t(a) values (2);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,2,3,4]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>我们可以看到， Txn1最后获取到结果比原来的多一行。 也即是说，我们第一次读和第二次读取结果应该一样，都应该是2，3，4。这个定义怎么这么像 A2(<strong>SQL-92中的P2</strong>)（不可重复度）被？我们再来拿A2的定义看一下：</p>
+<blockquote>
+<p>P2(A2) (Non-repeatable or Fuzzy Read): Transaction T1 reads a data item. Another transaction T2 then modifies or deletes that data item and commits. If T1 then attempts to reread the data item, it receives a modified value or discovers that the data item has been deleted.</p>
+</blockquote>
+<p>注意和幻读定义的两个不同：</p>
+<ul>
+<li>幻读定义中有 &lt; search condition &gt;</li>
+<li>幻读定义中 T2 是“创建数据”，不可重复读的定义中 T2 是修改或者删除数据</li>
+</ul>
+<p>在满足 **&lt; search condition &gt;**的范围内，修改和删除数据必定是对已经存在的数据行操作，而创建数据则意味着创建之前这个数据项是不存在的。“创建数据”不仅是 insert，还包括 update。update 把本来不满足谓词范围的数据项更新成满足谓词范围的数据项，比如：谓词范围是 a&gt;1 and a&lt;5，update a=2 where a=6 就是这样的情况。</p>
+<p>显然，这样定义幻读是不合适的。对于A3和扩展P3的来说</p>
+<ul>
+<li>P3: r1[P]…w2[y in P]…((c1 or a1) and (c2 or a2) any order)</li>
+<li>A3: r1[P]…w2[y in P]…c2…r1[P]…c1</li>
+</ul>
+<p>A3 的定义强调Txn2 提交后 r1 再去查询谓词，得到结果集不符合才算是幻读。这样是有问题的，下看面的例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>tt是员工表</span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tt;</span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="operator">|</span> name     <span class="operator">|</span> department <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="operator">|</span> zhangsan <span class="operator">|</span> developer  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> lisi     <span class="operator">|</span> developer  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">----------+------------+</span></span><br><span class="line"><span class="number">2</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>tt_count是各部门人数统计表</span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tt_count;</span><br><span class="line"><span class="operator">+</span><span class="comment">------------+--------+</span></span><br><span class="line"><span class="operator">|</span> department <span class="operator">|</span> number <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------+--------+</span></span><br><span class="line"><span class="operator">|</span> developer  <span class="operator">|</span>      <span class="number">2</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------------+--------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+<p>查询序列</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>select name from tt where department = ‘developer’ )[zhangsan,lisi ]</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>insert tt(name, department) values(‘wangwu’,‘developer’);</td>
+</tr>
+<tr>
+<td>…</td>
+<td>update tt_count set number = number + 1 where department = ‘developer’</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>select number from tt_count where department = ‘developer’ )[3 ]</td>
+<td></td>
+</tr>
+<tr>
+<td>commit</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>上述的例子当中，Txn1 并没有去查询所谓的谓词，但是依然出现了tt_count表中的 <code>developer 的number = 3</code>, 因此，按照A3的定义来说是有问题的，如果我们用P3广义的来解释，只要 <code>insert tt(name, department) values('wangwu','developer')</code> 这条语句成功，那就算是幻读了。这样是可以解释通的。</p>
+<p>这也是 P3 定义的由来，只要事务2对事务1的谓词范围进行了写入（写入成功），不管后面事务1做什么查询，都算是幻读。</p>
+<p>幻读的另外一个例子：</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,3,4]</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>update set a = 2 where a = 6);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>select a from t where a &gt; 1 and a &lt; 5&gt;)[result:2,2,3,4]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>再直观点讲（个人解读），不可重复读是说读的结果的行数不变或者减少，结果的内容发生变化；而幻读呢，就是读的结果的行数变多了。这就是<strong>SQL-92</strong> 定义的幻读。但是<strong>Critique</strong>认为这样定义幻读是不对的，论文认为幻读强调的是两次相同查询不同的数据，因此把删除一行，也就是数据变少，也应该属于幻读行列。</p>
+<p>具体原文如下：</p>
+<blockquote>
+<p>One important note is that ANSI SQL P3 only prohibits inserts (and updates, according to some interpretations) to a predicate whereas the definition of P3 above prohibits any write satisfying the predicate once the predicate has been read — the write could be an insert, update, or delete.</p>
+</blockquote>
+<p>有了幻读较少数据的这个补充，我们来讨论另外一个case:</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>select a from t where a = 1)[result:2]</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>delete from t where a = 1);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit</td>
+</tr>
+<tr>
+<td>select a from t where a = 1)[result:[]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>按照谓词查询一个数据，按照上面说的<strong>Critique</strong> 对P3的定义，这个case应该不仅满足P3也同时满足P2,那么问题又来了，这到底算是那个case?<br>
+在标准中有如下定义：</p>
+<blockquote>
+<p>p2 Another transaction T2 then modifies or <strong>deletes</strong> that data item</p>
+</blockquote>
+<blockquote>
+<p>p3 the write could be an insert, update, or <strong>delete</strong></p>
+</blockquote>
+<p>由于标准中幻读和脏读的定义中核心点的区分就是，一个是 date item 的变化，一个是对Data Set的变化，上面的case可以有两种解读, 就是返回的结果是一个 data item 还是一个 data set？</p>
+<p>根据前文知道，a = 1 在where之后，可以理解为谓词：Predicate， 严格来说，所有的查询条件都属于谓词；而相对的，在 KV 存储引擎中直接读取某个 key 的行为则称为 item。然而关系型数据库在 KV 之上还有 SQL 层，SQL 层即使是读取某个 key 也是通过一些查询条件（predicate）来进行描述的，当我们在 SQL 层面之上讨论是 predicate 还是 item 的时候，需要考虑它是否是一个点查询。</p>
+<p>点查询是一种查找数据的方法，通过建立好的索引去定位数据的 key，一般能够用非常高的效率查找到所需的数据，其查询的过程和读取某个 key 相似，所以本文的观点认为：点查询是第一次查询返回为data item类型的查询。其他查询均是 predicate 类型的查询条件。明白这个之后，我们可以回答这个问题：上面的case是不P2。</p>
+<p>当三个原始异常的坑填补上之后，我们再来看隔离级别：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642757861458.png" alt></p>
+<h4 id="增加P0">增加P0</h4>
+<p><strong>ANSI SQL-92</strong> 在定义异常的时候忽略了一个比较低级的异常现象， 先看定义：</p>
+<ul>
+<li>P0: w1[x]…w2[x]…((c1 or a1) and (c2 or a2) in any order)</li>
+</ul>
+<p>看一下例子：</p>
+<table>
+<thead>
+<tr>
+<th>Txn1</th>
+<th>Txn2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td>w(x,2)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td>begin</td>
+</tr>
+<tr>
+<td>…</td>
+<td>w(x,3)</td>
+</tr>
+<tr>
+<td></td>
+<td>…</td>
+</tr>
+<tr>
+<td>commit(abort)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>T1写入和提交之间，T2趁机写入别的的数据。能带来的后果为两个，导致T1的更新丢失了（没错，脏写有时候会被归为丢失更新。）</p>
+<ul>
+<li>1、不能保证数据的一致性。</li>
+<li>2、回滚异常（设定x初始值为0， 当T1发生异常要回滚，是回滚到3还是回滚到0？）</li>
+</ul>
+<p>讲到这里你获取会奇怪，两个事务同时写X。同时写X加锁不就好了？管谁写，写成功就好了，为啥这也定义？是的，如果给x记上锁，那就意味着我想对这个序列串行化处理，串行化是我们后边隔离级别要讨论的事情，我们这里只谈问题，不谈解决办法，毕竟只有知道有问题在哪，我们才能解决不是。</p>
+<h3 id="重新定义隔离级别">重新定义隔离级别</h3>
+<p>至此，四个新的定义出现了, 注意这里一个点，就是删掉了c2和a2,既然我们不强第二个调事务终止，所以就没有必要强调第二个事务提交或者回滚。但是我们必须要保留第一个事务的提交或者回滚，来却确保一个事务的操作会影响另一个事务操作。</p>
+<ul>
+<li>P0: w1[x]…w2[x]…(c1 or a1) (Dirty Write)</li>
+<li>P1: w1[x]…r2[x]…(c1 or a1) (Dirty Read)</li>
+<li>P2: r1[x]…w2[x]…(c1 or a1) (Fuzzy or Non-Repeatable Read)</li>
+<li>P3: r1[P]…w2[y in P]…(c1 or a1) (Phantom)</li>
+</ul>
+<p>并且用广义的定义重新描述了ANSI隔离级别：</p>
+<p><img src="/article/distributed-transaction-1/distributed-transaction-1-1642766870162.png" alt></p>
+<p>然后根据P0-P3的容忍度补充了标准内的隔离级别。根据上面的新定义的图示，有了PO之后，感觉这个标准更加完善了，但是依旧有些异常现象不在这四种之内，比如<strong>P4,P4C</strong>之类的。我们下一篇文章在谈论。</p>
+<p>下一篇文章，我会根据基于ANSI锁调度，分析上表中的隔离级别是如何实现的。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.modb.pro/db/88214">关于 MySQL Repeatable Read Isolation 常见的三个误区</a></li>
+<li><a href="https://www.cnblogs.com/ivan-uno/p/8274355.html">再谈数据库事务隔离性</a></li>
+<li><a href="https://juejin.cn/post/6844903854857781262">Mysql RR级别依然可能丢失更新数据</a></li>
+<li><a href="https://segmentfault.com/a/1190000023045329">事务隔离级别，看这一篇就够了</a></li>
+<li><a href="https://pingcap.com/zh/blog/take-you-through-the-isolation-level-of-tidb-1">Transaction management：两阶段锁（two-phase locking</a></li>
+<li><a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.225.2581&amp;rep=rep1&amp;type=pdf">Correctness Criteria Beyond Serializability</a></li>
+<li><a href="https://hw311.me/zh/study-notes/database/2019/02/24/transaction-consistency-serializability/#fn:1">Transaction management：可串行性（serializability）</a></li>
+<li><a href="https://lenshood.github.io/2020/11/30/isolation-level-with-mysql/">MySQL(InnoDB) 独特的 Repeatable Read 隔离级别</a></li>
+<li><a href="http://blog.kongfy.com/2019/03/serializable/">可串行化（Serializable）：理想和现实</a></li>
+<li><a href="https://segmentfault.com/a/1190000040548324">技术分享 | 隔离级别：正确理解幻读</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-95-51.pdf">A Critique of ANSI SQL Isolation Levels</a></li>
+<li><a href="https://niceaz.com/2019/03/24/isolation-2pl-mvcc/">数据库的隔离级别与2PL/MVCC算法原理</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/369953647">《A Critique of ANSI SQL Isolation Levels》论文导读</a></li>
+<li><a href="https://zz-jason.github.io/posts/ansi-sql-isolation-levels/">论文阅读：《A Critique of ANSI SQL Isolation Levels》</a></li>
+<li><a href="http://oserror.com/backend/transaction-isolation-second/">事务隔离（二）：基于加锁方式的事务隔离原理</a></li>
+<li><a href="https://blog.csdn.net/matrixyy/article/details/43115589">数据库事务的ACID隔离级中P0（脏写）和P4（更新丢失）的区别</a></li>
+</ul>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/distributed-transaction-1-2/" data-toggle="tooltip" data-placement="top" title="事务详解（2）-- 再谈隔离级别">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/attempt/" data-toggle="tooltip" data-placement="top" title="开源重试组件Attempt">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%A6%82%E8%A6%81"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概要</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">事务概述</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">什么是事务</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">事务的四大特性ACID</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%88Atomicity%EF%BC%89"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">原子性（Atomicity）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%88Consistency%EF%BC%89"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">一致性（Consistency） :</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7%EF%BC%88Isolation%EF%BC%89"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">隔离性（Isolation）:</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%8C%81%E4%B9%85%E6%80%A7%EF%BC%88Durability-%EF%BC%9A"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">持久性（Durability)：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">事务的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BA%8B%E5%8A%A1%E5%B9%B6%E5%8F%91%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">事务并发的问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E3%80%901%E3%80%91%E8%84%8F%E8%AF%BB%EF%BC%88%E8%AF%BB%E5%8F%96%E6%9C%AA%E6%8F%90%E4%BA%A4%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="toc-nav-number">5.1.1.</span> <span class="toc-nav-text">【1】脏读（读取未提交数据）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E3%80%902%E3%80%91%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%EF%BC%88%E5%89%8D%E5%90%8E%E5%A4%9A%E6%AC%A1%E8%AF%BB%E5%8F%96%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%86%85%E5%AE%B9%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%89"><span class="toc-nav-number">5.1.2.</span> <span class="toc-nav-text">【2】不可重复读（前后多次读取，数据内容不一致）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E3%80%903%E3%80%91%E5%B9%BB%E8%AF%BB%EF%BC%88%E5%89%8D%E5%90%8E%E5%A4%9A%E6%AC%A1%E8%AF%BB%E5%8F%96%EF%BC%8C%E6%95%B0%E6%8D%AE%E6%80%BB%E9%87%8F%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%89"><span class="toc-nav-number">5.1.3.</span> <span class="toc-nav-text">【3】幻读（前后多次读取，数据总量不一致）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">数据库的隔离级别</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Read-Uncommitted-%E8%AF%BB%E6%9C%AA%E6%8F%90%E4%BA%A4%EF%BC%9A"><span class="toc-nav-number">5.2.1.</span> <span class="toc-nav-text">Read Uncommitted 读未提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Read-Committed-%E8%AF%BB%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%9A"><span class="toc-nav-number">5.2.2.</span> <span class="toc-nav-text">Read Committed 读已提交：</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Repeatable-Read-%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="toc-nav-number">5.2.3.</span> <span class="toc-nav-text">Repeatable Read 重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Serializable-%E5%8F%AF%E4%B8%B2%E8%A1%8C%E5%8C%96%EF%BC%9A"><span class="toc-nav-number">5.2.4.</span> <span class="toc-nav-text">Serializable 可串行化：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">隔离级别的本质</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%A0%87%E5%87%86%E7%9A%84%E6%8F%90%E5%87%BA"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text">标准的提出</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E6%9C%AC%E8%B4%A8-2"><span class="toc-nav-number">5.5.</span> <span class="toc-nav-text">隔离级别的本质</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E8%B5%B7%E6%BA%90"><span class="toc-nav-number">5.6.</span> <span class="toc-nav-text">隔离级别起源</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">隔离级别标准的提出</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">被质疑SQL-92标准</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%A0%87%E5%87%86%E7%9A%84%E7%BC%BA%E9%99%B7"><span class="toc-nav-number">7.1.</span> <span class="toc-nav-text">标准的缺陷</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%A0%87%E5%87%86%E7%9A%84%E6%89%B9%E5%88%A4"><span class="toc-nav-number">7.2.</span> <span class="toc-nav-text">标准的批判</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%A0%87%E5%87%86%E7%9A%84%E4%BF%AE%E8%AE%A2%E4%B9%8B%E8%B7%AF"><span class="toc-nav-number">7.3.</span> <span class="toc-nav-text">标准的修订之路</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">对SQL-92标准中的异常定义规范化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#ANSI-SQL-92-%E5%AF%B9Phantom%E7%9A%84%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89"><span class="toc-nav-number">8.1.</span> <span class="toc-nav-text">ANSI SQL-92 对Phantom的重新定义</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89P1%E3%80%81P2%E3%80%81P3"><span class="toc-nav-number">8.2.</span> <span class="toc-nav-text">重新定义P1、P2、P3</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#P3%EF%BC%88%E5%B9%BB%E8%AF%BB%E7%9A%84%E5%9D%91%EF%BC%89%E7%9A%84%E8%A1%A5%E5%85%85"><span class="toc-nav-number">8.3.</span> <span class="toc-nav-text">P3（幻读的坑）的补充</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#%E5%A2%9E%E5%8A%A0P0"><span class="toc-nav-number">8.3.1.</span> <span class="toc-nav-text">增加P0</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-nav-number">8.3.2.</span> <span class="toc-nav-text">重新定义隔离级别</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%8F%82%E8%80%83"><span class="toc-nav-number">8.4.</span> <span class="toc-nav-text">参考</span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                        
+                          <a class="tag" href="/tags/#事物" title="事物">事物</a>
+                        
+                          <a class="tag" href="/tags/#MYSQL" title="MYSQL">MYSQL</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2026 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- Custom Theme search -->
+
+<script src="/js/search.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://example.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>
