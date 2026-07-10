@@ -250,12 +250,43 @@
 
 <div class="post-preview">
 
+    <a href="/article/k8s-cluster-setup-2/">
+        <h2 class="post-title">
+            K8S 搭建指南(二)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/29/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                
+            </h3>
+        <div class="post-content-preview">
+            前言在本搭建指南的第一部分中，我们从零开始，详细介绍了两种主流的 Kubernetes 集群搭建方法。首先，我们探讨了如何使用 kubeadm 工具快速部署一个功能完备的集群，这个过程涵盖了从环境准备、容器运行时安装到集群初始化的每一个步骤。随后，我们深入到手动二进制部署的细节，构建了一个高可用的生产级集群。这包括：手动签发所有 TLS 证书，搭建高可用 etcd 集群，配置 keepali...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2026-07-08
+        </p>
+        <div class="tags">
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/k8s-cluster-setup-1/">
         <h2 class="post-title">
             K8S 搭建指南(一)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/46/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/52/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -264,11 +295,8 @@
             </h3>
         <div class="post-content-preview">
             K8S 搭建指南
-
-第一部分 前置操作
-设置静态IP地址
-使用mutui的方法重置网络配置
-1234567891011方法三：使用 nmtui 图形化工具 (最简单) 在终端输入：nmtui选择 &quot;Edit a connection&quot;。选择你的网卡并按 Enter。将 IPv4 CONFIGURATION 从 &lt;Automatic&gt; 改为 &lt;Manual...
+第一部分 前置操作设置静态IP地址
+使用mutui的方法重置网络配置123456789在终端输入：nmtui选择 &quot;Edit a connection&quot;。选择你的网卡并按 Enter。将 IPv4 CONFIGURATION 从 &lt;Automatic&gt; 改为 &lt;Manual&gt;。点击 &lt;Show&gt; 展开，填写 Addre...
         </div>
     </a>
     
@@ -286,23 +314,20 @@
 
 <div class="post-preview">
 
-    <a href="/article/distributed-transaction-2/">
+    <a href="/article/distributed-transaction-cap/">
         <h2 class="post-title">
-            分布式事务二
+            分布式事务一
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/73/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
         <h3 class="post-subtitle-my">
-                分布式事务概述
+                CAP和BASE理论
             </h3>
         <div class="post-content-preview">
-            基础理论
-分布式事务
-单机的事务我已经在我的隔离级别系列文章中总结过，分布式事务是针对分布式系统中对数据的修改发生的逻辑上满足事务特性的操作序列的要求。
-分布式事务指的是事务的参与者、事务所在的服务器、涉及的资源服务器以及事务管理器等分别位于不同分布式系统的不同服务或数据库节点上。简单来说，分布式事务就是一个在不同环境(比如不同的数据库、不同的服务器)下运行的整体事务。这个整体事务包含一个或...
+            基础理论CAP 理论CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也称为 Brewer 定理，起源于在 2000 年 7 月，是加州大学伯克利分校的 Eric Brewer 教授于“ACM 分布式计算原理研讨会（PODC）”上提出的一个猜想。两年之后，麻省理工学院的 Seth Gilbert 和 Nancy Lync...
         </div>
     </a>
     
@@ -320,22 +345,21 @@
 
 <div class="post-preview">
 
-    <a href="/article/distributed-transaction-cap/">
+    <a href="/article/distributed-transaction-2/">
         <h2 class="post-title">
-            分布式事务一
+            分布式事务二
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/18/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/48/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
         <h3 class="post-subtitle-my">
-                CAP和BASE理论
+                分布式事务概述
             </h3>
         <div class="post-content-preview">
-            基础理论
-CAP 理论
-CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也称为 Brewer 定理，起源于在 2000 年 7 月，是加州大学伯克利分校的 Eric Brewer 教授于“ACM 分布式计算原理研讨会（PODC）”上提出的一个猜想。两年之后，麻省理工学院的 Seth Gilbert 和 Nancy Ly...
+            基础理论分布式事务单机的事务我已经在我的隔离级别系列文章中总结过，分布式事务是针对分布式系统中对数据的修改发生的逻辑上满足事务特性的操作序列的要求。
+分布式事务指的是事务的参与者、事务所在的服务器、涉及的资源服务器以及事务管理器等分别位于不同分布式系统的不同服务或数据库节点上。简单来说，分布式事务就是一个在不同环境(比如不同的数据库、不同的服务器)下运行的整体事务。这个整体事务包含一个或者多...
         </div>
     </a>
     
@@ -358,7 +382,7 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
             事务详解（2）-- 再谈隔离级别
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/26/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/68/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -366,9 +390,7 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
                 基于锁调度的隔离级别
             </h3>
         <div class="post-content-preview">
-            前言
-在上一篇文章当中，我们讨论了事务的一般理论以及事务的隔离级别的起源，并讨论了SQL-92标准的问题的修正的论文 「A Critique of ANSI SQL Isolation Levels」。
-改论文在标准的基础上推广出了异常现象P1-P3广义的解释，然后根据A1-A3的容忍度补充了标准内的隔离级别P0的个隔离级别。本文继续讨论 「A Critique of ANSI SQL Is...
+            前言在上一篇文章当中，我们讨论了事务的一般理论以及事务的隔离级别的起源，并讨论了SQL-92标准的问题的修正的论文 「A Critique of ANSI SQL Isolation Levels」。改论文在标准的基础上推广出了异常现象P1-P3广义的解释，然后根据A1-A3的容忍度补充了标准内的隔离级别P0的个隔离级别。本文继续讨论 「A Critique of ANSI SQL Isol...
         </div>
     </a>
     
@@ -397,7 +419,7 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
             事务详解（1）-- 隔离级别
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/1/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/7/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -405,11 +427,8 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
                 【A Critique of ANSI SQL Isolation Levels】详解
             </h3>
         <div class="post-content-preview">
-            概要
-本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。
-事务概述
-什么是事务
-事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步...
+            概要本文主要讨论的是事务隔离级别，从事务隔离级别的起源，标准和本质来深入分析事务并发控制下的隔离级别的原理和实现。阅读文本前，你需要具备事务的一些基本知识，本文的第一章节会回顾我们所熟知的有关隔离级别和事务的基础知识。如果你了解事务的一般基础知识，你可以跳过第一章节，直接阅读第二章节。
+事务概述什么是事务事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生...
         </div>
     </a>
     
@@ -438,7 +457,7 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
             开源重试组件Attempt
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/85/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -446,10 +465,8 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
                 
             </h3>
         <div class="post-content-preview">
-            开源
-想做开源软件很久了，奈何一直没有启动起来。一来是没有契机，二来也没有想法。2020年由于一些变故，我从某团离职后来到了新公司。负责一个To B业务, 由于并发量和我以前负责的项目没法比，同时又是个to B的项目，因此
-省去了火急火燎的去处理线上问题的时间。因此，更多的时间我拿来思考和总结。
-同时也参加了软件架构师的培训中。虽然各大互联网企业对软考证书似乎并不care，但是我的目的不仅仅...
+            开源想做开源软件很久了，奈何一直没有启动起来。一来是没有契机，二来也没有想法。2020年由于一些变故，我从某团离职后来到了新公司。负责一个To B业务, 由于并发量和我以前负责的项目没法比，同时又是个to B的项目，因此省去了火急火燎的去处理线上问题的时间。因此，更多的时间我拿来思考和总结。
+同时也参加了软件架构师的培训中。虽然各大互联网企业对软考证书似乎并不care，但是我的目的不仅仅如此...
         </div>
     </a>
     
@@ -472,7 +489,7 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
             Java并发编程之volatile关键字
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/19/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/34/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -480,9 +497,8 @@ CAP 定理（Consistency、Availability、Partition Tolerance Theorem），也�
                 从Hotspot分析volatile的实现原理
             </h3>
         <div class="post-content-preview">
-            概述
-volatile关键字是Java并发编程当中不可或缺的一环，维序着Java共享变量的可见性和有序性。由于volatile关键字是与Java的内存模型有关的，因此在讲述volatile关键之前，我们先来回顾一下volatile的应用场景。
-Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不同，但是必遵循一定的规范，来统一Java编程的基本原则，这个规范被成为Java虚拟机规范...
+            概述volatile关键字是Java并发编程当中不可或缺的一环，维序着Java共享变量的可见性和有序性。由于volatile关键字是与Java的内存模型有关的，因此在讲述volatile关键之前，我们先来回顾一下volatile的应用场景。
+Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不同，但是必遵循一定的规范，来统一Java编程的基本原则，这个规范被成为Java虚拟机规范。...
         </div>
     </a>
     
@@ -509,7 +525,7 @@ Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不�
             Java内存模型(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/81/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/40/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -517,16 +533,13 @@ Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不�
                 编译器重排序
             </h3>
         <div class="post-content-preview">
-            前言
-在我的Java内存模型(1)JMM是什么 中我已经阐述了JMM是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
-内存模型在JVM的应用
-首先，我们再来重温一下，三种重排序。
-重排序
-指令重排序:在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
+            前言在我的Java内存模型(1)JMM是什么 中我已经阐述了JMM是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
+内存模型在JVM的应用首先，我们再来重温一下，三种重排序。
+重排序指令重排序:在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
 
 编译器优化的重排序
 
-编译器在不改变单线程程序语义的前提下（代码中不...
+编译器在不改变单线程程序语义的前提下（代码中不包含s...
         </div>
     </a>
     
@@ -555,7 +568,7 @@ Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不�
             CPU缓存一致性协议
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/34/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/45/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -563,12 +576,7 @@ Java是跨平台的，因此针对于不同平台，JVM实现方式也有所不�
                 深入理解内存屏障
             </h3>
         <div class="post-content-preview">
-            CPU 结构
-现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。
-CPU缓存有多级缓存，比如L1, L2, L3等：
-L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。
-L2容量比L1大，速度比L1慢，每个核都有L2缓存。
-...
+            CPU 结构现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。CPU缓存有多级缓存，比如L1, L2, L3等：L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。L2容量比L1大，速度比L1慢，每个核都有L2缓存。L3容量最...
         </div>
     </a>
     
@@ -585,40 +593,6 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
               <a href="/tags/#并发系统" title="并发系统">并发系统</a>
             
               <a href="/tags/#内存屏障" title="内存屏障">内存屏障</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/why-memory-barriers-2/">
-        <h2 class="post-title">
-            CPU缓存一致性协议（2）
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/71/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                缓存一致性性模型
-            </h3>
-        <div class="post-content-preview">
-            内存模型
-内存模型的分类
-内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。
-在分析之前，我们先定义一个基本的内存模型，以这个内存模型为...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2021-06-28
-        </p>
-        <div class="tags">
             
         </div>
     
@@ -734,11 +708,11 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
     <ul>
       
         <li>
-          <a href="/article/k8s-cluster-setup-1/">K8S 搭建指南(一)</a>
+          <a href="/article/k8s-cluster-setup-2/">K8S 搭建指南(二)</a>
         </li>
       
         <li>
-          <a href="/article/distributed-transaction-2/">分布式事务二</a>
+          <a href="/article/k8s-cluster-setup-1/">K8S 搭建指南(一)</a>
         </li>
       
         <li>
@@ -746,11 +720,11 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
         </li>
       
         <li>
-          <a href="/article/distributed-transaction-1-2/">事务详解（2）-- 再谈隔离级别</a>
+          <a href="/article/distributed-transaction-2/">分布式事务二</a>
         </li>
       
         <li>
-          <a href="/article/distributed-transaction-1/">事务详解（1）-- 隔离级别</a>
+          <a href="/article/distributed-transaction-1-2/">事务详解（2）-- 再谈隔离级别</a>
         </li>
       
     </ul>
@@ -761,7 +735,7 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -834,19 +808,19 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
             
         
             
-            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
-            
-        
-            
             <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
             
         
             
         
             
+            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
         
             
             <a href="/tags/#内存模型篇" title="内存模型篇" rel="3">内存模型篇</a>
+            
+        
             
         
             
@@ -861,18 +835,6 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
         
             
         
-            
-        
-            
-            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
-            
-        
-            
-            <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
-            
-        
-            
-            <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
             
         
             
@@ -905,6 +867,18 @@ L2容量比L1大，速度比L1慢，每个核都有L2缓存。
         
             
         
+            
+        
+            
+            <a href="/tags/#大数据" title="大数据" rel="2">大数据</a>
+            
+        
+            
+            <a href="/tags/#空间亚线性算法" title="空间亚线性算法" rel="2">空间亚线性算法</a>
+            
+        
+            
+            <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
             
         
             
