@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          K8S 搭建指南(三) - 西木 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/article/k8s-cluster-setup-3/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS --> 
+    
+<link rel="stylesheet" href="/css/beantech.min.css">
+
+
+    
+<link rel="stylesheet" href="/css/donate.css">
+
+
+    
+<link rel="stylesheet" href="/css/search.css">
+
+    
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/widget.css">
+
+
+    
+<link rel="stylesheet" href="/css/rocket.css">
+
+
+    
+<link rel="stylesheet" href="/css/signature.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script>hljs.initHighlightingOnLoad();</script>
+<meta name="generator" content="Hexo 8.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/archive.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                        </div>
+                        <h1>K8S 搭建指南(三)</h1>
+                        <h2 class="subheading">部署第一个高可用的应用到K8S集群</h2>
+                        <span class="meta">
+                            Posted by Jason Lee on
+                            2026-07-10
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">木西笔记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1>概述</h1>
+<p>上节我们介绍了搭建自己的 name-space, 接下来我们准备在我们的 namespace 上部署我们的应用，首先我们要创建自己的应用。</p>
+<h1>编写我们的k8s demo 应用</h1>
+<p>请参考： <a href="https://github.com/IceFrozen/springboot-k8s-demo">https://github.com/IceFrozen/springboot-k8s-demo</a></p>
+<h2 id="登录我们的-Docker-Hub-先创建我们的账号">登录我们的 Docker Hub 先创建我们的账号</h2>
+<ol>
+<li>登录<br>
+<img src="/article/k8s-cluster-setup-3/1.png" alt></li>
+<li>选择仓库<br>
+<img src="/article/k8s-cluster-setup-3/2.png" alt></li>
+<li>创建仓库名字 springboot-test<br>
+<img src="/article/k8s-cluster-setup-3/2.png" alt></li>
+</ol>
+<h2 id="部署我们的应用">部署我们的应用</h2>
+<p>想要部署我们的应用，我们首先需要一个拥有 docker 的环境，在上两两篇文章中，我们搭建了一个集群，这里我们使用另外一台新的机器，我们命名为k8srepo， ip 设置为 192.168.3.110 , 同样的我们也使用红帽 9 系统作为，由于我们已经安装了 podman, 这里我们需要让 podman 变成 docker 命令来兼容 docker的命令以便可以 运行springboot-k8s-demo</p>
+<p>我在一个新的 node 中，注意一下 node 并不是k8s集群的节点，这样以来我们避免了一些软件和环境的冲突</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 确保这些东西</span></span><br><span class="line">dnf install -y podman podman-plugins</span><br><span class="line">dnf install -y podman podman-plugins</span><br><span class="line">dnf install -y python3-pip</span><br><span class="line">dnf install -y java17</span><br><span class="line"><span class="comment"># 增加repo</span></span><br><span class="line">dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line"></span><br><span class="line"><span class="built_in">ln</span> -s /usr/bin/podman /usr/local/bin/docker</span><br><span class="line"><span class="built_in">ln</span> -s /usr/local/bin/podman-compose /usr/local/bin/docker-compose</span><br><span class="line"></span><br><span class="line"><span class="comment"># build package 并且上传到 docker hub  </span></span><br><span class="line">git <span class="built_in">clone</span>  https://github.com/IceFrozen/springboot-k8s-demo.git</span><br><span class="line"><span class="comment"># use your docker hub user name.</span></span><br><span class="line"><span class="built_in">cd</span> springboot-k8s-demo</span><br><span class="line"><span class="comment"># 将 DOCKERHUB_USERNAME 修改成你的用户名</span></span><br><span class="line">vim  springboot-k8s-demo/WebService/deploy.sh </span><br><span class="line"></span><br><span class="line"><span class="comment"># login your docker hub </span></span><br><span class="line">docker login </span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改版本 然后执行一下命令</span></span><br><span class="line">./Build.sh dev</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果 docker push 失败可是设置一下代理 HTTPS_PROXY 替换成你的代理然后 push </span></span><br><span class="line">HTTPS_PROXY=http://192.168.3.240:7897 HTTP_PROXY=http://192.168.3.240:7897 docker push --format docker &lt;your docker hub username&gt;/springboot-test:latest</span><br></pre></td></tr></table></figure>
+<p>之后可以发现，我们的镜像已经 push 成功<br>
+<img src="/article/k8s-cluster-setup-3/4.png" alt></p>
+<p>接下来我们可以用这个镜像来测试我们的应用，这里这个应用有三个 API</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">GET /info</span><br><span class="line">Body:</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,</span><br><span class="line">  <span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,</span><br><span class="line">  <span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,</span><br><span class="line">  <span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,</span><br><span class="line">  <span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">---</span><br><span class="line">GET /hello</span><br><span class="line">Body:</span><br><span class="line">hello world</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">GET /memory</span><br><span class="line">Body:</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;usedMemoryMB&quot;</span>:102,</span><br><span class="line">  <span class="string">&quot;totalMemoryMB&quot;</span>:512,</span><br><span class="line">  <span class="string">&quot;maxMemoryMB&quot;</span>:1024,</span><br><span class="line">  <span class="string">&quot;freeMemoryMB&quot;</span>:409</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="部署一个应用到k8s集群">部署一个应用到k8s集群</h2>
+<p>我们在 k8snode 节点（注意，这个节点是我们创建自己的空间的时候所用的节点，是一个 k8s worker 节点，并且我们已经配置的 kubectl name spaces 是我们自己的 space）<br>
+file: springboot-test-nodePort.yaml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># file springboot-test-nodePort.yaml</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: springboot-test</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: springboot-test</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: springboot-test</span><br><span class="line">    spec:</span><br><span class="line">      nodeSelector:</span><br><span class="line">        node-role.kubernetes.io/worker: <span class="string">&quot;&quot;</span></span><br><span class="line">      containers:</span><br><span class="line">      - name: springboot-app</span><br><span class="line">        image: lizhipeng/springboot-test  <span class="comment"># 这就是我们镜像</span></span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8081</span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: springboot-test-service</span><br><span class="line">  namespace: zhipeng-space</span><br><span class="line">spec:</span><br><span class="line">  <span class="built_in">type</span>: NodePort</span><br><span class="line">  selector:</span><br><span class="line">    app: springboot-test</span><br><span class="line">  ports:</span><br><span class="line">    - port: 80</span><br><span class="line">      targetPort: 8081</span><br><span class="line">      nodePort: 30088  <span class="comment"># 服务使用 nodeport 类型</span></span><br></pre></td></tr></table></figure>
+<p>创建我们的应用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode4 yaml]# kubectl apply -f springboot-test-nodePort.yaml</span><br><span class="line">deployment.apps/springboot-test created</span><br><span class="line">service/springboot-test-service created</span><br><span class="line">[root@k8snode4 containerd.service.d]# kubectl get pods -o wide</span><br><span class="line">NAME                              READY   STATUS    RESTARTS   AGE     IP              NODE       NOMINATED NODE   READINESS GATES</span><br><span class="line">springboot-test-8d957c564-7mmrn   1/1     Running   0          2m10s   10.244.192.68   k8snode4   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">[root@k8snode4 containerd.service.d]# kubectl get service -o wide</span><br><span class="line">NAME                      TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE     SELECTOR</span><br><span class="line">springboot-test-service   NodePort   10.96.18.208   &lt;none&gt;        80:30088/TCP   2m24s   app=springboot-test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="排查问题">排查问题</h2>
+<p>当然，如果我们发现除了错，可以使用 kubectl describe 来排查错误 例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe pod springboot-test-service—&lt;<span class="built_in">id</span>&gt; -n zhipeng-space</span><br><span class="line"><span class="comment">## 输出如下，这里仅仅做mock数据的的输出，不是实际出现的问题</span></span><br><span class="line">vents:</span><br><span class="line">Type     Reason     Age   From               Message</span><br><span class="line">  ----     ------     ----  ----               -------</span><br><span class="line">Normal   Scheduled  63s   default-scheduler  Successfully assigned zhipeng-space/springboot-app-8569fc86f6-7d7wr to k8snode5</span><br><span class="line">Normal   Pulling    62s   kubelet            spec.containers&#123;springboot&#125;: Pulling image <span class="string">&quot;m9961014/springboot-k8s-demo:latest&quot;</span></span><br><span class="line">Warning  Failed     2s    kubelet            spec.containers&#123;springboot&#125;: Failed to pull image <span class="string">&quot;m9961014/springboot-k8s-demo:latest&quot;</span>: failed to pull and unpack image <span class="string">&quot;docker.io/m9961014/springboot-k8s-demo:latest&quot;</span>: failed to resolve image: unexpected status from HEAD request to https://docker.m.daocloud.io/v2/m9961014/springboot-k8s-demo/manifests/latest?ns=docker.io: 403 Forbidden</span><br><span class="line">Warning  Failed     2s    kubelet            spec.containers&#123;springboot&#125;: Error: ErrImagePull</span><br><span class="line">Normal   BackOff    1s    kubelet            spec.containers&#123;springboot&#125;: Back-off pulling image <span class="string">&quot;m9961014/springboot-k8s-demo:latest&quot;</span></span><br><span class="line">Warning  Failed     1s    kubelet            spec.containers&#123;springboot&#125;: Error: ImagePullBackOff</span><br><span class="line">[root@k8snode4 yaml]#</span><br></pre></td></tr></table></figure>
+<h2 id="测试服务">测试服务</h2>
+<table>
+<thead>
+<tr>
+<th>测试</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>curl 10.244.192.68:80</code></td>
+<td>Pod 本身是否正常</td>
+</tr>
+<tr>
+<td><code>curl 10.96.18.208:80</code></td>
+<td>Kubernetes Service 是否正常</td>
+</tr>
+<tr>
+<td><code>curl 192.168.3.124:30088</code></td>
+<td>NodePort 是否正常</td>
+</tr>
+<tr>
+<td>浏览器访问 <code>192.168.3.124:30088</code></td>
+<td>集群外部访问是否正常</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode4 yaml]# curl http://10.96.18.208:80/hello</span><br><span class="line">hello world[root@k8snode4 yaml]# curl http://10.96.18.208:80/info</span><br><span class="line">&#123;&quot;hostName&quot;:&quot;springboot-test-8d957c564-7mmrn&quot;,&quot;osVersion&quot;:&quot;5.14.0-611.5.1.el9_7.aarch64&quot;,&quot;canonicalHostName&quot;:&quot;springboot-test-8d957c564-7mmrn&quot;,&quot;javaVersion&quot;:&quot;17.0.19&quot;,&quot;osName&quot;:&quot;Linux&quot;&#125;[root@k8snode4 yaml]# curl http://k8snode4:30088/info</span><br><span class="line">&#123;&quot;hostName&quot;:&quot;springboot-test-8d957c564-7mmrn&quot;,&quot;osVersion&quot;:&quot;5.14.0-611.5.1.el9_7.aarch64&quot;,&quot;canonicalHostName&quot;:&quot;springboot-test-8d957c564-7mmrn&quot;,&quot;javaVersion&quot;:&quot;17.0.19&quot;,&quot;osName&quot;:&quot;Linux&quot;&#125;[root@k8snode4 yaml]#</span><br></pre></td></tr></table></figure>
+<h1>使用 CordDNS 来访问我们的服务</h1>
+<h2 id="使用默认域名访问我们的服务">使用默认域名访问我们的服务</h2>
+<p>当然我们也可以使用 K8s 内部的域名方式来访问我们的服务，针对于内部域名只是在我们 pod 内部使用的，原因在于我们安装了 coredns ，因此我们可以在我们的 pod 内部使用域名来访问我们的服务。</p>
+<p>kubectl exec -it <pod> – cat /etc/resolv.conf</pod></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">search zhipeng-space.svc.cluster.local svc.cluster.local cluster.local</span><br><span class="line">nameserver 10.96.0.2</span><br><span class="line">options ndots:5</span><br></pre></td></tr></table></figure>
+<p>所以 Pod 里直接用 Service 名即可（kubelet 的 clusterDNS: 10.96.0.2 已生效）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">springboot-test-service                                  <span class="comment"># 同 namespace，靠 search 域补全</span></span><br><span class="line">springboot-test-service.zhipeng.svc.cluster.local        <span class="comment"># 全限定名，推荐写全</span></span><br><span class="line">命名规则：</span><br><span class="line"></span><br><span class="line">&lt;service&gt;.&lt;namespace&gt;.svc.&lt;clusterDomain&gt;</span><br><span class="line">   │           │              └── cluster.local（kubeadm init 的 dnsDomain）</span><br><span class="line">   │           └── 你的 ns：zhipeng（你笔记里的 zhipeng-space）</span><br><span class="line">   └── Service 名，不是 Deployment 名！</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先我们需要进入到我们的 pod 内部 </span></span><br><span class="line">kubectl <span class="built_in">exec</span> -it springboot-test-8d957c564-7mmrn -n zhipeng-space -- /bin/bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行我们的便可以得到我们的服务信息</span></span><br><span class="line">curl http://springboot-test-service:80/info</span><br><span class="line"><span class="comment"># 因为我们的容器内没有安装 curl ，但是安装了 wget，因此我们使用 wget 来访问我们的服务</span></span><br><span class="line">wget http://springboot-test-service:80/info</span><br></pre></td></tr></table></figure>
+<p>测试如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="built_in">exec</span> -it springboot-test-8d957c564-7mmrn -n zhipeng-space -- /bin/bash</span><br><span class="line">springboot-test-8d957c564-7mmrn:/app# <span class="built_in">ls</span></span><br><span class="line">192e158           app-0.0.1.jar     deploy.sh         logs</span><br><span class="line">Dockerfile        conf              lib               start-service.sh</span><br><span class="line">springboot-test-8d957c564-7mmrn:/app# wget http://springboot-test-service/info</span><br><span class="line">Connecting to springboot-test-service (10.96.18.208:80)</span><br><span class="line">saving to <span class="string">&#x27;info&#x27;</span></span><br><span class="line">info                 100% |*************************************************************************************|   186  0:00:00 ETA</span><br><span class="line"><span class="string">&#x27;info&#x27;</span> saved</span><br><span class="line">springboot-test-8d957c564-7mmrn:/app# <span class="built_in">cat</span> info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;springboot-test-8d957c564-7mmrn:/app#</span><br></pre></td></tr></table></figure>
+<p>但是要注意的是，如果用 https 是无法访问通的，因为我们并没有暴漏 https 的端口，因此我们需要修改我们的 yaml 文件，添加 https 的端口，然后重新部署我们的应用。如何利用证书实现 https 的功能我们会放到下节解释。</p>
+<h2 id="在集群节点或者内部-POD上访问我们的服务-修改-resolv-conf的方式">在集群节点或者内部 POD上访问我们的服务(修改 resolv.conf的方式)</h2>
+<p>在pod 内部访问服务，同时我们也可在集群的节点上来通过域名访问服务。因为我们的节点的 /etc/resolv.conf 默认指向 192.168.3.1（网关 DNS），解析不了 cluster.local。只需要把 CoreDNS 加为第一 DNS 即可（ClusterIP 在节点上可达，因为 kube-proxy 在每个节点都写了转发规则）：这里有个需要注意的一点就是，当我们使用两个 dns的时候，注意节点的 options 参数，<br>
+一般情况下我们会这么加：<code>options ndots:5 timeout:1 attempts:2 single-request-reopen rotate </code><br>
+由于我们两个 dns 的解析是不同系统的，因此不可以增加 rotate 参数，否则会导致我们两个 dns 的解析是不同的，因此我们需要去掉 rotate 参数。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+<th>你当前场景的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ndots:5</code></td>
+<td>域名中 <code>.</code> 少于 5 个时，优先尝试 <code>search</code> 域；达到 5 个则更倾向直接查询</td>
+<td>Kubernetes DNS 常见配置</td>
+</tr>
+<tr>
+<td><code>timeout:1</code></td>
+<td>DNS 单次查询等待约 1 秒后超时</td>
+<td>DNS 故障时失败得比较快</td>
+</tr>
+<tr>
+<td><code>attempts:2</code></td>
+<td>DNS 查询失败后的重试次数</td>
+<td>最多进行多次尝试</td>
+</tr>
+<tr>
+<td><code>single-request-reopen</code></td>
+<td>A/AAAA 查询遇到部分 DNS/NAT 兼容问题时重新打开 socket</td>
+<td>一般可以保留，对 Kubernetes 没太大影响</td>
+</tr>
+<tr>
+<td><code>rotate</code></td>
+<td>多个 <code>nameserver</code> 之间轮换选择</td>
+<td><strong>你当前场景比较重要</strong>，可能导致一次走 CoreDNS，一次走 <code>192.168.3.1</code>（这个不要配置，去掉即可）</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份</span></span><br><span class="line"><span class="built_in">cp</span> /etc/resolv.conf /etc/resolv.conf.bak</span><br><span class="line"><span class="comment"># 更新 resolv.conf 并保持旧的 dns server:192.168.3.1 将新的添加第一位</span></span><br><span class="line">[root@k8snode4 yaml]# <span class="built_in">cat</span> &gt; /etc/resolv.conf &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">nameserver 10.96.0.2</span><br><span class="line">nameserver 192.168.3.1</span><br><span class="line"></span><br><span class="line">search zhipeng-space.svc.cluster.local svc.cluster.local cluster.local</span><br><span class="line">options ndots:5 <span class="built_in">timeout</span>:1 attempts:2 single-request-reopen</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">[root@k8snode4 yaml]# <span class="built_in">cat</span> /etc/resolv.conf</span><br><span class="line">nameserver 10.96.0.2</span><br><span class="line">nameserver 192.168.3.1</span><br><span class="line"></span><br><span class="line">search zhipeng-space.svc.cluster.local svc.cluster.local cluster.local</span><br><span class="line">options ndots:5 <span class="built_in">timeout</span>:1 attempts:2 single-request-reopen</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我们进行测试k8snode4为k8s worker 节点</span></span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot-test-service.zhipeng-space.svc.cluster.local/hello</span><br><span class="line">hello world</span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot-test-service.zhipeng-space.svc.cluster.local</span><br><span class="line">&#123;<span class="string">&quot;timestamp&quot;</span>:<span class="string">&quot;2026-11-01T14:42:52.297+00:00&quot;</span>,<span class="string">&quot;status&quot;</span>:404,<span class="string">&quot;error&quot;</span>:<span class="string">&quot;Not Found&quot;</span>,<span class="string">&quot;path&quot;</span>:<span class="string">&quot;/&quot;</span>&#125;</span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot-test-service.zhipeng-space.svc.cluster.local/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>把节点 /etc/resolv.conf 指向 Kubernetes CoreDNS 后，节点本身也可以直接使用 *.svc.cluster.local。 这是可以工作的，因为你已经确认 10.96.0.2 在节点上可达。只是生产环境中通常更推荐让 Pod 使用 CoreDNS，而节点自己的 DNS 仍保留原来的企业/局域网 DNS；两者职责可以分开。</p>
+<p>节点的走向</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">节点</span><br><span class="line"> │</span><br><span class="line"> │ DNS</span><br><span class="line"> ▼</span><br><span class="line">10.96.0.2</span><br><span class="line"> │</span><br><span class="line"> ▼</span><br><span class="line">CoreDNS</span><br><span class="line"> │</span><br><span class="line"> ├── *.cluster.local → Kubernetes Service</span><br><span class="line"> │</span><br><span class="line"> └── 其他域名 → 上游 DNS</span><br><span class="line">                    │</span><br><span class="line">                    ▼</span><br><span class="line">                192.168.3.1</span><br></pre></td></tr></table></figure>
+<p>测试一下默认dns</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">root@k8snode4 yaml]# nslookup www.baidu.com</span><br><span class="line">;; Got recursion not available from 10.96.0.2, trying next server</span><br><span class="line">;; Got recursion not available from 10.96.0.2, trying next server</span><br><span class="line">;; Got recursion not available from 10.96.0.2, trying next server</span><br><span class="line">Server:		10.96.0.2</span><br><span class="line">Address:	10.96.0.2#53</span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">www.baidu.com	canonical name = www.a.shifen.com.</span><br><span class="line">Name:	www.a.shifen.com</span><br><span class="line">Address: 220.181.111.1</span><br><span class="line">Name:	www.a.shifen.com</span><br><span class="line">Address: 220.181.111.232</span><br><span class="line">Name:	www.a.shifen.com</span><br><span class="line">Address: 240e:83:205:1cd:0:ff:b0b8:dee9</span><br><span class="line">Name:	www.a.shifen.com</span><br><span class="line">Address: 240e:83:205:381:0:ff:b00f:96a2</span><br></pre></td></tr></table></figure>
+<p>不过有一个潜在风险：CoreDNS 的 upstream 如果也是读取节点 /etc/resolv.conf，而你又把节点 /etc/resolv.conf 第一项改成 10.96.0.2，可能形成 DNS 转发环路：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CoreDNS</span><br><span class="line">  ↓</span><br><span class="line">/etc/resolv.conf</span><br><span class="line">  ↓</span><br><span class="line">10.96.0.2</span><br><span class="line">  ↓</span><br><span class="line">CoreDNS</span><br><span class="line">  ↓</span><br></pre></td></tr></table></figure>
+<p>建议我们检查一下出否出现环路：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n kube-system get configmap coredns -o yaml</span><br><span class="line"></span><br><span class="line">特别看 CoreDNS 的：</span><br><span class="line">forward . /etc/resolv.conf</span><br></pre></td></tr></table></figure>
+<h2 id="在集群节点或者内部-POD上访问我们的服务-CoreDNS-解析你自己的域名（如-springboot-test-com）方式）">在集群节点或者内部 POD上访问我们的服务(CoreDNS 解析你自己的域名（如 <a href="http://springboot.test.com">springboot.test.com</a>）方式）</h2>
+<p>上一章节，我们讲了如何用 CoreDNS 解析 Kubernetes 的 Service 域名，这一章节我们讲解如何用 CoreDNS 解析你自己的域名。例如，我们将我们的访问的域名定为<code>springboot.test.com</code>CoreDNS 默认只认 cluster.local，其他域名走 forward。要让它兼管自定义域名，改 kube-system/coredns 这个 ConfigMap。</p>
+<p>第一步，首先要恢复一下 /etc/resolve.conf的配置,指向正常的 DNS服务（我们这里用的是 VM 集群，192.168.3.1是我们内部的 dns）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode4 yaml]# <span class="built_in">cat</span> &gt; /etc/resolv.conf &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">nameserver 192.168.3.1</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>⚠️ Corefile 语法写错会导致 CoreDNS CrashLoopBackOff、全集群 DNS 瘫痪。改前先备份：kubectl -n kube-system get cm coredns -o yaml &gt; coredns.cm.bak.yaml<br>
+执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n kube-system edit configmap coredns</span><br></pre></td></tr></table></figure>
+<p>在现有 .:53 { … } 块之外新增一个 server block：<br>
+192.168.3.124 这个 ip 是 k8snode4 的 vm ip， 也是springboot-test-service 的 pod 所在的节点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">springboot.test.com:53 &#123;</span><br><span class="line">       errors</span><br><span class="line">       hosts &#123;</span><br><span class="line">           192.168.3.124 springboot.test.com</span><br><span class="line">           fallthrough</span><br><span class="line">       &#125;</span><br><span class="line">       cache 30</span><br><span class="line">       forward . 192.168.3.1 114.114.114.114</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>详细的配置文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Please edit the object below. Lines beginning with a &#x27;#&#x27; will be ignored,</span></span><br><span class="line"><span class="comment"># and an empty file will abort the edit. If an error occurs while saving this file will be</span></span><br><span class="line"><span class="comment"># reopened with the relevant failures.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">data:</span><br><span class="line">  Corefile: |</span><br><span class="line">    .:53 &#123;</span><br><span class="line">        errors</span><br><span class="line">        health &#123;</span><br><span class="line">          lameduck 5s</span><br><span class="line">        &#125;</span><br><span class="line">        ready</span><br><span class="line">        kubernetes cluster.local in-addr.arpa ip6.arpa &#123;</span><br><span class="line">          pods insecure</span><br><span class="line">          fallthrough in-addr.arpa ip6.arpa</span><br><span class="line">          ttl 30</span><br><span class="line">        &#125;</span><br><span class="line">        prometheus :9153</span><br><span class="line">        forward . 192.168.3.1 114.114.114.114 &#123;</span><br><span class="line">          max_concurrent 1000</span><br><span class="line">        &#125;</span><br><span class="line">        cache 30</span><br><span class="line">        loop</span><br><span class="line">        reload</span><br><span class="line">        loadbalance</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">#注意，另起一行</span></span><br><span class="line">    springboot.test.com:53 &#123;</span><br><span class="line">        errors</span><br><span class="line">        hosts &#123;</span><br><span class="line">            192.168.3.124 springboot.test.com <span class="comment">#192.168.3.124 这个 ip 是 k8snode4 的 vm ip， 也是springboot-test-service 的 pod 所在的节点</span></span><br><span class="line">            fallthrough</span><br><span class="line">        &#125;</span><br><span class="line">        cache 30</span><br><span class="line">        forward . 192.168.3.1 114.114.114.114</span><br><span class="line">    &#125;</span><br><span class="line">    ......</span><br></pre></td></tr></table></figure>
+<p>生效（ConfigMap 挂载是软更新，CoreDNS 自动 reload，通常 1 分钟内；不放心就重启）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n kube-system rollout restart deployment/coredns     <span class="comment"># 重启</span></span><br><span class="line">kubectl -n kube-system logs -l k8s-app=kube-dns --<span class="built_in">tail</span>=20     <span class="comment"># 看有无 reload/报错</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用k8snode1 也是是 master 的k8s节点来重启服务</span></span><br><span class="line">[root@k8snode1 yamls]# kubectl -n kube-system rollout restart deployment/coredns</span><br><span class="line">deployment.apps/coredns restarted</span><br><span class="line"><span class="comment"># 查看日志验证重启逻辑</span></span><br><span class="line">[root@k8snode1 yamls]# kubectl -n kube-system logs -l k8s-app=kube-dns --<span class="built_in">tail</span>=20</span><br><span class="line">maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined</span><br><span class="line">.:53</span><br><span class="line">springboot.test.com.:53</span><br><span class="line">[INFO] plugin/reload: Running configuration SHA512 = 159dc82c61f5901f74b361795aa769ac1bb9e423559a7a3431eeaf9bc3ea44f536c72413619f3d034fc2036dabe222ecc4820af5d29239eda8e7a6c57b51d696</span><br><span class="line">CoreDNS-1.12.0</span><br><span class="line">linux/arm64, go1.23.3, 51e11f1</span><br><span class="line">maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined</span><br><span class="line">.:53</span><br><span class="line">springboot.test.com.:53</span><br><span class="line">[INFO] plugin/reload: Running configuration SHA512 = 159dc82c61f5901f74b361795aa769ac1bb9e423559a7a3431eeaf9bc3ea44f536c72413619f3d034fc2036dabe222ecc4820af5d29239eda8e7a6c57b51d696</span><br><span class="line">CoreDNS-1.12.0</span><br><span class="line">linux/arm64, go1.23.3, 51e11f1</span><br><span class="line">maxprocs: Leaving GOMAXPROCS=2: CPU quota undefined</span><br><span class="line">.:53</span><br><span class="line">springboot.test.com.:53</span><br><span class="line">[INFO] plugin/reload: Running configuration SHA512 = 159dc82c61f5901f74b361795aa769ac1bb9e423559a7a3431eeaf9bc3ea44f536c72413619f3d034fc2036dabe222ecc4820af5d29239eda8e7a6c57b51d696</span><br><span class="line">CoreDNS-1.12.0</span><br><span class="line">linux/arm64, go1.23.3, 51e11f1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>接下来我们需要等几分钟，让所有的 coreDNS 全部重启完毕。然后验证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 验证 pod 内的情况</span></span><br><span class="line">[root@k8snode4 yaml]# kubectl <span class="built_in">exec</span> -it springboot-test-8d957c564-7mmrn -- /bin/bash</span><br><span class="line">springboot-test-8d957c564-7mmrn:/app# nslookup springboot.test.com</span><br><span class="line">Server:		10.96.0.2</span><br><span class="line">Address:	10.96.0.2:53</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Name:	springboot.test.com</span><br><span class="line">Address: 192.168.3.124</span><br><span class="line">springboot-test-8d957c564-7mmrn:/app#</span><br><span class="line"></span><br><span class="line"><span class="comment"># 但是外部访问的时候依旧不行 然后访问（仍需端口，因为 DNS 只给 IP）：</span></span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot.test.com:30088/</span><br><span class="line">curl: (6) Could not resolve host: springboot.test.com</span><br><span class="line"></span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot.test.com/info</span><br><span class="line">curl: (7) Failed to connect to springboot.test.com port 80: Connection refused</span><br><span class="line"></span><br><span class="line"><span class="comment"># 此时需要我们给集群外部节点也配置一个dns 服务器</span></span><br><span class="line">[root@k8snode4 yaml]# <span class="built_in">cat</span> &gt; /etc/resolv.conf &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">nameserver 10.96.0.2</span><br><span class="line">nameserver 192.168.3.1</span><br><span class="line"></span><br><span class="line">search zhipeng-space.svc.cluster.local svc.cluster.local cluster.local</span><br><span class="line">options ndots:5 <span class="built_in">timeout</span>:1 attempts:2 single-request-reopen</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再次测试</span></span><br><span class="line">[root@k8snode4 yaml]# curl http://springboot.test.com:30088/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-8d957c564-7mmrn&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;[root@k8snode4 yaml]#</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>我们可以看到，虽然我们在集群内部访问的时候，可以正常访问，但是我们从集群外部访问的时候，依旧不行。以为我们的 DNS 在集群外的节点根本访问不到。且我们的 host 只能使用 30088 的端口，无法真正的使用 80 端口。因此这个方案并不是最优的</p>
+<h2 id="使用CoreDNS-rewrite-插件">使用CoreDNS rewrite 插件</h2>
+<p>rewrite 插件可以把客户端查询名改写（只改&quot;问题&quot;里的名字，不改响应），然后再交给后面的插件（kubernetes / hosts / forward）作答。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">客户端查询 springboot.test.com</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">rewrite 插件：把查询名改写（只改<span class="string">&quot;问题&quot;</span>里的名字，不改响应）</span><br><span class="line">        │   springboot.test.com. → springboot-test-service.zhipeng-space.svc.cluster.local.</span><br><span class="line">        ▼</span><br><span class="line">后面的插件（kubernetes / hosts / forward）按改写后的名字作答</span><br></pre></td></tr></table></figure>
+<h3 id="示例-1：把-springboot-test-com-改写成集群内-Service-域名-注意，另起一行">示例 1：把 <a href="http://springboot.test.com">springboot.test.com</a> 改写成集群内 Service 域名 注意，另起一行</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 yaml]# kubectl -n kube-system edit configmap coredns</span><br><span class="line"></span><br><span class="line"><span class="comment"># ... </span></span><br><span class="line"></span><br><span class="line">springboot.test.com:53 &#123;</span><br><span class="line">    errors</span><br><span class="line">    rewrite name springboot.test.com. springboot-test-service.zhipeng-space.svc.cluster.local.</span><br><span class="line">    kubernetes cluster.local in-addr.arpa ip6.arpa &#123;</span><br><span class="line">      pods insecure</span><br><span class="line">      fallthrough in-addr.arpa ip6.arpa</span><br><span class="line">      ttl 30</span><br><span class="line">    &#125;</span><br><span class="line">    cache 30</span><br><span class="line">    forward . 192.168.3.1 114.114.114.114</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># ... </span></span><br><span class="line"></span><br><span class="line">[root@k8snode1 yaml]# kubectl -n kube-system rollout restart deployment/coredns</span><br></pre></td></tr></table></figure>
+<p>测试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 yamls]# <span class="built_in">cat</span> /etc/resolv.conf</span><br><span class="line">nameserver 10.96.0.2</span><br><span class="line">[root@k8snode1 yamls]# nslookup springboot.test.com</span><br><span class="line">Server:		10.96.0.2</span><br><span class="line">Address:	10.96.0.2#53</span><br><span class="line"></span><br><span class="line">Name:	springboot.test.com</span><br><span class="line">Address: 10.96.18.208</span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# curl http://springboot.test.com/hello</span><br><span class="line">hello world</span><br><span class="line">[root@k8snode1 yamls]#</span><br></pre></td></tr></table></figure>
+<h3 id="其他的配置方案-示例">其他的配置方案(示例)</h3>
+<h4 id="示例-1：regex-捕获分组，按前缀映射到不同-Service">示例 1：regex 捕获分组，按前缀映射到不同 Service</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">springboot.test.com:53 &#123;</span><br><span class="line">    errors</span><br><span class="line">    <span class="comment"># web.springboot.test.com.  → svc-web.zhipeng.svc.cluster.local.</span></span><br><span class="line">    <span class="comment"># api.springboot.test.com.  → svc-api.zhipeng.svc.cluster.local.</span></span><br><span class="line">    rewrite name regex (.*)\.springboot\.<span class="built_in">test</span>\.com\. svc-&#123;1&#125;.zhipeng.svc.cluster.local.</span><br><span class="line">    kubernetes cluster.local in-addr.arpa ip6.arpa</span><br><span class="line">    cache 30</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="示例-2：regex-捕获分组，按前缀映射到不同-Service">示例 2：regex 捕获分组，按前缀映射到不同 Service</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">springboot.test.com:53 &#123;</span><br><span class="line">    errors</span><br><span class="line">    <span class="comment"># 任意子域 → 统一规范成 springboot.test.com.</span></span><br><span class="line">    rewrite name regex (.*)\.springboot\.<span class="built_in">test</span>\.com\. springboot.test.com.</span><br><span class="line">    hosts &#123;</span><br><span class="line">        192.168.3.130 springboot.test.com</span><br><span class="line">        192.168.3.130 www.springboot.test.com</span><br><span class="line">        fallthrough</span><br><span class="line">    &#125;</span><br><span class="line">    cache 30</span><br><span class="line">    forward . 192.168.3.1 114.114.114.114</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>虽然我们介绍了很多配置 dns 的方案，但是总归是k8s集群内，而且我们还需要配置 core DNS 的地址，这样我们的域名系统才可以生效，那么如果是 k8s系统之外的机器，我们该如何配置呢？</p>
+<h1>向外部暴露服务</h1>
+<p>截止到目前为位置，我们所有的服务都基于 k8s 内部，也就是说所有的服务都是在集群内部访问的，但是我们需要将我们的服务暴露给外部，以便我们集群外部访问我们的服务，其实原理是将外部的流量引入到 k8s集群的内部，使得 k8s集群可以路由这些请求，上个大章节的 springboot-test-service 就是这样将外部的请求导入的，使用的是 nodePort 类型的 service，比如说我们在外部的机器上执行请求</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ curl http://192.168.3.124:30088/hello</span><br><span class="line">hello world%</span><br></pre></td></tr></table></figure>
+<p>原理就是将流量导入到 pod 的存在的机器上, service 类型为nodePort，将实体 node 的30088 端口上监听的服务就可以处理这个请求了，并转发给对应的 service。这种方式有弊端，就是必须知道 pod 所在的机器，而 pod 所在的机器会随着k8s资源的调度进行变化。外部的机器如何通过一个媒介来访问到 k8s集群内部的服务呢？这就用到了 Ingress</p>
+<h2 id="什么是Ingress">什么是Ingress</h2>
+<p>Ingress 是 Kubernetes 中的一个资源对象，它用于将集群外部流量路由到集群内部的服务。关于 Ingress 的详细介绍可以参考：<a href="https://kubernetes.io/zh/docs/concepts/services-networking/ingress/">https://kubernetes.io/zh/docs/concepts/services-networking/ingress/</a><br>
+在一下的例子当中，我会使用 nginx 作为统一入口，在 k8s 集群中使用 haproxy-ingress-controller 来实现负载均衡</p>
+<p>架构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">客户端 http(s)://springboot.test.com</span><br><span class="line">                                    │</span><br><span class="line">                        DNS → 192.168.3.130（Nginx 所在机器，集群外）</span><br><span class="line">                                    ▼</span><br><span class="line">        ┌───────────────────────────────────────────────────────────┐</span><br><span class="line">        │ 外部 Nginx（七层，集群外）                                  │</span><br><span class="line">        │   server_name springboot.test.com                         │</span><br><span class="line">        │   upstream → 各节点:80/443                                 │</span><br><span class="line">        └───────┬───────────────┬───────────────┬───────────────────┘</span><br><span class="line">                ▼               ▼               ▼</span><br><span class="line">        192.168.3.121    192.168.3.122    192.168.3.123   ← hostPort 80/443</span><br><span class="line">        ┌──────────────────────────────────────────────────┐</span><br><span class="line">        │  HAProxy Ingress Controller（DaemonSet，每节点一个）  │</span><br><span class="line">        │  按 Host + Path 路由、TLS 终止、健康检查、负载均衡     │</span><br><span class="line">        └───────┬──────────────────────────────────────────┘</span><br><span class="line">                ▼</span><br><span class="line">        Service springboot-test-service (zhipeng-space)</span><br><span class="line">                ▼</span><br><span class="line">              Pod:8081</span><br></pre></td></tr></table></figure>
+<h2 id="安装-ingress-haproxy">安装 ingress-haproxy</h2>
+<h2 id="Install-controller">Install controller</h2>
+<p>以下是我整理出来的 haproxy 整理出来的yaml 文件，本章节会对这个 yaml 文件做详细的介绍,s</p>
+<h2 id="haproxy-结构如下">haproxy 结构如下</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Namespace ingress-controller</span><br><span class="line">   ├── ServiceAccount haproxy-ingress        ← Pod 的身份</span><br><span class="line">   ├── ClusterRole haproxy-ingress           ← 这个身份能干什么（集群级）</span><br><span class="line">   ├── ClusterRoleBinding                    ← 把<span class="string">&quot;身份&quot;</span>和<span class="string">&quot;权限&quot;</span>绑起来</span><br><span class="line">   ├── ConfigMap haproxy-ingress             ← Global 作用域的配置键（--configmap 指向它）</span><br><span class="line">   ├── IngressClass haproxy                  ← 声明<span class="string">&quot;这个类由谁实现&quot;</span></span><br><span class="line">   └── DaemonSet haproxy-ingress             ← 真正跑的进程，每节点一份</span><br><span class="line">          args 里的 --configmap / --ingress-class / --controller-class</span><br><span class="line">          必须和上面三个资源的名字**逐字对齐**</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Namespace</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">ingress-controller</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">ingress-controller</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;services&quot;</span>, <span class="string">&quot;endpoints&quot;</span>, <span class="string">&quot;secrets&quot;</span>, <span class="string">&quot;configmaps&quot;</span>, <span class="string">&quot;pods&quot;</span>, <span class="string">&quot;namespaces&quot;</span>, <span class="string">&quot;nodes&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;events&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;create&quot;</span>, <span class="string">&quot;patch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;discovery.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;endpointslices&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;networking.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;ingresses&quot;</span>, <span class="string">&quot;ingressclasses&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;networking.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;ingresses/status&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;update&quot;</span>, <span class="string">&quot;patch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;coordination.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;leases&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;create&quot;</span>, <span class="string">&quot;update&quot;</span>]</span><br><span class="line">  <span class="comment"># 装了 Gateway API CRD 才需要；--watch-gateway=false 时这两段可删</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;gateway.networking.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;gatewayclasses&quot;</span>, <span class="string">&quot;gateways&quot;</span>, <span class="string">&quot;httproutes&quot;</span>, <span class="string">&quot;tcproutes&quot;</span>, <span class="string">&quot;tlsroutes&quot;</span>, <span class="string">&quot;udproutes&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;get&quot;</span>, <span class="string">&quot;list&quot;</span>, <span class="string">&quot;watch&quot;</span>]</span><br><span class="line">  <span class="bullet">-</span> <span class="attr">apiGroups:</span> [<span class="string">&quot;gateway.networking.k8s.io&quot;</span>]</span><br><span class="line">    <span class="attr">resources:</span> [<span class="string">&quot;gatewayclasses/status&quot;</span>, <span class="string">&quot;gateways/status&quot;</span>, <span class="string">&quot;httproutes/status&quot;</span>, <span class="string">&quot;tcproutes/status&quot;</span>, <span class="string">&quot;tlsroutes/status&quot;</span>, <span class="string">&quot;udproutes/status&quot;</span>]</span><br><span class="line">    <span class="attr">verbs:</span> [<span class="string">&quot;update&quot;</span>, <span class="string">&quot;patch&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line">  <span class="attr">apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line">  <span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">    <span class="attr">namespace:</span> <span class="string">ingress-controller</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="comment"># Global ConfigMap：Global 作用域的键只能写这里，写在 annotation 里会被忽略</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">ingress-controller</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="attr">forwardfor:</span> <span class="string">&quot;add&quot;</span></span><br><span class="line">  <span class="attr">use-forwarded-proto:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">  <span class="attr">max-connections:</span> <span class="string">&quot;10000&quot;</span></span><br><span class="line">  <span class="attr">timeout-client:</span> <span class="string">&quot;60s&quot;</span></span><br><span class="line">  <span class="attr">timeout-server:</span> <span class="string">&quot;60s&quot;</span></span><br><span class="line">  <span class="attr">ssl-redirect:</span> <span class="string">&quot;false&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">IngressClass</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">controller:</span> <span class="string">haproxy-ingress.github.io/controller</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">DaemonSet</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">ingress-controller</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app.kubernetes.io/name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app.kubernetes.io/name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">  <span class="attr">updateStrategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">RollingUpdate</span></span><br><span class="line">    <span class="attr">rollingUpdate:</span></span><br><span class="line">      <span class="attr">maxUnavailable:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app.kubernetes.io/name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">serviceAccountName:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">      <span class="attr">terminationGracePeriodSeconds:</span> <span class="number">60</span></span><br><span class="line">      <span class="comment"># 只调度到 3 台 master（node-role.kubernetes.io/control-plane 标签）</span></span><br><span class="line">      <span class="attr">nodeSelector:</span></span><br><span class="line">        <span class="attr">node-role.kubernetes.io/control-plane:</span> <span class="string">&quot;&quot;</span></span><br><span class="line">      <span class="attr">tolerations:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/control-plane</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">Exists</span></span><br><span class="line">          <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">Exists</span></span><br><span class="line">          <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">haproxy-ingress</span></span><br><span class="line">          <span class="attr">image:</span> <span class="string">quay.io/jcmoraisjr/haproxy-ingress:v0.16.1</span></span><br><span class="line">          <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">          <span class="attr">args:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--configmap=ingress-controller/haproxy-ingress</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--ingress-class=haproxy</span></span><br><span class="line">            <span class="comment"># 注意：--controller-class 收的是&quot;后缀&quot;，不要传完整名字，否则会拼成 xxx/xxx</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--election-id=class-haproxy.haproxy-ingress.github.io</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--update-status=true</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--report-node-internal-ip-address=true</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--watch-gateway=false</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--reload-strategy=reusesocket</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">--v=2</span></span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_NAMESPACE</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">fieldRef:</span></span><br><span class="line">                  <span class="attr">fieldPath:</span> <span class="string">metadata.namespace</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_NAME</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">fieldRef:</span></span><br><span class="line">                  <span class="attr">fieldPath:</span> <span class="string">metadata.name</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">POD_IP</span></span><br><span class="line">              <span class="attr">valueFrom:</span></span><br><span class="line">                <span class="attr">fieldRef:</span></span><br><span class="line">                  <span class="attr">fieldPath:</span> <span class="string">status.podIP</span></span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line">              <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">              <span class="attr">hostPort:</span> <span class="number">80</span></span><br><span class="line">              <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">https</span></span><br><span class="line">              <span class="attr">containerPort:</span> <span class="number">443</span></span><br><span class="line">              <span class="attr">hostPort:</span> <span class="number">443</span></span><br><span class="line">              <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">healthz</span></span><br><span class="line">              <span class="attr">containerPort:</span> <span class="number">10254</span></span><br><span class="line">              <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">          <span class="attr">readinessProbe:</span></span><br><span class="line">            <span class="attr">httpGet:</span></span><br><span class="line">              <span class="attr">path:</span> <span class="string">/readyz</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">10254</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">5</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">5</span></span><br><span class="line">          <span class="attr">livenessProbe:</span></span><br><span class="line">            <span class="attr">httpGet:</span></span><br><span class="line">              <span class="attr">path:</span> <span class="string">/healthz</span></span><br><span class="line">              <span class="attr">port:</span> <span class="number">10254</span></span><br><span class="line">            <span class="attr">initialDelaySeconds:</span> <span class="number">10</span></span><br><span class="line">            <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">          <span class="attr">resources:</span></span><br><span class="line">            <span class="attr">requests:</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">100m</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">128Mi</span></span><br><span class="line">            <span class="attr">limits:</span></span><br><span class="line">              <span class="attr">cpu:</span> <span class="string">&quot;1&quot;</span></span><br><span class="line">              <span class="attr">memory:</span> <span class="string">512Mi</span></span><br><span class="line">          <span class="attr">securityContext:</span></span><br><span class="line">            <span class="attr">allowPrivilegeEscalation:</span> <span class="literal">false</span></span><br><span class="line">            <span class="attr">capabilities:</span></span><br><span class="line">              <span class="attr">drop:</span> [<span class="string">&quot;ALL&quot;</span>]</span><br><span class="line">              <span class="attr">add:</span> [<span class="string">&quot;NET_BIND_SERVICE&quot;</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这里有几个修改我们需要注意</p>
+<ol>
+<li>只调度到 master 节点</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">spec:</span><br><span class="line">    ...</span><br><span class="line">      nodeSelector:</span><br><span class="line">        node-role.kubernetes.io/control-plane: <span class="string">&quot;&quot;</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>ConfigMap 的配置项以及含义</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>键</th>
+<th>含义</th>
+<th>为什么这么配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>forwardfor: “add”</td>
+<td>HAProxy 给上游追加 X-Forwarded-For</td>
+<td>你的链路是 客户端 → Nginx → HAProxy → Pod。必须 append 才能让后端看到完整链路（客户端 IP 在 XFF 的第一个位置）。取值 add（追加）/update（覆盖）/ifmissing（没有才加）</td>
+</tr>
+<tr>
+<td>use-forwarded-proto: “true”</td>
+<td>信任上游传来的 X-Forwarded-Proto</td>
+<td>你在 Nginx 上终止了 TLS，到 HAProxy 已经是明文 HTTP。不信任这个头，Spring Boot 生成的跳转链接会变成 http://，前端混合内容报警</td>
+</tr>
+<tr>
+<td>max-connections: “10000”</td>
+<td>全部 proxy 的总并发上限（Global）</td>
+<td>默认 2000 对小集群够用；调到 1w 是给内部服务调用留余量。这是防御性上限，超了返回 503 而不是把节点打爆</td>
+</tr>
+<tr>
+<td>timeout-client: “60s”</td>
+<td>客户端侧超时（Global）</td>
+<td>默认 50s。L7 场景下 60s 是比较通用的值；比上游 Nginx 的 proxy_read_timeout 略短会更早释放连接</td>
+</tr>
+<tr>
+<td>timeout-server: “60s”</td>
+<td>后端侧超时（Backend）</td>
+<td>Spring Boot 冷启动/慢接口常见，60s 避免 504；如果某个接口特别慢，可以在那个 Ingress 上用注解单独调大，不要全局放大</td>
+</tr>
+<tr>
+<td>ssl-redirect: “false”</td>
+<td>是否强制 80→443 跳转（Path）</td>
+<td>关键：TLS 已经在外部 Nginx 终止，HAProxy 收到的是 HTTP。若这里为 true，HAProxy 会再回 302 到 https，而 Nginx 又转回来 → 无限跳转。所以必须关</td>
+</tr>
+</tbody>
+</table>
+<ol start="3">
+<li>启动参数</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>键</th>
+<th>含义</th>
+<th>为什么这么配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>–configmap=ingress-controller/haproxy-ingress</td>
+<td>指定全局 ConfigMap（格式 ns/name）</td>
+<td>v0.13+ 若这个 ConfigMap 不存在会直接 panic 退出，所以 ConfigMap 必须和它一起创建；注意&quot;ns/name&quot;两段都要对</td>
+</tr>
+<tr>
+<td>–ingress-class=haproxy</td>
+<td>只接管 <a href="http://kubernetes.io/ingress.class:">kubernetes.io/ingress.class:</a> haproxy</td>
+<td>和 ingress-nginx 共存时互不干扰</td>
+</tr>
+<tr>
+<td>–controller-class=<a href="http://haproxy-ingress.github.io/controller">haproxy-ingress.github.io/controller</a></td>
+<td>只接管 spec.controller 等于这个值的 IngressClass</td>
+<td>和 IngressClass 资源逐字对齐；同时它是区分&quot;同集群多套 HAProxy Ingress&quot;的手段</td>
+</tr>
+<tr>
+<td>–election-id=<a href="http://class-haproxy.haproxy-ingress.github.io">class-haproxy.haproxy-ingress.github.io</a></td>
+<td>leader 选举的锁名</td>
+<td>v0.15+ 的默认格式是 class-%<a href="http://s.haproxy-ingress.github.io">s.haproxy-ingress.github.io</a>（%s 填 class 名）。写全是为了显式，也避免有人改了 class 名却忘了改这个导致两套控制器抢同一把锁</td>
+</tr>
+<tr>
+<td>–update-status=true</td>
+<td>把节点 IP 回填到 Ingress 的 status.loadBalancer.ingress</td>
+<td>默认就是 true，写出来是为了说明&quot;它依赖 leases 权限 + leader 选举&quot;，别把 RBAC 那几条删了</td>
+</tr>
+<tr>
+<td>–report-node-internal-ip-address=true</td>
+<td>status 里用节点内网 IP</td>
+<td>你的节点只有 InternalIP，没有 ExternalIP，不加这个 kubectl get ingress 的 ADDRESS 列会一直是空的（很多人以为控制器没工作）</td>
+</tr>
+<tr>
+<td>–watch-gateway=false</td>
+<td>不监听 Gateway API CRD</td>
+<td>你没装 Gateway API CRD，v0.14+ 默认开启会不停报&quot;找不到 CRD&quot;的错日志，掩盖真正的错误。关掉后 RBAC 里 gateway 那两段也可以删</td>
+</tr>
+<tr>
+<td>–reload-strategy=reusesocket</td>
+<td>重载时把监听 socket 交给新进程（无损）</td>
+<td>v0.8 起就是默认值。写出来是因为它直接影响&quot;改配置会不会断连接&quot;，值得显式留痕</td>
+</tr>
+<tr>
+<td>–v=2	日志级别</td>
+<td>（1=info，2=+debug）</td>
+<td>排障期用 2，稳定后可降到 1 减少日志量</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>端口与探针</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ports:</span><br><span class="line">  - containerPort: 80    / hostPort: 80      <span class="comment"># HTTP 入口</span></span><br><span class="line">  - containerPort: 443   / hostPort: 443     <span class="comment"># HTTPS 入口（TLS 由 Nginx 终止时可不用，但留着以便将来切到 HAProxy 终止）</span></span><br><span class="line">  - containerPort: 10254                     <span class="comment"># 健康检查 + Prometheus 指标</span></span><br><span class="line">readinessProbe: /readyz : 10254              <span class="comment"># 就绪：能接流量了吗</span></span><br><span class="line">livenessProbe:  /healthz : 10254             <span class="comment"># 存活：进程还活着吗</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>–update-status=true，控制器需要知道自己在哪个 namespace（用来给自己打选主/状态相关的东西），必须通过 Downward API 注入 POD_NAMESPACE。我上一版清单漏了这段 env。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">env</span>:</span><br><span class="line">          - name: POD_NAMESPACE</span><br><span class="line">            valueFrom:</span><br><span class="line">              fieldRef:</span><br><span class="line">                fieldPath: metadata.namespace</span><br><span class="line">          - name: POD_NAME</span><br><span class="line">            valueFrom:</span><br><span class="line">              fieldRef:</span><br><span class="line">                fieldPath: metadata.name</span><br><span class="line">          - name: POD_IP</span><br><span class="line">            valueFrom:</span><br><span class="line">              fieldRef:</span><br><span class="line">                fieldPath: status.podIP</span><br></pre></td></tr></table></figure>
+<h2 id="apply-controller">apply controller</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f haproxy-ingress-install.yaml</span><br><span class="line">[root@k8snode1 containerd.service.d]# kubectl -n ingress-controller get pods -o wide</span><br><span class="line">NAME                    READY   STATUS    RESTARTS   AGE     IP               NODE       NOMINATED NODE   READINESS GATES</span><br><span class="line">haproxy-ingress-94jjm   1/1     Running   0          10m     10.244.98.205    k8snode3   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">haproxy-ingress-nkgsm   1/1     Running   0          10m     10.244.185.201   k8snode2   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">haproxy-ingress-vfsrm   1/1     Running   0          7m42s   10.244.249.12    k8snode1   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">[root@k8snode1 containerd.service.d]#</span><br></pre></td></tr></table></figure>
+<h2 id="check">check</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SA=system:serviceaccount:ingress-controller:haproxy-ingress</span><br><span class="line"></span><br><span class="line">kubectl auth can-i list endpointslices --as=<span class="variable">$SA</span> -A          <span class="comment"># yes</span></span><br><span class="line">kubectl auth can-i watch ingresses.networking.k8s.io --as=<span class="variable">$SA</span> -A   <span class="comment"># yes</span></span><br><span class="line">kubectl auth can-i update ingresses/status --as=<span class="variable">$SA</span> -A      <span class="comment"># yes</span></span><br><span class="line">kubectl auth can-i get secrets --as=<span class="variable">$SA</span> -A                  <span class="comment"># yes</span></span><br><span class="line">kubectl auth can-i update leases.coordination.k8s.io --as=<span class="variable">$SA</span> -n ingress-controller  <span class="comment"># yes</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>check 进程以及Pod 内的端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 containerd.service.d]# kubectl -n ingress-controller <span class="built_in">exec</span> haproxy-ingress-nkgsm -- sh -c <span class="string">&#x27;netstat -ltnp&#x27;</span></span><br><span class="line">Active Internet connections (only servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name</span><br><span class="line">tcp        0      0 0.0.0.0:10253           0.0.0.0:*               LISTEN      21/haproxy</span><br><span class="line">tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      21/haproxy</span><br><span class="line">tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      21/haproxy</span><br><span class="line">tcp        0      0 0.0.0.0:1936            0.0.0.0:*               LISTEN      21/haproxy</span><br><span class="line">tcp        0      0 :::10254                :::*                    LISTEN      6/haproxy-ingress-c</span><br><span class="line">[root@k8snode1 containerd.service.d]# kubectl -n ingress-controller <span class="built_in">exec</span> haproxy-ingress-nkgsm -- sh -c <span class="string">&#x27;ps aux 2&gt;/dev/null || ps -ef&#x27;</span></span><br><span class="line">PID   USER     TIME  COMMAND</span><br><span class="line">    1 haproxy   0:00 /usr/bin/dumb-init -- /start.sh --configmap=ingress-controller/haproxy-ingress --ingress-class=haproxy --election-id=class-haproxy.haproxy-ingress.github.io --update-status=<span class="literal">true</span> --report-node-internal-ip-address=<span class="literal">true</span> --watch-gateway=<span class="literal">false</span> --reload-strategy=reusesocket --v=2</span><br><span class="line">    6 haproxy   0:06 /haproxy-ingress-controller --configmap=ingress-controller/haproxy-ingress --ingress-class=haproxy --election-id=class-haproxy.haproxy-ingress.github.io --update-status=<span class="literal">true</span> --report-node-internal-ip-address=<span class="literal">true</span> --watch-gateway=<span class="literal">false</span> --reload-strategy=reusesocket --v=2</span><br><span class="line">   19 haproxy   0:00 haproxy -W -S /var/run/haproxy/master.sock,mode,600 -f /etc/haproxy</span><br><span class="line">   21 haproxy   0:01 haproxy -W -S /var/run/haproxy/master.sock,mode,600 -f /etc/haproxy</span><br><span class="line">   56 haproxy   0:00 sh -c ps aux 2&gt;/dev/null || ps -ef</span><br><span class="line">   62 haproxy   0:00 ps aux</span><br><span class="line">[root@k8snode1 containerd.service.d]# kubectl -n ingress-controller <span class="built_in">exec</span> haproxy-ingress-nkgsm -- \</span><br><span class="line">  sh -c <span class="string">&#x27;wget -qO- http://127.0.0.1:10254/healthz; echo; wget -qO- http://127.0.0.1:10254/readyz&#x27;</span></span><br><span class="line">ok</span><br><span class="line">ok[root@k8snode1 containerd.service.d]#</span><br></pre></td></tr></table></figure>
+<p>上述的测试完成之后，证明haproxy-ingress 已经正常运行，接下来我们需要配置 ingress 来使用 haproxy-ingress 来实现负载均衡</p>
+<h2 id="改造-springboot-test-yaml-使得其中有两个实例，并且以-ClisterIP-的方式存在">改造 springboot-test.yaml, 使得其中有两个实例，并且以 ClisterIP 的方式存在</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: springboot-test</span><br><span class="line">  namespace: zhipeng-space          <span class="comment"># ← 补上，否则 Pod 落在 default</span></span><br><span class="line">spec:</span><br><span class="line">  replicas: 2         <span class="comment"># 让 worker 节点上有两个实例</span></span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: springboot-test</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: springboot-test</span><br><span class="line">    spec:</span><br><span class="line">      nodeSelector:</span><br><span class="line">        node-role.kubernetes.io/worker: <span class="string">&quot;&quot;</span>   <span class="comment"># 确认节点上真有这个标签</span></span><br><span class="line">      containers:</span><br><span class="line">        - name: springboot-app</span><br><span class="line">          image: lizhipeng/springboot-test</span><br><span class="line">          ports:</span><br><span class="line">            - name: http</span><br><span class="line">              containerPort: 8081</span><br><span class="line">              protocol: TCP</span><br><span class="line">          readinessProbe:</span><br><span class="line">            tcpSocket:</span><br><span class="line">              port: 8081</span><br><span class="line">            initialDelaySeconds: 10</span><br><span class="line">            periodSeconds: 5</span><br><span class="line">          livenessProbe:</span><br><span class="line">            tcpSocket:</span><br><span class="line">              port: 8081</span><br><span class="line">            initialDelaySeconds: 30</span><br><span class="line">            periodSeconds: 10</span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: springboot-test-service</span><br><span class="line">  namespace: zhipeng-space</span><br><span class="line">spec:</span><br><span class="line">  <span class="built_in">type</span>: ClusterIP                    <span class="comment"># ← NodePort 改 ClusterIP</span></span><br><span class="line">  selector:</span><br><span class="line">    app: springboot-test</span><br><span class="line">  ports:</span><br><span class="line">    - name: http</span><br><span class="line">      port: 80</span><br><span class="line">      targetPort: 8081</span><br><span class="line">      protocol: TCP</span><br><span class="line">      <span class="comment"># nodePort 必须删除，否则 apply 会报 Forbidden</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意在 node4 上执行</span></span><br><span class="line">root@k8snode4 yaml]# kubectl apply -f springboot-test-clusterIp.yaml</span><br><span class="line">deployment.apps/springboot-test configured</span><br><span class="line">service/springboot-test-service configured</span><br><span class="line"></span><br><span class="line">root@k8snode4 yaml]# curl http://springboot.test.com/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;[root@k8snode4 yaml]# curl http://springboot.test.com/infocurl http://springboot.test.com/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vcq6r&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vcq6r&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;[root@k8snode4 yaml]#</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="配置-springboot-test-ingress">配置 springboot-test-ingress</h2>
+<p>下面我们配置 ingress, 我们希望 通过 <a href="http://springboot-test-service.zhipengk8scluster.com">springboot-test-service.zhipengk8scluster.com</a> 来访问 springboot-test-service<br>
+springboot-test-ingress.yaml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.k8s.io/v1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: springboot-test</span><br><span class="line">  namespace: zhipeng-space</span><br><span class="line">  annotations:</span><br><span class="line">    haproxy-ingress.github.io/balance-algorithm: leastconn</span><br><span class="line">    haproxy-ingress.github.io/timeout-server: 60s</span><br><span class="line">    haproxy-ingress.github.io/ssl-redirect: <span class="string">&quot;false&quot;</span>     <span class="comment"># 外部 Nginx 已终止 TLS，避免 302 循环</span></span><br><span class="line">spec:</span><br><span class="line">  ingressClassName: haproxy                             <span class="comment"># ← 关键：交给 HAProxy，不是 nginx</span></span><br><span class="line">  rules:</span><br><span class="line">    - host: springboot-test-service.zhipengk8scluster.com</span><br><span class="line">      http:</span><br><span class="line">        paths:</span><br><span class="line">          - path: /</span><br><span class="line">            pathType: Prefix</span><br><span class="line">            backend:</span><br><span class="line">              service:</span><br><span class="line">                name: springboot-test-service</span><br><span class="line">                port:</span><br><span class="line">                  number: 80                            <span class="comment"># Service 的 port，不是 targetPort</span></span><br></pre></td></tr></table></figure>
+<p>验证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 yamls]# kubectl -n zhipeng-space get ingress springboot-test</span><br><span class="line">NAME              CLASS     HOSTS                                           ADDRESS                                     PORTS   AGE</span><br><span class="line">springboot-test   haproxy   springboot-test-service.zhipengk8scluster.com   192.168.3.121,192.168.3.122,192.168.3.123   80      140m</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# kubectl -n ingress-controller logs ds/haproxy-ingress --<span class="built_in">tail</span>=50 | grep -iE <span class="string">&#x27;springboot|zhipengk8scluster|UPDATE|ADD&#x27;</span></span><br><span class="line">Found 3 pods, using pod/haproxy-ingress-nkgsm</span><br><span class="line">I1103 09:05:10.262148       6 services.go:274] <span class="string">&quot;finish haproxy update&quot;</span> logger=<span class="string">&quot;services&quot;</span> <span class="built_in">id</span>=10 parse-ingress-ms=0.74271 write-maps-ms=0.058141 address-status-update-ms=4.530814 total-ms=5.331665</span><br><span class="line">I1103 09:18:02.602763       6 watchers.go:516] <span class="string">&quot;notify&quot;</span> logger=<span class="string">&quot;watchers&quot;</span> event=<span class="string">&quot;create&quot;</span> kind=<span class="string">&quot;*v1.Ingress&quot;</span> namespace=<span class="string">&quot;zhipeng-space&quot;</span> name=<span class="string">&quot;springboot-test&quot;</span></span><br><span class="line">I1103 09:18:02.801948       6 services.go:257] <span class="string">&quot;starting haproxy update&quot;</span> logger=<span class="string">&quot;services&quot;</span> <span class="built_in">id</span>=11</span><br><span class="line">I1103 09:18:02.802180       6 converters.go:75] <span class="string">&quot;applying 1 change notification: [add/Ingress:zhipeng-space/springboot-test]&quot;</span> logger=<span class="string">&quot;converter&quot;</span></span><br><span class="line">I1103 09:18:02.809483       6 instance.go:465] <span class="string">&quot;updating 1 host(s): [zhipengk8scluster.com]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 09:18:02.809505       6 instance.go:482] <span class="string">&quot;updating 1 backend(s): [zhipeng-space_springboot-test-service_8081]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 09:18:02.809642       6 dynupdate.go:121] <span class="string">&quot;added host &#x27;zhipengk8scluster.com&#x27;&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 09:18:02.809669       6 dynupdate.go:153] <span class="string">&quot;added backend &#x27;zhipeng-space_springboot-test-service_8081&#x27;&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 09:18:02.809697       6 dynupdate.go:104] <span class="string">&quot;need to reload due to config changes: [hosts backends]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 09:18:03.046246       6 svcaddress.go:144] <span class="string">&quot;address status updated&quot;</span> logger=<span class="string">&quot;services.address&quot;</span> kind=<span class="string">&quot;*v1.Ingress&quot;</span> namespace=<span class="string">&quot;zhipeng-space&quot;</span> name=<span class="string">&quot;springboot-test&quot;</span></span><br><span class="line">I1103 09:18:03.046317       6 services.go:274] <span class="string">&quot;finish haproxy update&quot;</span> logger=<span class="string">&quot;services&quot;</span> <span class="built_in">id</span>=11 parse-ingress-ms=3.757201 write-maps-ms=3.712209 write-config-ms=5.46327 reload-haproxy-ms=209.49973 address-status-update-ms=21.863289 total-ms=244.29568</span><br><span class="line">I1103 11:35:52.297202       6 watchers.go:516] <span class="string">&quot;notify&quot;</span> logger=<span class="string">&quot;watchers&quot;</span> event=<span class="string">&quot;update&quot;</span> kind=<span class="string">&quot;*v1.Ingress&quot;</span> namespace=<span class="string">&quot;zhipeng-space&quot;</span> name=<span class="string">&quot;springboot-test&quot;</span></span><br><span class="line">I1103 11:35:52.500322       6 services.go:257] <span class="string">&quot;starting haproxy update&quot;</span> logger=<span class="string">&quot;services&quot;</span> <span class="built_in">id</span>=12</span><br><span class="line">I1103 11:35:52.501467       6 converters.go:75] <span class="string">&quot;applying 1 change notification: [update/Ingress:zhipeng-space/springboot-test]&quot;</span> logger=<span class="string">&quot;converter&quot;</span></span><br><span class="line">I1103 11:35:52.509786       6 instance.go:465] <span class="string">&quot;updating 2 host(s): [springboot-test-service.zhipengk8scluster.com zhipengk8scluster.com]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 11:35:52.509814       6 instance.go:482] <span class="string">&quot;updating 1 backend(s): [zhipeng-space_springboot-test-service_8081]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 11:35:52.510654       6 dynupdate.go:121] <span class="string">&quot;added host &#x27;springboot-test-service.zhipengk8scluster.com&#x27;&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 11:35:52.510777       6 dynupdate.go:130] <span class="string">&quot;removed host &#x27;zhipengk8scluster.com&#x27;&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 11:35:52.511171       6 dynupdate.go:215] <span class="string">&quot;diff outside endpoints of backend &#x27;zhipeng-space_springboot-test-service_8081&#x27;&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">I1103 11:35:52.511539       6 dynupdate.go:104] <span class="string">&quot;need to reload due to config changes: [hosts backends]&quot;</span> logger=<span class="string">&quot;haproxy&quot;</span></span><br><span class="line">[WARNING]  (71) : Proxy zhipeng-space_springboot-test-service_8081 stopped (cumulated conns: FE: 0, BE: 0).</span><br><span class="line">I1103 11:35:52.672539       6 services.go:274] <span class="string">&quot;finish haproxy update&quot;</span> logger=<span class="string">&quot;services&quot;</span> <span class="built_in">id</span>=12 parse-ingress-ms=5.068429 write-maps-ms=4.129918 write-config-ms=8.970261 reload-haproxy-ms=152.08105 address-status-update-ms=1.879777 total-ms=172.12944</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>数据面 —— 规则是否进了 haproxy.cfg</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 yamls]# kubectl -n ingress-controller <span class="built_in">exec</span> ds/haproxy-ingress -- sh -c   <span class="string">&#x27;grep -n -i -A8 &quot;zhipengk8scluster\|springboot-test-service&quot; /etc/haproxy/haproxy.cfg | head -40&#x27;</span></span><br><span class="line">50:backend zhipeng-space_springboot-test-service_8081</span><br><span class="line">51-    mode http</span><br><span class="line">52-    balance leastconn</span><br><span class="line">53-    <span class="built_in">timeout</span> server 60s</span><br><span class="line">54-    acl https-request ssl_fc</span><br><span class="line">55-    http-response set-header Strict-Transport-Security <span class="string">&quot;max-age=15768000&quot;</span> <span class="keyword">if</span> https-request</span><br><span class="line">56-    server srv001 10.244.187.2:8081 weight 1 check inter 2s</span><br><span class="line">57-    server srv002 10.244.192.71:8081 weight 1 check inter 2s</span><br><span class="line">58-    server srv003 127.0.0.1:1023 disabled weight 1 check inter 2s</span><br></pre></td></tr></table></figure>
+<p>测试如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@k8snode1 yamls]# curl -s -H <span class="string">&#x27;Host: springboot-test-service.zhipengk8scluster.com&#x27;</span> http://192.168.3.121/hello</span><br><span class="line">hello world</span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# curl -s -H <span class="string">&#x27;Host: springboot-test-service.zhipengk8scluster.com&#x27;</span> http://192.168.3.121/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vcq6r&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vcq6r&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# curl -s -H <span class="string">&#x27;Host: springboot-test-service.zhipengk8scluster.com&#x27;</span> http://192.168.3.121/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# curl -s -H <span class="string">&#x27;Host: springboot-test-service.zhipengk8scluster.com&#x27;</span> http://192.168.3.122/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">[root@k8snode1 yamls]# curl -s -H <span class="string">&#x27;Host: springboot-test-service.zhipengk8scluster.com&#x27;</span> http://192.168.3.123/info</span><br><span class="line">&#123;<span class="string">&quot;hostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;osVersion&quot;</span>:<span class="string">&quot;5.14.0-611.5.1.el9_7.aarch64&quot;</span>,<span class="string">&quot;canonicalHostName&quot;</span>:<span class="string">&quot;springboot-test-84d89bdf9c-vrfx4&quot;</span>,<span class="string">&quot;javaVersion&quot;</span>:<span class="string">&quot;17.0.19&quot;</span>,<span class="string">&quot;osName&quot;</span>:<span class="string">&quot;Linux&quot;</span>&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="映射端口测试-haproxy">映射端口测试 haproxy</h2>
+<p>1936 端口就是 HAProxy 的 stats 页，直接映射出来看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n ingress-controller port-forward --address 0.0.0.0 \</span><br><span class="line">  pod/$(kubectl -n ingress-controller get pod -l app.kubernetes.io/name=haproxy-ingress \</span><br><span class="line">        --field-selector spec.nodeName=k8snode1 -o jsonpath=<span class="string">&#x27;&#123;.items[0].metadata.name&#125;&#x27;</span>) 1936:1936</span><br></pre></td></tr></table></figure>
+<p>然后访问 <a href="http://192.168.3.121:1936">http://192.168.3.121:1936</a> 便可以得到 HAProxy 的 stats 页面。</p>
+<h2 id="总结-2">总结</h2>
+<p>接下来我们可以绑定 DNS 然后将 使用 keepalived 将多个 nginx 绑定到同一个 vip 上，之后通过 DNS 和 vip 的绑定来对外提供服务，而 nginx 的代理则将请求路由到 <code>192.168.3.121</code> <code>192.168.3.122</code> <code>192.168.3.123</code> 这三台 haproxy就能访问我们的 springboot-test-service 了。</p>
+<h1>总结</h1>
+<h2 id="一、常用命令速查">一、常用命令速查</h2>
+<h3 id="CoreDNS">CoreDNS</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 解析自定义域名（用集群 DNS）</span></span><br><span class="line">nslookup springboot.test.com 10.96.0.2</span><br><span class="line">getent hosts springboot.test.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看/改 Corefile（改前务必备份）</span></span><br><span class="line">kubectl -n kube-system get cm coredns -o yaml &gt; coredns.bak.yaml</span><br><span class="line">kubectl -n kube-system edit configmap coredns</span><br><span class="line">kubectl -n kube-system rollout restart deployment/coredns</span><br><span class="line"></span><br><span class="line"><span class="comment"># 看日志（注意新版 Pod 无 --previous）</span></span><br><span class="line">kubectl -n kube-system logs -l k8s-app=kube-dns --<span class="built_in">tail</span>=50</span><br></pre></td></tr></table></figure>
+<h3 id="HAProxy-Ingress-部署与校验">HAProxy Ingress 部署与校验</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 资源状态</span></span><br><span class="line">kubectl -n ingress-controller get ds,pods -o wide</span><br><span class="line">kubectl -n ingress-controller rollout status ds/haproxy-ingress</span><br><span class="line"></span><br><span class="line"><span class="comment"># 权限自检（用控制器身份）</span></span><br><span class="line">SA=system:serviceaccount:ingress-controller:haproxy-ingress</span><br><span class="line">kubectl auth can-i update ingresses --subresource=status --as=<span class="variable">$SA</span> -n zhipeng-space</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据面配置与语法</span></span><br><span class="line">kubectl -n ingress-controller <span class="built_in">exec</span> ds/haproxy-ingress -- haproxy -c -f /etc/haproxy/haproxy.cfg</span><br><span class="line">kubectl -n ingress-controller <span class="built_in">exec</span> ds/haproxy-ingress -- sh -c <span class="string">&#x27;grep springboot /etc/haproxy/haproxy.cfg&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 容器内探活（精简镜像没 bash/ss，用 sh + netstat/wget）</span></span><br><span class="line">kubectl -n ingress-controller <span class="built_in">exec</span> &lt;pod&gt; -- sh -c <span class="string">&#x27;netstat -ltnp&#x27;</span></span><br><span class="line">kubectl -n ingress-controller <span class="built_in">exec</span> &lt;pod&gt; -- sh -c <span class="string">&#x27;wget -qO- http://127.0.0.1:10254/healthz&#x27;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="RBAC-权限校验">RBAC / 权限校验</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SA=system:serviceaccount:ingress-controller:haproxy-ingress</span><br><span class="line">kubectl auth can-i update ingresses --subresource=status --as=<span class="variable">$SA</span> -n zhipeng-space</span><br><span class="line"></span><br><span class="line">扩展①：子资源错误写法对照 </span><br><span class="line">kubectl auth can-i get pods/log --as=<span class="variable">$SA</span>（/log 写法在新版不灵，用 --subresource）</span><br><span class="line"></span><br><span class="line">扩展②：列出该 SA 全部权限 </span><br><span class="line">kubectl auth can-i --list --as=<span class="variable">$SA</span> | <span class="built_in">head</span> -3</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="端口-流量验证">端口/流量验证</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直打节点（绕过 Nginx 与 DNS）</span></span><br><span class="line">curl -sv -H <span class="string">&#x27;Host: springboot.test.com&#x27;</span> http://192.168.3.121/hello</span><br><span class="line"></span><br><span class="line"><span class="comment"># 三节点一致性</span></span><br><span class="line"><span class="keyword">for</span> ip <span class="keyword">in</span> 192.168.3.121 192.168.3.122 192.168.3.123; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">printf</span> <span class="string">&#x27;%s -&gt; &#x27;</span> <span class="variable">$ip</span></span><br><span class="line">  curl -s -o /dev/null -w <span class="string">&#x27;%&#123;http_code&#125;\n&#x27;</span> -H <span class="string">&#x27;Host: springboot.test.com&#x27;</span> http://<span class="variable">$ip</span>/hello</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 看 hostPort DNAT 规则（Calico portmap，宿主机 ss 看不到属正常）</span></span><br><span class="line">iptables -t nat -S | grep -E <span class="string">&#x27;DNAT.*dport (80|443)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 暴露 stats 面板（临时）</span></span><br><span class="line">kubectl -n ingress-controller port-forward --address 0.0.0.0 pod/&lt;pod&gt; 1936:1936</span><br><span class="line"></span><br><span class="line">扩展①：加 hostPort 永久暴露 </span><br><span class="line">kubectl patch ds haproxy-ingress --<span class="built_in">type</span>=json -p=<span class="string">&#x27;[&#123;&quot;op&quot;:&quot;add&quot;,&quot;path&quot;:&quot;/spec/template/spec/containers/0/ports/-&quot;,&quot;value&quot;:&#123;&quot;name&quot;:&quot;stats&quot;,&quot;containerPort&quot;:1936,&quot;hostPort&quot;:1936,&quot;protocol&quot;:&quot;TCP&quot;&#125;&#125;]&#x27;</span></span><br><span class="line"></span><br><span class="line">扩展②：NodePort + Local </span><br><span class="line">kubectl expose ds haproxy-ingress --<span class="built_in">type</span>=NodePort --name=haproxy-stats --port=1936 --target-port=1936 &amp;&amp; kubectl -n ingress-controller patch svc haproxy-stats -p <span class="string">&#x27;&#123;&quot;spec&quot;:&#123;&quot;externalTrafficPolicy&quot;:&quot;Local&quot;,&quot;ports&quot;:[&#123;&quot;port&quot;:1936,&quot;nodePort&quot;:31936,&quot;targetPort&quot;:1936&#125;]&#125;&#125;&#x27;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="集群与资源状态">集群与资源状态</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 集群状态</span></span><br><span class="line">kubectl get nodes,svc,ep,ing,deploy,ds,pods -o wide</span><br><span class="line">kubectl get cs</span><br><span class="line">kubectl get csr -o wide</span><br><span class="line">kubectl get pv,pvc,pdb,sts,rs,job,cj,sa,cm,secret,svcacc,role,rolebinding,ns</span><br><span class="line"></span><br><span class="line">扩展①：只看故障 Pod 的详细描述 </span><br><span class="line">kubectl -n ingress-controller describe pod &lt;pod&gt; | <span class="built_in">tail</span> -20</span><br><span class="line">扩展②：按节点筛选 </span><br><span class="line">kubectl -n ingress-controller get pods -l app.kubernetes.io/name=haproxy-ingress --field-selector spec.nodeName=k8snode2</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">等待滚动更新完成</span><br><span class="line">kubectl -n ingress-controller rollout status ds/haproxy-ingress</span><br><span class="line"></span><br><span class="line">扩展①：带超时 kubectl ... rollout status ds/haproxy-ingress --<span class="built_in">timeout</span>=120s</span><br><span class="line">扩展②：查看历史/回滚 kubectl -n ingress-controller rollout <span class="built_in">history</span> ds/haproxy-ingress / ... rollout undo ds/haproxy-ingress</span><br></pre></td></tr></table></figure>
+<h3 id="通用排障与校验">通用排障与校验</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply --dry-run=server -f haproxy-ingress-install.yaml</span><br><span class="line"></span><br><span class="line">扩展①：看差异</span><br><span class="line">kubectl diff -f haproxy-ingress-install.yaml</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">kubectl get nodes -L node-role.kubernetes.io/worker</span><br><span class="line">扩展①：打标签 </span><br><span class="line">kubectl label node k8snode4 node-role.kubernetes.io/worker=<span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">扩展②：看所有角色 </span><br><span class="line">kubectl get nodes --show-labels | grep -E <span class="string">&#x27;control-plane|worker&#x27;</span></span><br><span class="line"></span><br><span class="line">kubectl -n zhipeng-space create deployment <span class="built_in">echo</span> --image=k8s.gcr.io/echoserver:1.10</span><br><span class="line">kubectl -n zhipeng-space expose deployment <span class="built_in">echo</span> --port=8080</span><br><span class="line">curl -s -H <span class="string">&#x27;Host: echo.zhipengk8scluster.com&#x27;</span> http://192.168.3.121/springboot-test/hello | <span class="built_in">head</span> -20</span><br></pre></td></tr></table></figure>
+
+        
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/article/k8s-ingress/" data-toggle="tooltip" data-placement="top" title="K8S Ingress 详解">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/article/k8s-cluster-setup-2/" data-toggle="tooltip" data-placement="top" title="K8S 搭建指南(二)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                    <div class="reward">
+                        <div class="reward-button">赏 <span class="reward-code"> 
+                            <span class="alipay-code"> <img class="alipay-img" src="alipay_url"><b>支付宝打赏</b></span> 
+                            <span class="wechat-code"> <img class="wechat-img" src="wechatpay_url"><b>微信打赏</b> </span>
+                            </span></div>
+                        <p class="reward-notice">赞赏一下</p>
+                    </div>
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
+                    <!--  css & js -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>                       
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">概述</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">编写我们的k8s demo 应用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E7%99%BB%E5%BD%95%E6%88%91%E4%BB%AC%E7%9A%84-Docker-Hub-%E5%85%88%E5%88%9B%E5%BB%BA%E6%88%91%E4%BB%AC%E7%9A%84%E8%B4%A6%E5%8F%B7"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">登录我们的 Docker Hub 先创建我们的账号</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%83%A8%E7%BD%B2%E6%88%91%E4%BB%AC%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">部署我们的应用</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%83%A8%E7%BD%B2%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E5%88%B0k8s%E9%9B%86%E7%BE%A4"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">部署一个应用到k8s集群</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%8E%92%E6%9F%A5%E9%97%AE%E9%A2%98"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">排查问题</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%B5%8B%E8%AF%95%E6%9C%8D%E5%8A%A1"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">测试服务</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">使用 CordDNS 来访问我们的服务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8%E9%BB%98%E8%AE%A4%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE%E6%88%91%E4%BB%AC%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">使用默认域名访问我们的服务</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%9C%A8%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E6%88%96%E8%80%85%E5%86%85%E9%83%A8-POD%E4%B8%8A%E8%AE%BF%E9%97%AE%E6%88%91%E4%BB%AC%E7%9A%84%E6%9C%8D%E5%8A%A1-%E4%BF%AE%E6%94%B9-resolv-conf%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">在集群节点或者内部 POD上访问我们的服务(修改 resolv.conf的方式)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%9C%A8%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E6%88%96%E8%80%85%E5%86%85%E9%83%A8-POD%E4%B8%8A%E8%AE%BF%E9%97%AE%E6%88%91%E4%BB%AC%E7%9A%84%E6%9C%8D%E5%8A%A1-CoreDNS-%E8%A7%A3%E6%9E%90%E4%BD%A0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%9F%9F%E5%90%8D%EF%BC%88%E5%A6%82-springboot-test-com%EF%BC%89%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">在集群节点或者内部 POD上访问我们的服务(CoreDNS 解析你自己的域名（如 springboot.test.com）方式）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BD%BF%E7%94%A8CoreDNS-rewrite-%E6%8F%92%E4%BB%B6"><span class="toc-nav-number">3.4.</span> <span class="toc-nav-text">使用CoreDNS rewrite 插件</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9A%E6%8A%8A-springboot-test-com-%E6%94%B9%E5%86%99%E6%88%90%E9%9B%86%E7%BE%A4%E5%86%85-Service-%E5%9F%9F%E5%90%8D-%E6%B3%A8%E6%84%8F%EF%BC%8C%E5%8F%A6%E8%B5%B7%E4%B8%80%E8%A1%8C"><span class="toc-nav-number">3.4.1.</span> <span class="toc-nav-text">示例 1：把 springboot.test.com 改写成集群内 Service 域名 注意，另起一行</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E5%85%B6%E4%BB%96%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88-%E7%A4%BA%E4%BE%8B"><span class="toc-nav-number">3.4.2.</span> <span class="toc-nav-text">其他的配置方案(示例)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#%E7%A4%BA%E4%BE%8B-1%EF%BC%9Aregex-%E6%8D%95%E8%8E%B7%E5%88%86%E7%BB%84%EF%BC%8C%E6%8C%89%E5%89%8D%E7%BC%80%E6%98%A0%E5%B0%84%E5%88%B0%E4%B8%8D%E5%90%8C-Service"><span class="toc-nav-number">3.4.2.1.</span> <span class="toc-nav-text">示例 1：regex 捕获分组，按前缀映射到不同 Service</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#%E7%A4%BA%E4%BE%8B-2%EF%BC%9Aregex-%E6%8D%95%E8%8E%B7%E5%88%86%E7%BB%84%EF%BC%8C%E6%8C%89%E5%89%8D%E7%BC%80%E6%98%A0%E5%B0%84%E5%88%B0%E4%B8%8D%E5%90%8C-Service"><span class="toc-nav-number">3.4.2.2.</span> <span class="toc-nav-text">示例 2：regex 捕获分组，按前缀映射到不同 Service</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-nav-number">3.5.</span> <span class="toc-nav-text">总结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">向外部暴露服务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFIngress"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">什么是Ingress</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E5%AE%89%E8%A3%85-ingress-haproxy"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">安装 ingress-haproxy</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Install-controller"><span class="toc-nav-number">4.3.</span> <span class="toc-nav-text">Install controller</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#haproxy-%E7%BB%93%E6%9E%84%E5%A6%82%E4%B8%8B"><span class="toc-nav-number">4.4.</span> <span class="toc-nav-text">haproxy 结构如下</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#apply-controller"><span class="toc-nav-number">4.5.</span> <span class="toc-nav-text">apply controller</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#check"><span class="toc-nav-number">4.6.</span> <span class="toc-nav-text">check</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%94%B9%E9%80%A0-springboot-test-yaml-%E4%BD%BF%E5%BE%97%E5%85%B6%E4%B8%AD%E6%9C%89%E4%B8%A4%E4%B8%AA%E5%AE%9E%E4%BE%8B%EF%BC%8C%E5%B9%B6%E4%B8%94%E4%BB%A5-ClisterIP-%E7%9A%84%E6%96%B9%E5%BC%8F%E5%AD%98%E5%9C%A8"><span class="toc-nav-number">4.7.</span> <span class="toc-nav-text">改造 springboot-test.yaml, 使得其中有两个实例，并且以 ClisterIP 的方式存在</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E9%85%8D%E7%BD%AE-springboot-test-ingress"><span class="toc-nav-number">4.8.</span> <span class="toc-nav-text">配置 springboot-test-ingress</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%98%A0%E5%B0%84%E7%AB%AF%E5%8F%A3%E6%B5%8B%E8%AF%95-haproxy"><span class="toc-nav-number">4.9.</span> <span class="toc-nav-text">映射端口测试 haproxy</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="toc-nav-number">4.10.</span> <span class="toc-nav-text">总结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">总结</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#%E4%B8%80%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">一、常用命令速查</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#CoreDNS"><span class="toc-nav-number">5.1.1.</span> <span class="toc-nav-text">CoreDNS</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#HAProxy-Ingress-%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%A0%A1%E9%AA%8C"><span class="toc-nav-number">5.1.2.</span> <span class="toc-nav-text">HAProxy Ingress 部署与校验</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#RBAC-%E6%9D%83%E9%99%90%E6%A0%A1%E9%AA%8C"><span class="toc-nav-number">5.1.3.</span> <span class="toc-nav-text">RBAC &#x2F; 权限校验</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E7%AB%AF%E5%8F%A3-%E6%B5%81%E9%87%8F%E9%AA%8C%E8%AF%81"><span class="toc-nav-number">5.1.4.</span> <span class="toc-nav-text">端口&#x2F;流量验证</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%9B%86%E7%BE%A4%E4%B8%8E%E8%B5%84%E6%BA%90%E7%8A%B6%E6%80%81"><span class="toc-nav-number">5.1.5.</span> <span class="toc-nav-text">集群与资源状态</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#%E9%80%9A%E7%94%A8%E6%8E%92%E9%9A%9C%E4%B8%8E%E6%A0%A1%E9%AA%8C"><span class="toc-nav-number">5.1.6.</span> <span class="toc-nav-text">通用排障与校验</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+<!-- chrome Firefox 中文锚点定位失效-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<!-- smooth scroll behavior polyfill  -->
+<script type="text/javascript" src="/js/smoothscroll.js"></script>
+<script>
+        $('#toc').on('click','a.toc-nav-text',function(a){
+            document.getElementById(a.target.innerText.replace(/\s/g,'').replace(/\./g,'-').toLowerCase()).scrollIntoView(true);
+            document.getElementById($(a.currentTarget).attr("href").replace("#","")).scrollIntoView({behavior: 'smooth' });
+        })  
+</script>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/2028033763">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/IceFrozen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Jason Lee 2026 
+                    <br>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="#">JasonLess</a> | 
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="#" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- Custom Theme search -->
+
+<script src="/js/search.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- search code -->
+
+    <script type="text/javascript">      
+      var search_path = "search.xml";
+      if (search_path.length == 0) {
+          search_path = "search.xml";
+      }
+      var path = "/" + search_path;
+      searchFunc(path, 'local-search-input', 'local-search-result');
+    </script>
+ 
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://example.com/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work --><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+
+</html>

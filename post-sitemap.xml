@@ -9,8 +9,16 @@
 
 
     <url>
+        <loc>http://example.com/article/k8s-cluster-setup-3/</loc>
+        <lastmod>2026-11-03T13:40:16.453Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://example.com/article/k8s-cluster-setup-2/</loc>
-        <lastmod>2026-07-10T01:23:57.333Z</lastmod>
+        <lastmod>2026-11-03T11:50:02.870Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -18,7 +26,15 @@
 
     <url>
         <loc>http://example.com/article/k8s-cluster-setup-1/</loc>
-        <lastmod>2026-07-09T11:56:35.250Z</lastmod>
+        <lastmod>2026-11-03T11:49:27.478Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://example.com/article/k8s-ingress/</loc>
+        <lastmod>2026-11-01T11:28:50.751Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -265,7 +281,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/why-mq/</loc>
+        <loc>http://example.com/article/tcpip-tcpstatus/</loc>
         <lastmod>2020-08-10T03:11:48.200Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -273,7 +289,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/tcpip-tcpstatus/</loc>
+        <loc>http://example.com/article/why-mq/</loc>
         <lastmod>2020-08-10T03:11:48.200Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -377,22 +393,6 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/java-thrift-2/</loc>
-        <lastmod>2020-08-10T03:11:48.020Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://example.com/article/java-thrift-3/</loc>
-        <lastmod>2020-08-10T03:11:48.020Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://example.com/article/java-thrift-1/</loc>
         <lastmod>2020-08-10T03:11:48.020Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -401,7 +401,23 @@
     </url>
 
     <url>
+        <loc>http://example.com/article/java-thrift-2/</loc>
+        <lastmod>2020-08-10T03:11:48.020Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://example.com/article/java-thrift-4-2/</loc>
+        <lastmod>2020-08-10T03:11:48.020Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://example.com/article/java-thrift-3/</loc>
         <lastmod>2020-08-10T03:11:48.020Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -473,6 +489,14 @@
     </url>
 
     <url>
+        <loc>http://example.com/article/java-cms-gc-log/</loc>
+        <lastmod>2020-08-10T03:11:47.950Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://example.com/article/java-cms-gc-2/</loc>
         <lastmod>2020-08-10T03:11:47.950Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -489,15 +513,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/java-cms-gc-log/</loc>
-        <lastmod>2020-08-10T03:11:47.950Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://example.com/article/forbid-foreach-add-or-move/</loc>
+        <loc>http://example.com/article/dynamic-programming/</loc>
         <lastmod>2020-08-10T03:11:47.920Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -505,7 +521,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/dynamic-programming/</loc>
+        <loc>http://example.com/article/forbid-foreach-add-or-move/</loc>
         <lastmod>2020-08-10T03:11:47.920Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -521,7 +537,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/distributed-redis-data-structure-skip-zip-list/</loc>
+        <loc>http://example.com/article/distributed-redis-data-structure-object/</loc>
         <lastmod>2020-08-10T03:11:47.870Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -529,7 +545,7 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/distributed-redis-data-structure-object/</loc>
+        <loc>http://example.com/article/distributed-redis-data-structure-skip-zip-list/</loc>
         <lastmod>2020-08-10T03:11:47.870Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -593,14 +609,6 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/Java-garbage-collection-analysis-2/</loc>
-        <lastmod>2020-08-10T03:11:47.780Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://example.com/article/Java-garbage-collection-analysis-3/</loc>
         <lastmod>2020-08-10T03:11:47.780Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -617,8 +625,8 @@
     </url>
 
     <url>
-        <loc>http://example.com/article/Java-AQS2/</loc>
-        <lastmod>2020-08-10T03:11:47.770Z</lastmod>
+        <loc>http://example.com/article/Java-garbage-collection-analysis-2/</loc>
+        <lastmod>2020-08-10T03:11:47.780Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -626,6 +634,14 @@
 
     <url>
         <loc>http://example.com/article/Generics/</loc>
+        <lastmod>2020-08-10T03:11:47.770Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://example.com/article/Java-AQS2/</loc>
         <lastmod>2020-08-10T03:11:47.770Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

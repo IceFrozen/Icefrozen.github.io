@@ -250,12 +250,102 @@
 
 <div class="post-preview">
 
+    <a href="/article/java-memory-model-complier-reordering/">
+        <h2 class="post-title">
+            Java内存模型(2)
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/20/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                编译器重排序
+            </h3>
+        <div class="post-content-preview">
+            前言
+在我的Java内存模型(1)JMM是什么 中我已经阐述了JMM是什么以及CPU缓存模型和流水线的技术，下面针对于指令重排序中的编译器重排序做深入的讨论。
+内存模型在JVM的应用
+首先，我们再来重温一下，三种重排序。
+重排序
+指令重排序:在执行程序时为了提高性能，编译器和处理器常常会对指令做重排序。重排序分三种类型：
+
+编译器优化的重排序
+
+编译器在不改变单线程程序语义的前提下（代码中不...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2021-07-14
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#JAVA" title="JAVA">JAVA</a>
+            
+              <a href="/tags/#JVM" title="JVM">JVM</a>
+            
+              <a href="/tags/#内存模型篇" title="内存模型篇">内存模型篇</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/why-memory-barriers-1/">
+        <h2 class="post-title">
+            CPU缓存一致性协议
+        </h2>
+        <div>
+            <img class="post_img" src="https://picsum.photos/id/28/1600/500"></img>
+            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
+            
+        </div>
+        <h3 class="post-subtitle-my">
+                深入理解内存屏障
+            </h3>
+        <div class="post-content-preview">
+            CPU 结构
+现代多核处理器，一个CPU由多个核组成，每个核又可以有多个硬件线程，比如我们说4核8线程，就是指有4个核，每个核2个线程，这在OS看来就像8个并行处理器一样。
+CPU缓存有多级缓存，比如L1, L2, L3等：
+L1容量最小，速度最快，每个核都有L1缓存，L1又专门针对指令和数据分成L1d(数据缓存),L1i(指令缓存)。
+L2容量比L1大，速度比L1慢，每个核都有L2缓存。
+...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by Jason Lee on
+            2021-06-29
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#CPU" title="CPU">CPU</a>
+            
+              <a href="/tags/#缓存一致性" title="缓存一致性">缓存一致性</a>
+            
+              <a href="/tags/#并发系统" title="并发系统">并发系统</a>
+            
+              <a href="/tags/#内存屏障" title="内存屏障">内存屏障</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/article/why-memory-barriers-2/">
         <h2 class="post-title">
             CPU缓存一致性协议（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/19/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/31/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -263,8 +353,10 @@
                 缓存一致性性模型
             </h3>
         <div class="post-content-preview">
-            内存模型内存模型的分类内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。
-在分析之前，我们先定义一个基本的内存模型，以这个内存模型为基础...
+            内存模型
+内存模型的分类
+内存一致性模型（memory consistency model）就是用来描述多线程对共享存储器的访问行为，在不同的内存一致性模型里，多线程对共享存储器的访问行为有非常大的差别。这些差别会严重影响程序的执行逻辑，甚至会造成软件逻辑问题。在后面的介绍中，我们将分析不同的一致性模型里，多线程的内存访问乱序问题。
+在分析之前，我们先定义一个基本的内存模型，以这个内存模型为...
         </div>
     </a>
     
@@ -287,7 +379,7 @@
             KeepAlived 详解
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/63/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/69/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -295,7 +387,9 @@
                 
             </h3>
         <div class="post-content-preview">
-            概诉Keepalived 作用keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动实现...
+            概诉
+Keepalived 作用
+keepalived顾名思义是保持存活，常用来搭建设备的高可用，防止业务核心设备出现单点故障。keepalived基于VRRP协议来实现高可用，主要用作realserver的健康检查以及负载均衡主机和backup主机之间的故障漂移。他很大程度上是为ipvs服务的，也不需要共享存储。Keepalived主要的任务就是去调用ipvsadm命令，来生成规则，并自动...
         </div>
     </a>
     
@@ -318,7 +412,7 @@
             Spring Framework 源码分析（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/91/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/67/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -326,9 +420,12 @@
                 基础概念
             </h3>
         <div class="post-content-preview">
-            概诉Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
+            概诉
+Spring在java 语言层面的核心地位不用多说，Spring 三个核心思想：控制反转，依赖注入和面向切面编程，分别是
 一 、Spring IOC (控制反转)
-IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中.Bea...
+
+
+IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采用面向接口的编程模式.框架做的越多,就越有体会接口在起中起的作用,而Spring将这一想法,开始贯彻到业务的开发中....
         </div>
     </a>
     
@@ -355,7 +452,7 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
             负载均衡（3）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/60/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/64/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -363,13 +460,16 @@ IOC (即  Inversion of Control)为控制反转.Spring开发的基本思想 : 采
                 LVS服务的搭建机及其高级应用
             </h3>
         <div class="post-content-preview">
-            概诉根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
-LVS服务的搭建ipvsadm安装：
+            概诉
+根据LVS四层负载均衡器所述，本节来详细搭建一下LVS环境, 这里我们只做NAT模型和DR模型。
+LVS服务的搭建
+ipvsadm
+安装：
 1sudo yum  ipvsadm  -y
 
 ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
 
-123456789101112ipvsadm -A|E -t|u|f service-address [-s scheduler] [-p [...
+123456789101112ipvsadm -A|E -t|u|f service-address [-s scheduler] [-...
         </div>
     </a>
     
@@ -392,7 +492,7 @@ ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
             DNS服务(2)
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/16/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -401,16 +501,20 @@ ipvsadm 是LVS 管理集群服务的命令行工具，用法如下
             </h3>
         <div class="post-content-preview">
             DNS 服务简介
+
 接上篇 DNS服务(1) 简述了DNS的诞生和结构，本节来实际操作一遍，搭建一个DNS服务器。
 
-DNS 服务单台服务器DNS 服务器准备
-CentOS7 ip 为 192.168.100.10 
+DNS 服务单台服务器
+DNS 服务器准备
+
+CentOS7 ip 为 192.168.100.10
 user 用户为root 用户。
 
 安装Bind
+
 查看本机内bind 软件情况
 
-12345678[root@CentOS7 ~]# rpm -qa | grep ^bindbi...
+12345678[root@CentOS7 ~]# rpm -qa | grep ^bin...
         </div>
     </a>
     
@@ -435,7 +539,7 @@ user 用户为root 用户。
             负载均衡（2）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/42/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/87/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -443,10 +547,14 @@ user 用户为root 用户。
                 LVS四层负载均衡器
             </h3>
         <div class="post-content-preview">
-            概诉上节，讨论了负载均衡的常规策略和一般算法负载均衡（1），今天来主要学习一下LVS负载器。
-LVS什么是LVS
+            概诉
+上节，讨论了负载均衡的常规策略和一般算法负载均衡（1），今天来主要学习一下LVS负载器。
+LVS
 什么是LVS
-  LVS是Linux Virtual Server的简称，也就是Linux虚拟服务器，是一个由章文嵩博士发起的自由软件项目，官方站点是：http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux2....
+
+
+什么是LVS
+LVS是Linux Virtual Server的简称，也就是Linux虚拟服务器，是一个由章文嵩博士发起的自由软件项目，官方站点是：http://www.linuxvirtualserver.org。现在LVS已经是Linux标准内核的一部分，在Linux...
         </div>
     </a>
     
@@ -469,7 +577,7 @@ LVS什么是LVS
             负载均衡（1）
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/55/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/49/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -480,8 +588,9 @@ LVS什么是LVS
             
 说明：以下大部分内容来自：一篇读懂分布式架构下的负载均衡技术：分类、原理、算法、常见方案等
 
-负载均衡的概念关于“负载均衡”的解释，百度词条里：负载均衡，英文叫Load Balance，意思就是将请求或者数据分摊到多个操作单元上进行执行，共同完成工作任务。
-负载均衡（Load Balance）建立在现有网络结构之上，它提供了一种廉价有效透明的方法扩展网络设备和服务器的带宽、增加吞吐量、加强...
+负载均衡的概念
+关于“负载均衡”的解释，百度词条里：负载均衡，英文叫Load Balance，意思就是将请求或者数据分摊到多个操作单元上进行执行，共同完成工作任务。
+负载均衡（Load Balance）建立在现有网络结构之上，它提供了一种廉价有效透明的方法扩展网络设备和服务器的带宽、增加吞吐量、加...
         </div>
     </a>
     
@@ -504,7 +613,7 @@ LVS什么是LVS
             Redis系列之集群搭建
         </h2>
         <div>
-            <img class="post_img" src="https://picsum.photos/id/19/1600/500"></img>
+            <img class="post_img" src="https://picsum.photos/id/61/1600/500"></img>
             <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
             
         </div>
@@ -512,12 +621,16 @@ LVS什么是LVS
                 
             </h3>
         <div class="post-content-preview">
-            Redis集群模式Redis 主从集群
-(1) 读写分离在redis主从架构中，Master节点负责处理写请求，Slave节点只处理读请求。对于写请求少，读请求多的场景，例如电商详情页，通过这种读写分离的操作可以大幅提高并发量，通过增加redis从节点的数量可以使得redis的QPS达到10W+。
+            Redis集群模式
+Redis 主从集群
+
+(1) 读写分离
+在redis主从架构中，Master节点负责处理写请求，Slave节点只处理读请求。对于写请求少，读请求多的场景，例如电商详情页，通过这种读写分离的操作可以大幅提高并发量，通过增加redis从节点的数量可以使得redis的QPS达到10W+。
 
 
 
-(2) 主从同步Master节点接收到写请求并处理后，需要告知Slave节点数据发生了改...
+(2) 主从同步
+Master节点接收到写请求并处理后，需要告知Slave节点数据...
         </div>
     </a>
     
@@ -526,74 +639,6 @@ LVS什么是LVS
             2020-12-04
         </p>
         <div class="tags">
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/Net-wrok-DNS-1/">
-        <h2 class="post-title">
-            DNS服务
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/15/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                
-            </h3>
-        <div class="post-content-preview">
-            简介什么是DNSDomain Name System （缩写：DNS）是互联网的一项服务。它作为将域名和IP地址相互映射的一个分布式数据库，能够使人更方便地访问互联网。他的的作用非常简单，就是根据域名查出IP地址。你可以把它想象成一本巨大的电话本。举例来说，如果你要访问域名math.stackexchange.com，首先要通过DNS查出它的IP地址是151.101.129.69， DNS使...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2020-11-21
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#网络" title="网络">网络</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/openerating-learning-vfs-2/">
-        <h2 class="post-title">
-            Linux 操作系统原理-文件系统(2)
-        </h2>
-        <div>
-            <img class="post_img" src="https://picsum.photos/id/17/1600/500"></img>
-            <!-- <img class="post_img" src="https://source.unsplash.com/random"></img> -->
-            
-        </div>
-        <h3 class="post-subtitle-my">
-                虚拟文件系统
-            </h3>
-        <div class="post-content-preview">
-            概诉接上篇 Linux 操作系统原理-文件系统(1) 本节来讨论一下，文件类型。
-文件类型普通文件类型理解了文件系统的结构之后，我们来看一下文件的类型。
-Linux以文件的形式对计算机中的数据和硬件资源进行管理，也就是彻底的一切皆文件，反映在Linux的文件类型上就是：普通文件、目录文件（也就是文件夹）、设备文件、链接文件、管道文件、套接字文件（数据通信的接口）等等。而这些种类繁多的文件被L...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by Jason Lee on
-            2020-09-30
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#操作系统" title="操作系统">操作系统</a>
             
         </div>
     
@@ -713,6 +758,14 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
     <ul>
       
         <li>
+          <a href="/article/k8s-ingress/">K8S Ingress 详解</a>
+        </li>
+      
+        <li>
+          <a href="/article/k8s-cluster-setup-3/">K8S 搭建指南(三)</a>
+        </li>
+      
+        <li>
           <a href="/article/k8s-cluster-setup-2/">K8S 搭建指南(二)</a>
         </li>
       
@@ -724,14 +777,6 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
           <a href="/article/distributed-transaction-cap/">分布式事务一</a>
         </li>
       
-        <li>
-          <a href="/article/distributed-transaction-2/">分布式事务二</a>
-        </li>
-      
-        <li>
-          <a href="/article/distributed-transaction-1-2/">事务详解（2）-- 再谈隔离级别</a>
-        </li>
-      
     </ul>
   </div>
 
@@ -740,7 +785,7 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/11/">十一月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/07/">七月 2026</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">五月 2026</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>
@@ -751,6 +796,14 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
     <!-- no hr -->
     <h5><a href="/tags/">FEATURED TAGS</a></h5>
     <div class="tags">
+        
+            
+            <a href="/tags/#JAVA" title="JAVA" rel="26">JAVA</a>
+            
+        
+            
+            <a href="/tags/#JVM" title="JVM" rel="21">JVM</a>
+            
         
             
             <a href="/tags/#算法" title="算法" rel="5">算法</a>
@@ -765,11 +818,7 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             
         
             
-            <a href="/tags/#JAVA" title="JAVA" rel="26">JAVA</a>
-            
-        
-            
-            <a href="/tags/#JVM" title="JVM" rel="21">JVM</a>
+            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
             
         
             
@@ -777,21 +826,17 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             
         
             
-            <a href="/tags/#多线程" title="多线程" rel="8">多线程</a>
+            <a href="/tags/#网络" title="网络" rel="2">网络</a>
             
         
             
-            <a href="/tags/#网络" title="网络" rel="2">网络</a>
+            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
             <a href="/tags/#Redis" title="Redis" rel="6">Redis</a>
             
         
-            
-        
-            
-            <a href="/tags/#系统架构" title="系统架构" rel="3">系统架构</a>
             
         
             
@@ -813,19 +858,17 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             
         
             
+            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
+            
+        
+            
             <a href="/tags/#源码解析" title="源码解析" rel="2">源码解析</a>
             
         
             
         
             
-            <a href="/tags/#动态规划" title="动态规划" rel="2">动态规划</a>
-            
-        
-            
             <a href="/tags/#内存模型篇" title="内存模型篇" rel="3">内存模型篇</a>
-            
-        
             
         
             
@@ -836,34 +879,6 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
             <a href="/tags/#RPC" title="RPC" rel="5">RPC</a>
             
         
-            
-        
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
-            
-        
-            
-            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
-            
-        
-            
-            <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
             
         
             
@@ -884,6 +899,38 @@ Linux以文件的形式对计算机中的数据和硬件资源进行管理，也
         
             
             <a href="/tags/#大数据算法篇" title="大数据算法篇" rel="2">大数据算法篇</a>
+            
+        
+            
+            <a href="/tags/#操作系统" title="操作系统" rel="4">操作系统</a>
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#源码分析" title="源码分析" rel="2">源码分析</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#TCP/IP" title="TCP/IP" rel="5">TCP/IP</a>
+            
+        
+            
+            <a href="/tags/#TLS" title="TLS" rel="3">TLS</a>
+            
+        
+            
+        
+            
+        
             
         
             

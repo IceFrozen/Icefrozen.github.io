@@ -3,6 +3,13 @@
 
 
     <url>
+        <loc>http://example.com/tags/Kubernetes/</loc>
+        <lastmod>2026-11-01T11:28:50.751Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://example.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
         <lastmod>2022-03-21T03:54:39.340Z</lastmod>
         <changefreq>weekly</changefreq>
